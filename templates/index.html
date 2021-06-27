@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BooKÏ</title>
+</head>
+
+<body>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif:ital@1&display=swap');
+        /* @import url(//fonts.googleapis.com/earlyaccess/notosanstc.css); */
+
+
+        #index {
+            text-align: center;
+            font-family: 'Noto Serif', serif;
+            font-size: 50px;
+        }
+
+        #searchSection {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            position: relative;
+            width: auto;
+            max-width: 800px;
+            height: 46px;
+            margin: auto;
+            outline: none;
+            box-shadow: none;
+            border-radius: 24px;
+            border: 1px solid #dfe1e5
+        }
+
+        #searchBar {
+            width: 700px;
+            border: 0px;
+            background: none;
+            outline: none;
+        }
+
+        #searchBtn {
+            width: 60px;
+            height: 46px;
+            background: none;
+            border: 0px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        #bookSection {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        #book {
+            width: 250px;
+            height: 350px;
+            text-align: center;
+        }
+
+        .bookCover {
+            width: 150px;
+            height: 200px;
+            margin: 10px auto;
+        }
+
+        .coverSize {
+            width: 150px;
+            height: 200px;
+        }
+
+        .bookTitle {
+            font-family: 'Noto Serif', serif;
+        }
+
+        .ratings {
+            position: relative;
+            vertical-align: middle;
+            display: inline-block;
+            color: #ddd;
+            overflow: hidden;
+            font-size: 20px;
+            text-shadow: 0px 1px 0 #999;
+        }
+
+        .full_star {
+            position: absolute;
+            left: 0;
+            top: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            color: #D56A16;
+        }
+    </style>
+
+    <div id="index">
+        <h1>BooKÏ</h1>
+    </div>
+
+    <form id="searchSection">
+        <input id="searchBar" placeholder="Title or Author">
+        <button id="searchBtn"><i class="fas fa-search"></i></button>
+    </form>
+    <div id="bookSection"></div>
+
+
+
+
+    <script src="https://kit.fontawesome.com/cbebce4b6d.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+    <script>
+        let rateArr = []
+        let ratingLen = 0
+        for (let i = 0; i < 5;) {
+            i += 0.5
+            ratingLen += 10
+            let rateDic = {
+                ratingNum: i,
+                ratingLen: ratingLen + "%"
+            }
+            rateArr.push(rateDic)
+        }
+
+        document.getElementById("searchSection").onclick = () => {
+            document.getElementById("searchSection").style.boxShadow = "block"
+        }
+
+        document.getElementById("searchBtn").onclick = (e) => {
+            e.preventDefault()
+            bookSection.innerHTML = ""
+            bookSearch()
+        }
+
+        async function bookSearch() {
+
+            let searchBar = document.getElementById('searchBar').value
+
+            url = "https://www.googleapis.com/books/v1/volumes?q=" + searchBar + "&maxResults=10&startIndex=0&key=AIzaSyDbZ4ChEkPy6BsmTMPbLUmS55VWtfnrEJE"
+
+            await fetch(url)
+                .then(response => {
+                    return response.json();
+                }).then(data => {
+                    console.log(data)
+                    data = data.items
+                    getBooks(data)
+                })
+        }
+
+        function getBooks(items) {
+
+            for (let n = 0; n <= items.length; n++) {
+                let bookSection = document.getElementById("bookSection")
+                let book_tag = document.createElement("div")
+                let bookCover_tag = document.createElement("div")
+                let bookTitle_tag = document.createElement("div")
+                let ratings_tag = document.createElement("div")
+                let emptyStar_tag = document.createElement("div")
+                let fullStar_tag = document.createElement("div")
+                let img_tag = document.createElement("img")
+                let url_tag = document.createElement("a")
+
+                if (items[n].volumeInfo.imageLinks == null){
+                    console.log(items[n].volumeInfo.title)
+                }else{
+                    img_tag.src = items[n].volumeInfo.imageLinks.smallThumbnail
+                }
+
+                let bookTitle = document.createTextNode(items[n].volumeInfo.title)
+                let emptyS = document.createTextNode("★★★★★")
+                let fullS = document.createTextNode("★★★★★")
+                let url_link = "/bookInfo/" + items[n].id
+
+                book_tag.setAttribute("id", "book")
+                bookCover_tag.classList.add("bookCover")
+                img_tag.classList.add("coverSize")
+                bookTitle_tag.classList.add("bookTitle")
+                ratings_tag.classList.add("ratings")
+                emptyStar_tag.classList.add("empty_star")
+                fullStar_tag.classList.add("full_star")
+                url_tag.setAttribute("id", "book_url")
+
+                let ratingData = items[n].volumeInfo.averageRating
+
+                if (ratingData != null) {
+                    let filterStar = rateArr.filter(function (element, index, array) {
+                        return element.ratingNum == ratingData
+                    })
+                    fullStar_tag.style.width = filterStar[0].ratingLen
+                } else {
+                    fullStar_tag.setAttribute("style", "width: 0%");
+                }
+
+                url_tag.href = url_link
+
+                bookCover_tag.appendChild(img_tag)
+                bookTitle_tag.appendChild(bookTitle)
+                emptyStar_tag.appendChild(emptyS)
+                fullStar_tag.appendChild(fullS)
+                ratings_tag.appendChild(emptyStar_tag)
+                ratings_tag.appendChild(fullStar_tag)
+                url_tag.appendChild(bookCover_tag)
+                url_tag.appendChild(bookTitle_tag)
+                url_tag.appendChild(ratings_tag)
+                book_tag.appendChild(url_tag)
+                bookSection.appendChild(book_tag)
+            }
+        }
+    
+    </script>
+
+</body>
+
+</html>
