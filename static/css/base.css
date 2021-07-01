@@ -1,0 +1,43 @@
+body {
+    background-color: #161B22;
+    color: white;
+    font-family: Helvetica;
+}
+
+.nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin: 30px 0px;
+    padding-right: 30px;
+    flex: 1;
+}
+
+.menu {
+    margin-right: 20px;
+    color: white;
+    font-size: 30px;
+    background: none;
+    border: none;
+    cursor: pointer;
+
+}
+
+.ratings {
+    position: relative;
+    vertical-align: middle;
+    display: inline-block;
+    color: #ddd;
+    overflow: hidden;
+    font-size: 20px;
+    text-shadow: 0px 1px 0 #999;
+}
+
+.full_star {
+    position: absolute;
+    left: 0;
+    top: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    color: #D56A16;
+}

@@ -6,26 +6,161 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BookTitle</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='css/demo.css')}}">
 </head>
 
 <body>
-    success
+    <style>
+        .theBook{
+            display: flex;
+            width: 1200px;
+            flex-direction: row;
+
+        }
+
+        #theBookCover{
+            width: 150px;
+            height: 200px;
+        }
+
+        #imgSec{
+            margin: 20px;
+        }
+
+        #infoSec{
+            margin: 20px;
+        }
+
+        #theBookDes{
+            white-space: nowrap; 
+            width: 50%; 
+            overflow: hidden;
+            text-overflow: ellipsis; 
+        }
+    </style>
+    <div class="theBook">
+        <div id="imgSec"></div>
+        <div id="infoSec"></div>
+    </div>
+
+    <div class="theBook">
+        <div id="bookSpec"></div>
+        <div id="related"></div>
+    </div>
+
+    <script src="{{url_for('static',filename='js/demo.js')}}"></script>
 
     <script>
         let src = window.location.href;
         let srcId = src.split("/")[4];
         let bookId;
 
-        theBookInfo(srcId)
+        getTheBook(srcId)
 
-        async function theBookInfo(bookId) {
+        async function getTheBook(bookId) {
             await fetch("https://www.googleapis.com/books/v1/volumes/" + `${bookId}`)
                 .then(response => {
                     return response.json();
                 }).then(result => {
-                    console.log(result)
+                    // console.log(result.id)
+                    theBookInfo(result)
+                    theBookSpec(result)
                 })
+        };
+
+        function theBookInfo(data) {
+            let theBook = document.getElementsByClassName("theBook")[0]
+            let imgSec = document.getElementById("imgSec")
+            let infoSec = document.getElementById("infoSec")
+            let theBookCover_img = document.createElement("img")
+            let theBookTitle_tag = document.createElement("div")
+            let authors_tag = document.createElement("div")
+            let ratings_tag = document.createElement("div")
+            let emptyStar_tag = document.createElement("div")
+            let fullStar_tag = document.createElement("div")
+            let theBookDes_tag = document.createElement("div")
+
+            let theBookTitle = document.createTextNode(data.volumeInfo.title)
+            let authors = document.createTextNode(data.volumeInfo.authors)
+            let emptyS = document.createTextNode("★★★★★")
+            let fullS = document.createTextNode("★★★★★")
+
+            theBookCover_img.setAttribute("id", "theBookCover")
+            ratings_tag.classList.add("ratings")
+            emptyStar_tag.classList.add("empty_star")
+            fullStar_tag.classList.add("full_star")
+            theBookDes_tag.setAttribute("id", "theBookDes")
+
+            theBookCover_img.src = data.volumeInfo.imageLinks.thumbnail
+
+            // whether rating exits or not
+            let ratingData = data.volumeInfo.averageRating
+            if (ratingData != null) {
+                let filterStar = rateArr.filter(function (element, index, array) {
+                    return element.ratingNum == ratingData
+                })
+                fullStar_tag.style.width = filterStar[0].ratingLen
+            } else {
+                fullStar_tag.setAttribute("style", "width: 0%");
+            }
+
+            // whether book description exits or not
+            let theBookDes = data.volumeInfo.description
+            !theBookDes?theBookDes_tag.innerHTML = "no description":theBookDes_tag.innerHTML = theBookDes
+
+            theBookTitle_tag.appendChild(theBookTitle)
+            authors_tag.appendChild(authors)
+            emptyStar_tag.appendChild(emptyS)
+            fullStar_tag.appendChild(fullS)
+            ratings_tag.appendChild(emptyStar_tag)
+            ratings_tag.appendChild(fullStar_tag)
+            imgSec.appendChild(theBookCover_img)
+            infoSec.appendChild(theBookTitle_tag)
+            infoSec.appendChild(authors_tag)
+            infoSec.appendChild(ratings_tag)
+            infoSec.appendChild(theBookDes_tag)
+            theBook.appendChild(imgSec)
+            theBook.appendChild(infoSec)
+            
         }
+
+        function theBookSpec(res){
+            let bookSpec = document.getElementById("bookSpec")
+            let publisher = document.createElement("div")
+            let ISBN = document.createElement("div")
+            let pageCount = document.createElement("div")
+            let dimensions = document.createElement("div")
+            let categories = document.createElement("div")
+
+            publisher.innerHTML = "出版商:" + res.volumeInfo.publisher + "," + res.volumeInfo.publishedDate
+
+            !res.volumeInfo.industryIdentifiers?console.log("no ISBN"):ISBN.innerHTML = "ISBN:" + res.volumeInfo.industryIdentifiers[0].identifier + "(ISBN10)," + res.volumeInfo.industryIdentifiers[1].identifier + "(ISBN13)"
+            
+            pageCount.innerHTML = "頁數:" + res.volumeInfo.pageCount + "頁"
+            dimensions.innerHTML = "規格:" + res.volumeInfo.dimensions.height + "x" + res.volumeInfo.dimensions.width + "x" + res.volumeInfo.dimensions.thickness
+
+            
+            // if res.volumeInfo.categories.length >
+            categories.innerHTML = "本書分類:"
+            for (let i = 0; i < res.volumeInfo.categories.length; i++){
+                let url_tag = document.createElement("a")
+                let br_tag = document.createElement("br")
+                url_tag.href = `/search?q=subject:${res.volumeInfo.categories[i]}`
+                url_tag.innerHTML = res.volumeInfo.categories[i]
+                console.log(url_tag)
+                url_tag.appendChild(br_tag)
+                categories.appendChild(url_tag)             
+            }
+            
+            bookSpec.appendChild(publisher)
+            bookSpec.appendChild(ISBN)
+            bookSpec.appendChild(pageCount)
+            bookSpec.appendChild(dimensions)
+            bookSpec.appendChild(categories)
+
+        }
+
+
     </script>
 </body>
 
