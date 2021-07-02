@@ -6,38 +6,35 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BookTitle</title>
-    <link rel="stylesheet" href="{{url_for('static',filename='css/demo.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/base.css')}}">
 </head>
 
 <body>
     <style>
-        .theBook{
+        .theBook {
             display: flex;
             width: 1200px;
             flex-direction: row;
-
         }
 
-        #theBookCover{
+        #theBookCover {
             width: 150px;
             height: 200px;
         }
 
-        #imgSec{
+        #imgSec,
+        #infoSec {
             margin: 20px;
         }
 
-        #infoSec{
-            margin: 20px;
-        }
-
-        #theBookDes{
-            white-space: nowrap; 
-            width: 50%; 
+        #theBookDes {
+            white-space: nowrap;
+            width: 50%;
             overflow: hidden;
-            text-overflow: ellipsis; 
+            text-overflow: ellipsis;
         }
     </style>
+
     <div class="theBook">
         <div id="imgSec"></div>
         <div id="infoSec"></div>
@@ -48,8 +45,7 @@
         <div id="related"></div>
     </div>
 
-    <script src="{{url_for('static',filename='js/demo.js')}}"></script>
-
+    <script src="{{url_for('static',filename='js/base.js')}}"></script>
     <script>
         let src = window.location.href;
         let srcId = src.split("/")[4];
@@ -106,7 +102,7 @@
 
             // whether book description exits or not
             let theBookDes = data.volumeInfo.description
-            !theBookDes?theBookDes_tag.innerHTML = "no description":theBookDes_tag.innerHTML = theBookDes
+            !theBookDes ? theBookDes_tag.innerHTML = "no description" : theBookDes_tag.innerHTML = theBookDes
 
             theBookTitle_tag.appendChild(theBookTitle)
             authors_tag.appendChild(authors)
@@ -121,10 +117,10 @@
             infoSec.appendChild(theBookDes_tag)
             theBook.appendChild(imgSec)
             theBook.appendChild(infoSec)
-            
+
         }
 
-        function theBookSpec(res){
+        function theBookSpec(res) {
             let bookSpec = document.getElementById("bookSpec")
             let publisher = document.createElement("div")
             let ISBN = document.createElement("div")
@@ -134,24 +130,24 @@
 
             publisher.innerHTML = "出版商:" + res.volumeInfo.publisher + "," + res.volumeInfo.publishedDate
 
-            !res.volumeInfo.industryIdentifiers?console.log("no ISBN"):ISBN.innerHTML = "ISBN:" + res.volumeInfo.industryIdentifiers[0].identifier + "(ISBN10)," + res.volumeInfo.industryIdentifiers[1].identifier + "(ISBN13)"
-            
+            !res.volumeInfo.industryIdentifiers ? console.log("no ISBN") : ISBN.innerHTML = "ISBN:" + res.volumeInfo.industryIdentifiers[0].identifier + "(ISBN10)," + res.volumeInfo.industryIdentifiers[1].identifier + "(ISBN13)"
+
             pageCount.innerHTML = "頁數:" + res.volumeInfo.pageCount + "頁"
             dimensions.innerHTML = "規格:" + res.volumeInfo.dimensions.height + "x" + res.volumeInfo.dimensions.width + "x" + res.volumeInfo.dimensions.thickness
 
-            
+
             // if res.volumeInfo.categories.length >
             categories.innerHTML = "本書分類:"
-            for (let i = 0; i < res.volumeInfo.categories.length; i++){
+            for (let i = 0; i < res.volumeInfo.categories.length; i++) {
                 let url_tag = document.createElement("a")
                 let br_tag = document.createElement("br")
                 url_tag.href = `/search?q=subject:${res.volumeInfo.categories[i]}`
                 url_tag.innerHTML = res.volumeInfo.categories[i]
                 console.log(url_tag)
                 url_tag.appendChild(br_tag)
-                categories.appendChild(url_tag)             
+                categories.appendChild(url_tag)
             }
-            
+
             bookSpec.appendChild(publisher)
             bookSpec.appendChild(ISBN)
             bookSpec.appendChild(pageCount)
@@ -161,6 +157,44 @@
         }
 
 
+    </script>
+
+    <script>
+        checkProcess()
+
+        async function checkProcess() {
+            await fetch("/api/user", { method: "GET" })
+
+                .then(response => {
+                    return response.json()
+                })
+                .then(res => {
+                    if (res.data == true) {
+                        document.getElementById("signinIcon").style.display = "none"
+                        document.getElementById("signoutIcon").style.display = "block"
+                    } else {
+                        document.getElementById("signinIcon").style.display = "block"
+                        document.getElementById("signoutIcon").style.display = "none"
+                    }
+                })
+        }
+
+        document.getElementById("signoutProcess").addEventListener("click", logoutProcess)
+
+        async function logoutProcess() {
+            await fetch("/api/user", {
+                method: "DELETE",
+                headers: {
+                    "content-type": "application/json"
+                },
+            }).then(response => {
+                return response.json()
+            }).then(result => {
+                if (result.ok == true) {
+                    location.reload()
+                }
+            })
+        }
     </script>
 </body>
 

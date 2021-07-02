@@ -17,16 +17,6 @@
             align-items: center;
         }
 
-        #index {
-            font-size: 30px;
-            margin-left: 30px
-        }
-
-        h1 a {
-            text-decoration: none;
-            color: orange;
-        }
-
         #searchSection {
             width: auto;
             max-width: 800px;
@@ -47,6 +37,7 @@
             color: white;
             font-size: 20px;
             padding-left: 10px;
+            font-family: Helvetica;
         }
 
         #searchBtn {
@@ -95,7 +86,7 @@
     </style>
 
     <div id="searchEngine">
-        <div id="index">
+        <div class="Header">
             <h1><a href="/">BooKÏ</a></h1>
         </div>
         <form id="searchSection">
@@ -104,8 +95,9 @@
         </form>
 
         <div class="nav">
-            <button class="menu"><i class="fas fa-book"></i></button>
-            <button class="menu">member</button>
+            <div class="menu mybookIcon" id="mybookIcon"><a id="mybookProcess" class="mybookProcess" href="#"><i class="fas fa-book"></i></a></div>
+            <div class="menu signinIcon" id="signinIcon" style="display: none"><a id="signinProcess" class="signinProcess" href="/accounts">Sign in</a></div>
+            <div class="menu signoutIcon" id="signoutIcon" style="display: none"><a id="signoutProcess" class="signoutProcess" href="#"><i class="fas fa-user-cog"></i></a></div>
         </div>
     </div>
 
@@ -120,18 +112,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
     <script src="{{url_for('static',filename='js/base.js')}}"></script>
     <script>
-
-        let rateArr = []
-        let ratingLen = 0
-        for (let i = 0; i < 5;) {
-            i += 0.5
-            ratingLen += 10
-            let rateDic = {
-                ratingNum: i,
-                ratingLen: ratingLen + "%"
-            }
-            rateArr.push(rateDic)
-        }
 
         let src = window.location.href;
         let queryString = src.split("=")[1];
@@ -228,6 +208,44 @@
             }
         }
 
+    </script>
+
+    <script>
+        checkProcess()
+
+        async function checkProcess() {
+            await fetch("/api/user", { method: "GET" })
+
+                .then(response => {
+                    return response.json()
+                })
+                .then(res => {
+                    if (res.data == true) {
+                        document.getElementById("signinIcon").style.display = "none"
+                        document.getElementById("signoutIcon").style.display = "block"
+                    } else {
+                        document.getElementById("signinIcon").style.display = "block"
+                        document.getElementById("signoutIcon").style.display = "none"
+                    }
+                })
+        }
+
+        document.getElementById("signoutProcess").addEventListener("click", logoutProcess)
+
+        async function logoutProcess() {
+            await fetch("/api/user", {
+                method: "DELETE",
+                headers: {
+                    "content-type": "application/json"
+                },
+            }).then(response => {
+                    return response.json()
+                }).then(result => {
+                    if (result.ok == true) {
+                        location.reload()
+                    }
+                })
+        }
     </script>
 
 </body>

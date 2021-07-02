@@ -12,8 +12,8 @@ from flask import Flask, jsonify, render_template, request, session, redirect
 load_dotenv()
 
 connection_pool = pooling.MySQLConnectionPool(
-    pool_name = os.getenv("DBpool"),
-    pool_size = 5,
+    pool_name=os.getenv("DBpool"),
+    pool_size=5,
     host=os.getenv("DBhost"),
     user=os.getenv("DBuser"),
     password=os.getenv("DBpw"),
@@ -22,12 +22,18 @@ connection_pool = pooling.MySQLConnectionPool(
 
 
 app = Flask(__name__, static_folder="static", static_url_path="/")
+app.secret_key = os.getenv("secretKey")
 
 # Pages
 @app.route("/")
 def index():
     return render_template("index.html")
-
+@app.route("/accounts")
+def accounts():
+    if "memberEmail" in session:
+        return redirect("/")
+    else:
+        return render_template("accounts.html")
 @app.route("/search")
 def searchPage():
     return render_template("search.html")
@@ -36,7 +42,7 @@ def bookPage(id):
     return render_template("bookInfo.html")
 
 
-@app.route("/user", methods=["GET", "POST", "PATCH", "DELETE"])
+@app.route("/api/user", methods=["GET", "POST", "PATCH", "DELETE"])
 def loginPage():
     mydb = connection_pool.get_connection()
     mycursor = mydb.cursor(buffered=True)
@@ -48,6 +54,7 @@ def loginPage():
         mycursor.execute(
             "SELECT * FROM member WHERE email = '%s'" % (sqlEmail))
         loginResult = mycursor.fetchone()
+        print(loginResult)
         try:
             if loginResult != None:
                 if sqlPassword == loginResult[3]:
@@ -65,14 +72,21 @@ def loginPage():
                     mydb.close()
                     return jsonify({
                         "error": True,
-                        "message": "密碼錯誤"
+                        "message": "Wrong Password"
                     }), 400
+
+            else:
+                mydb.close()
+                return jsonify({
+                    "error": True,
+                    "message": "Invalid Account"
+                })
 
         except:
             mydb.close()
             return jsonify({
                 "error": True,
-                "message": "無此帳號"
+                "message": "Invalid Server"
             }), 500
 
     elif request.method == "POST":
@@ -90,7 +104,7 @@ def loginPage():
                     mydb.close()
                     return jsonify({
                         "error": True,
-                        "message": "請填妥所有資料"
+                        "message": "Please fill in the blanks"
                     }), 400
                 else:
                     mycursor.execute(
@@ -99,21 +113,21 @@ def loginPage():
                     mydb.close()
                     return jsonify({
                         "ok": True,
-                        "message": "註冊成功, 請重新登入"
+                        "message": "Your account has been successfully activated, please re-sign-in"
                     }), 200
 
             else:
                 mydb.close()
                 return jsonify({
                     "error": True,
-                    "message": "註冊失敗, Email重複註冊",
+                    "message": "Email is used by another account.",
                 }), 400
 
         except:
             mydb.close()
             return jsonify({
                 "error": True,
-                "message": "伺服器內部錯誤"
+                "message": "Invalid Server"
             }), 500
 
     elif request.method == "GET":

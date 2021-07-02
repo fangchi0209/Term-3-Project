@@ -11,7 +11,6 @@
 
 <body>
     <style>
-
         #index {
             text-align: center;
             font-size: 50px;
@@ -41,6 +40,7 @@
             color: white;
             font-size: 20px;
             padding-left: 10px;
+            font-family: Helvetica;
         }
 
         #searchBtn {
@@ -53,46 +53,19 @@
             color: white;
         }
 
-        #bookSection {
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        #book {
-            width: 250px;
-            height: 350px;
-            text-align: center;
-        }
-
-        .bookCover {
-            width: 150px;
-            height: 200px;
-            margin: 10px auto;
-            background: none;
-            border: none;
-        }
-
-        .coverSize {
-            width: 150px;
-            height: 200px;
-        }
-
-
     </style>
 
     <div class="nav">
-        <button class="menu"><i class="fas fa-book"></i></button>
-        <button class="menu">Sign in</button>
+        <div class="menu mybookIcon" id="mybookIcon"><a id="mybookProcess" class="mybookProcess" href="#"><i class="fas fa-book"></i></a></div>
+        <div class="menu signinIcon" id="signinIcon" style="display: none"><a id="signinProcess" class="signinProcess" href="/accounts">Sign in</a></div>
+        <div class="menu signoutIcon" id="signoutIcon" style="display: none"><a id="signoutProcess" class="signoutProcess" href="#"><i class="fas fa-user-cog"></i></a></div>
     </div>
 
     <div id="index">
         <h1>BooKÏ</h1>
     </div>
 
-    <form id="searchSection" action="/bookInfo/AVVoPwAACAAJ">
+    <form id="searchSection">
         <input tyep="text" id="searchBar" placeholder="Title or Author">
         <button id="searchBtn" onclick="searchGo(event)"><i class="fas fa-search"></i></button>
     </form>
@@ -101,18 +74,57 @@
     <script src="https://kit.fontawesome.com/cbebce4b6d.js" crossorigin="anonymous"></script>
     <script>
 
-        function searchGo(e){
+        function searchGo(e) {
             e.preventDefault()
-            searchPage()
-            
+            if (document.getElementById("searchBar").value != ""){
+                searchPage()
+            }
         }
 
-        function searchPage(){
+        function searchPage() {
             let query;
             query = document.getElementById("searchBar").value
             window.location.href = `search?q=${query}`
         }
     </script>
+
+    <script>
+        checkProcess()
+
+        async function checkProcess() {
+            await fetch("/api/user", { method: "GET" })
+                .then(response => {
+                    return response.json()
+                }).then(res => {
+                    if (res.data == true) {
+                        document.getElementById("signinIcon").style.display = "none"
+                        document.getElementById("signoutIcon").style.display = "block"
+                    } else {
+                        document.getElementById("signinIcon").style.display = "block"
+                        document.getElementById("signoutIcon").style.display = "none"
+                    }
+                })
+        }
+
+        document.getElementById("signoutProcess").addEventListener("click", logoutProcess)
+
+        async function logoutProcess() {
+            await fetch("/api/user", {
+                method: "DELETE",
+                headers: {
+                    "content-type": "application/json"
+                },
+            }).then(response => {
+                return response.json()
+            }).then(result => {
+                if (result.ok == true) {
+                    location.reload()
+                }
+            })
+        }
+    </script>
+
+
 
 </body>
 
