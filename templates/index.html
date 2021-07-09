@@ -19,6 +19,12 @@
 
         #searchSection {
             display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #bundle {
+            display: flex;
             flex-direction: row;
             justify-content: center;
             position: relative;
@@ -30,6 +36,26 @@
             box-shadow: none;
             border-radius: 24px;
             border: 1px solid #dfe1e5
+        }
+
+        #toggle {
+            display: flex;
+            flex-direction: column;
+            background: gray;
+            width: 769px;
+            min-height: 35px;
+            border: 1px solid #dfe1e5;
+            padding: 1px;
+            border-bottom-left-radius: 24px;
+            border-bottom-right-radius: 24px;
+        }
+
+        #toggle a {
+            text-decoration: none;
+            color: white;
+            font-size: 28px;
+            margin: 10px 20px;
+            line-height: 2;
         }
 
         #searchBar {
@@ -52,13 +78,15 @@
             font-size: 20px;
             color: white;
         }
-
     </style>
 
     <div class="nav">
-        <div class="menu mybookIcon" id="mybookIcon"><a id="mybookProcess" class="mybookProcess" href="#"><i class="fas fa-book"></i></a></div>
-        <div class="menu signinIcon" id="signinIcon" style="display: none"><a id="signinProcess" class="signinProcess" href="/accounts">Sign in</a></div>
-        <div class="menu signoutIcon" id="signoutIcon" style="display: none"><a id="signoutProcess" class="signoutProcess" href="#"><i class="fas fa-user-cog"></i></a></div>
+        <div class="menu mybookIcon" id="mybookIcon"><a id="mybookProcess" class="mybookProcess" href="#"><i
+                    class="fas fa-book"></i></a></div>
+        <div class="menu signinIcon" id="signinIcon" style="display: none"><a id="signinProcess" class="signinProcess"
+                href="/accounts">Sign in</a></div>
+        <div class="menu signoutIcon" id="signoutIcon" style="display: none"><a id="signoutProcess"
+                class="signoutProcess" href="#"><i class="fas fa-user-cog"></i></a></div>
     </div>
 
     <div id="index">
@@ -66,26 +94,98 @@
     </div>
 
     <form id="searchSection">
-        <input tyep="text" id="searchBar" placeholder="Title or Author">
-        <button id="searchBtn" onclick="searchGo(event)"><i class="fas fa-search"></i></button>
+        <div id="bundle">
+            <input type="text" id="searchBar" placeholder="Title or Author">
+            <button id="searchBtn" onclick="searchGo(event)"><i class="fas fa-search"></i></button>
+        </div>
+        <div id="toggle" style="display: none"></div>
     </form>
 
 
     <script src="https://kit.fontawesome.com/cbebce4b6d.js" crossorigin="anonymous"></script>
     <script>
 
+        let signinIcon = document.getElementById("signinIcon")
+        let signoutIcon = document.getElementById("signoutIcon")
+        let mybookIcon = document.getElementById("mybookIcon")
+        let searchBar = document.getElementById("searchBar")
+        let toggle = document.getElementById("toggle")
+        let bundle = document.getElementById("bundle")
+
         function searchGo(e) {
             e.preventDefault()
-            if (document.getElementById("searchBar").value != ""){
+            if (searchBar.value != "") {
                 searchPage()
             }
         }
 
         function searchPage() {
             let query;
-            query = document.getElementById("searchBar").value
+            query = searchBar.value
             window.location.href = `search?q=${query}`
         }
+
+        document.addEventListener("click", function (e) {
+            if (e.target != document.getElementsByTagName("div")[6]) {
+                toggle.style.display = "none"
+                bundle.style.borderRadius = "24px"
+            }
+        })
+
+        toggle.addEventListener("click", function (e) {
+            let targetW = e.target.innerHTML
+            if ((targetW.indexOf("<") != -1) == false) {
+                window.location.href = `search?q=${targetW}`
+                toggle.style.display = "none"
+                    bundle.style.borderRadius = "24px"
+            }
+        })
+
+
+        searchBar.oninput = function () {
+
+            if (searchBar.value != "") {
+                fetch("/api/searchEngine", {
+                    method: "POST",
+                    headers: {
+                        "content-type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        key: searchBar.value
+                    }),
+                })
+                    .then(reponse => {
+                        return reponse.json()
+                    }).then(res => {
+                        let books = res.ok
+                        preview(books)
+                    })
+            } else {
+                searchBar.style.borderRadius = "24px"
+            }
+        }
+
+        function preview(data) {
+            // console.log(data)
+            if (data != "") {
+                bundle.style.borderRadius = "24px 24px 0px 0px"
+                toggle.style.display = "block"
+                toggle.innerHTML = ""
+                let search_str = ""
+                for (let i = 0; i < data.length; i++) {
+                    var a = '<a href="javascript:;">' + data[i] + '</a><br>'
+                    search_str += a
+                    toggle.innerHTML = search_str
+                }
+
+            } else {
+                toggle.style.display = "none"
+                bundle.style.borderRadius = "24px"
+            }
+        }
+
+
+
     </script>
 
     <script>
@@ -97,11 +197,11 @@
                     return response.json()
                 }).then(res => {
                     if (res.data == true) {
-                        document.getElementById("signinIcon").style.display = "none"
-                        document.getElementById("signoutIcon").style.display = "block"
+                        signinIcon.style.display = "none"
+                        signoutIcon.style.display = "block"
                     } else {
-                        document.getElementById("signinIcon").style.display = "block"
-                        document.getElementById("signoutIcon").style.display = "none"
+                        signinIcon.style.display = "block"
+                        signoutIcon.style.display = "none"
                     }
                 })
         }

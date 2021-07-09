@@ -15,6 +15,8 @@
             display: flex;
             width: 1200px;
             flex-direction: row;
+            margin: 10px auto;
+            padding: 10px;
         }
 
         #theBookCover {
@@ -22,22 +24,126 @@
             height: 200px;
         }
 
-        #imgSec,
-        #infoSec {
+        #imgSec {
             margin: 20px;
         }
 
+        #infoSec {
+            margin: 20px;
+            position: relative;
+
+        }
+
+        #theBookTitle {
+            font-size: 28px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
         #theBookDes {
-            white-space: nowrap;
-            width: 50%;
+            white-space: pre-wrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            margin: 10px 0;
+            line-height: 30px;
         }
+
+        .ratings {
+            margin: 10px 0;
+        }
+
+        .extraLink a {
+            text-decoration: none;
+            color: white;
+        }
+
+        .extraLink a:hover {
+            color: orange
+        }
+
+        #more {
+            position: absolute;
+            right: 0px;
+        }
+
+        #more a {
+            color: orange;
+            font-size: 40px;
+        }
+
+        #bookSpec {
+            margin: 20px;
+            line-height: 30px;
+        }
+
+        #reviews {
+            display: flex;
+            flex-direction: column;
+            margin: 10px auto;
+            padding: 10px;
+        }
+
+        #commentSec {
+            display: flex;
+            flex-direction: row;
+            margin: 20px;
+            line-height: 30px;
+        }
+
+        #commentBox {
+            width: 360px;
+            border: 1px solid red;
+        }
+
+        #reviewSec {
+            margin: 20px;
+            line-height: 30px;
+        }
+
+        .indiReview {
+            display: flex;
+            flex-direction: column;
+            width: auto;
+            max-width: 480px;
+            margin: 10px 0px;
+            border: 1px solid gray;
+            padding: 10px;
+        }
+
+        .together {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .reviewer {
+            flex-grow: 1;
+        }
+
+
     </style>
+
+    <div class="searchEngine">
+        <div class="Header">
+            <h1><a href="/">BooKÏ</a></h1>
+        </div>
+
+        <div class="nav">
+            <div class="menu mybookIcon" id="mybookIcon"><a id="mybookProcess" class="mybookProcess" href="#"><i
+                        class="fas fa-book"></i></a></div>
+            <div class="menu signinIcon" id="signinIcon" style="display: none"><a id="signinProcess"
+                    class="signinProcess" href="/accounts">Sign in</a></div>
+            <div class="menu signoutIcon" id="signoutIcon" style="display: none"><a id="signoutProcess"
+                    class="signoutProcess" href="#"><i class="fas fa-user-cog"></i></a></div>
+        </div>
+    </div>
 
     <div class="theBook">
         <div id="imgSec"></div>
         <div id="infoSec"></div>
+
     </div>
 
     <div class="theBook">
@@ -45,11 +151,21 @@
         <div id="related"></div>
     </div>
 
+    <div id="reviews">
+        <div id="commentSec">
+            <div contenteditable="true" id="commentBox"></div><button id="commentBtn" onclick="uploadComment()">Send</button>
+        </div>
+        <div id="reviewSec"></div>
+    </div> 
+
+    <script src="https://kit.fontawesome.com/cbebce4b6d.js" crossorigin="anonymous"></script>
     <script src="{{url_for('static',filename='js/base.js')}}"></script>
     <script>
+        // MAIN SCRIPT
         let src = window.location.href;
         let srcId = src.split("/")[4];
         let bookId;
+        let moreIcon = false
 
         getTheBook(srcId)
 
@@ -71,21 +187,32 @@
             let theBookCover_img = document.createElement("img")
             let theBookTitle_tag = document.createElement("div")
             let authors_tag = document.createElement("div")
+            let aForauthors_tag = document.createElement("a")
             let ratings_tag = document.createElement("div")
             let emptyStar_tag = document.createElement("div")
             let fullStar_tag = document.createElement("div")
             let theBookDes_tag = document.createElement("div")
+            let more_tag = document.createElement("div")
+            let a_tag = document.createElement("a")
+            let i_tag = document.createElement("i")
+
+            aForauthors_tag.href = `/search?q=inauthor:${data.volumeInfo.authors}`
+            a_tag.href = "javascript:;"
 
             let theBookTitle = document.createTextNode(data.volumeInfo.title)
-            let authors = document.createTextNode(data.volumeInfo.authors)
             let emptyS = document.createTextNode("★★★★★")
             let fullS = document.createTextNode("★★★★★")
 
             theBookCover_img.setAttribute("id", "theBookCover")
+            theBookTitle_tag.setAttribute("id", "theBookTitle")
+            authors_tag.classList.add("extraLink")
             ratings_tag.classList.add("ratings")
             emptyStar_tag.classList.add("empty_star")
             fullStar_tag.classList.add("full_star")
             theBookDes_tag.setAttribute("id", "theBookDes")
+            more_tag.setAttribute("id", "more")
+            i_tag.classList.add("fas")
+            i_tag.classList.add("fa-caret-down")
 
             theBookCover_img.src = data.volumeInfo.imageLinks.thumbnail
 
@@ -105,19 +232,34 @@
             !theBookDes ? theBookDes_tag.innerHTML = "no description" : theBookDes_tag.innerHTML = theBookDes
 
             theBookTitle_tag.appendChild(theBookTitle)
-            authors_tag.appendChild(authors)
+            aForauthors_tag.innerHTML = data.volumeInfo.authors
+            authors_tag.appendChild(aForauthors_tag)
             emptyStar_tag.appendChild(emptyS)
             fullStar_tag.appendChild(fullS)
             ratings_tag.appendChild(emptyStar_tag)
             ratings_tag.appendChild(fullStar_tag)
+
+            a_tag.appendChild(i_tag)
+            more_tag.appendChild(a_tag)
             imgSec.appendChild(theBookCover_img)
             infoSec.appendChild(theBookTitle_tag)
             infoSec.appendChild(authors_tag)
             infoSec.appendChild(ratings_tag)
             infoSec.appendChild(theBookDes_tag)
+            infoSec.appendChild(more_tag)
             theBook.appendChild(imgSec)
             theBook.appendChild(infoSec)
 
+            document.getElementById("more").addEventListener("click", function () {
+                if (moreIcon == false) {
+                    console.log("open")
+                    document.getElementById("theBookDes").style.display = "block"
+                } else {
+                    console.log("close")
+                    document.getElementById("theBookDes").style.display = "-webkit-box"
+                }
+                moreIcon = !moreIcon
+            })
         }
 
         function theBookSpec(res) {
@@ -128,22 +270,29 @@
             let dimensions = document.createElement("div")
             let categories = document.createElement("div")
 
-            publisher.innerHTML = "出版商:" + res.volumeInfo.publisher + "," + res.volumeInfo.publishedDate
+            categories.classList.add("extraLink")
 
-            !res.volumeInfo.industryIdentifiers ? console.log("no ISBN") : ISBN.innerHTML = "ISBN:" + res.volumeInfo.industryIdentifiers[0].identifier + "(ISBN10)," + res.volumeInfo.industryIdentifiers[1].identifier + "(ISBN13)"
+            publisher.innerHTML = "出版商:" + "&nbsp" + res.volumeInfo.publisher + "&nbsp" + "," + "&nbsp" + res.volumeInfo.publishedDate
 
-            pageCount.innerHTML = "頁數:" + res.volumeInfo.pageCount + "頁"
-            dimensions.innerHTML = "規格:" + res.volumeInfo.dimensions.height + "x" + res.volumeInfo.dimensions.width + "x" + res.volumeInfo.dimensions.thickness
+            !res.volumeInfo.industryIdentifiers ? console.log("no ISBN") : ISBN.innerHTML = "ISBN:" + "&nbsp" + res.volumeInfo.industryIdentifiers[0].identifier + "&nbsp" + "(ISBN10)," + "&nbsp" + res.volumeInfo.industryIdentifiers[1].identifier + "&nbsp" + "(ISBN13)"
+
+            pageCount.innerHTML = "頁數:" + "&nbsp" + res.volumeInfo.pageCount + "&nbsp" + "頁"
+
+            if (res.volumeInfo.dimensions != null) {
+                dimensions.innerHTML = "規格:" + "&nbsp" + res.volumeInfo.dimensions.height + "&nbsp" + "x" + "&nbsp" + res.volumeInfo.dimensions.width + "&nbsp" + "x" + "&nbsp" + res.volumeInfo.dimensions.thickness
+            } else {
+                console.log("No dimensions")
+            }
+
 
 
             // if res.volumeInfo.categories.length >
-            categories.innerHTML = "本書分類:"
+            categories.innerHTML = "本書分類:<br>"
             for (let i = 0; i < res.volumeInfo.categories.length; i++) {
                 let url_tag = document.createElement("a")
                 let br_tag = document.createElement("br")
                 url_tag.href = `/search?q=subject:${res.volumeInfo.categories[i]}`
                 url_tag.innerHTML = res.volumeInfo.categories[i]
-                console.log(url_tag)
                 url_tag.appendChild(br_tag)
                 categories.appendChild(url_tag)
             }
@@ -160,6 +309,100 @@
     </script>
 
     <script>
+        // REVIEW BOARD
+
+        loadComment(srcId)
+
+        let commentBox = document.getElementById("commentBox")
+        let reviewSec = document.getElementById("reviewSec")
+        
+         
+        async function uploadComment(){
+            
+            let myDate = new Date();
+            let theDate = myDate.toLocaleString()
+            let theTitle = document.getElementById("theBookTitle").innerHTML
+
+            db = {
+                title: srcId,
+                date: theDate,
+                content: commentBox.innerHTML,
+            }
+
+            await fetch("/api/reviews", {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json",
+                },
+                body: JSON.stringify(db)
+            }).then(response => {
+                return response.json()
+            }).then(re => {
+                let indiReview_tag = document.createElement("div")
+                let reviewer_tag = document.createElement("div")
+                let review_tag = document.createElement("div")
+                let reviewTime_tag = document.createElement("div");
+                let together_tag = document.createElement("div")
+
+                indiReview_tag.className = "indiReview"
+                reviewer_tag.className = "reviewer"
+                review_tag.className = "review"
+                reviewTime_tag.className = "reviewtTme";
+                together_tag.className = "together"
+
+                reviewer_tag.innerHTML = re.user
+                review_tag.innerHTML = re.content
+                reviewTime_tag.innerHTML = re.date
+                together_tag.appendChild(reviewer_tag)
+                together_tag.appendChild(reviewTime_tag)
+                indiReview_tag.appendChild(together_tag)
+                indiReview_tag.appendChild(review_tag)
+                reviewSec.appendChild(indiReview_tag)
+                commentBox.innerHTML = ""
+
+                reviewSec.insertBefore(indiReview_tag, reviewSec.childNodes[0])
+            })
+            
+        }
+
+        async function loadComment(url) {
+            await fetch(`/api/reviews?t=${url}`, {method: "GET"})
+            .then(response => {
+                return response.json()
+            }).then(data => {
+                let oldReviews = data.allReviews
+                for (let n = 0; n < oldReviews.length; n++){
+
+                    let indiReview_tag = document.createElement("div")
+                    let reviewer_tag = document.createElement("div")
+                    let review_tag = document.createElement("div")
+                    let reviewTime_tag = document.createElement("div");
+                    let together_tag = document.createElement("div")
+
+                    indiReview_tag.className = "indiReview"
+                    reviewer_tag.className = "reviewer"
+                    review_tag.className = "review"
+                    reviewTime_tag.className = "reviewtTme";
+                    together_tag.className = "together"
+
+                    reviewer_tag.innerHTML = oldReviews[n].name
+                    review_tag.innerHTML = oldReviews[n].content
+                    reviewTime_tag.innerHTML = oldReviews[n].time
+                    together_tag.appendChild(reviewer_tag)
+                    together_tag.appendChild(reviewTime_tag)
+                    indiReview_tag.appendChild(together_tag)
+                    indiReview_tag.appendChild(review_tag)
+                    reviewSec.appendChild(indiReview_tag)
+
+                    reviewSec.insertBefore(indiReview_tag, reviewSec.childNodes[0])
+                }
+            })
+        }
+
+    </script>
+
+    <script>
+        // MEMBER SYSTEM
         checkProcess()
 
         async function checkProcess() {

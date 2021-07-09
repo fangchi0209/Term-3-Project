@@ -1,7 +1,8 @@
 import json
 import ssl
 import traceback
-
+from concurrent.futures import ThreadPoolExecutor
+import requests
 import os
 from dotenv import load_dotenv
 import mysql.connector
@@ -13,7 +14,7 @@ load_dotenv()
 
 connection_pool = pooling.MySQLConnectionPool(
     pool_name=os.getenv("DBpool"),
-    pool_size=5,
+    pool_size=10,
     host=os.getenv("DBhost"),
     user=os.getenv("DBuser"),
     password=os.getenv("DBpw"),
@@ -25,21 +26,141 @@ app = Flask(__name__, static_folder="static", static_url_path="/")
 app.secret_key = os.getenv("secretKey")
 
 # Pages
+
+
 @app.route("/")
 def index():
     return render_template("index.html")
+
+
 @app.route("/accounts")
 def accounts():
     if "memberEmail" in session:
         return redirect("/")
     else:
         return render_template("accounts.html")
+
+
 @app.route("/search")
 def searchPage():
     return render_template("search.html")
+
+
 @app.route("/bookInfo/<id>")
 def bookPage(id):
     return render_template("bookInfo.html")
+
+
+@app.route("/api/searchEngine", methods=["POST"])
+def searchEngine():
+
+    mydb = connection_pool.get_connection()
+    mycursor = mydb.cursor(buffered=True)
+
+    data = request.get_json()
+    words = data["key"]
+
+    mycursor.execute(f"SELECT DISTINCT title FROM books WHERE splitW LIKE '%{words}%' LIMIT 8")
+    results = mycursor.fetchall()
+
+    books = []
+    for result in results:
+        books.append(result)
+
+    mydb.close()
+    return jsonify({
+        "ok": books
+    })
+
+@app.route("/api/eachPage")
+def eachPage():
+
+    keyword = request.args.get("q")
+    # print(keyword)
+
+    data = []
+
+    first = f"https://www.googleapis.com/books/v1/volumes?q={keyword}&startIndex=0&maxResults=1"
+    f = requests.get(first)
+    final = json.loads(f.text)
+    totalCount = final["totalItems"] - 80
+
+    i = 0
+    while i < totalCount:
+        links = f"https://www.googleapis.com/books/v1/volumes?q={keyword}&startIndex={i}&maxResults=30"
+        # links = f"https://www.googleapis.com/books/v1/volumes?q={keyword}&startIndex={i}&maxResults=30&key=AIzaSyDbZ4ChEkPy6BsmTMPbLUmS55VWtfnrEJE&country=TW"
+        data.append(links)
+        i += 30
+
+    def allBooks(url):
+
+        r = requests.get(url)
+        r.encoding = "utf-8"
+        x = json.loads(r.text)
+
+        return x
+
+    with ThreadPoolExecutor(max_workers=15) as executor:
+        results = executor.map(allBooks, data)
+
+    resultsArr = []
+    for n in results:
+        resultsArr.append(n)
+
+    # print(resultsArr)
+    return jsonify(resultsArr)
+
+
+@app.route("/api/reviews", methods=["GET", "POST"])
+def reviews():
+
+    mydb = connection_pool.get_connection()
+    mycursor = mydb.cursor(buffered=True)
+
+    if request.method == "POST":
+        data = request.get_json()
+        cTitle = data["title"]
+        print(cTitle)
+        cUser = session["memberName"]
+        cTime = data["date"]
+        cContent = data["content"]
+
+        mycursor.execute(
+            "INSERT INTO  reviews (book, user, time, content) VALUES (%s, %s, %s, %s)", (cTitle, cUser, cTime, cContent))
+        mydb.commit()
+
+
+        return jsonify({
+            "user": session["memberName"],
+            "date": cTime,
+            "content": cContent
+        })
+
+    elif request.method == "GET":
+        mydb = connection_pool.get_connection()
+        mycursor = mydb.cursor(buffered=True)
+
+        bookId = request.args.get("t")
+        print(bookId)
+
+        mycursor.execute(f"Select * FROM reviews WHERE book LIKE '%{bookId}%'")
+        allReviews = mycursor.fetchall()
+
+        reviewArr = []
+        for arr in allReviews:
+            reviewDic = {
+                "name": arr[2],
+                "time": arr[3],
+                "content": arr[4]
+            }
+
+            reviewData = reviewDic.copy()
+            reviewArr.append(reviewData)
+
+        mydb.close()
+        return jsonify({
+            "allReviews": reviewArr
+        })
 
 
 @app.route("/api/user", methods=["GET", "POST", "PATCH", "DELETE"])
@@ -54,7 +175,7 @@ def loginPage():
         mycursor.execute(
             "SELECT * FROM member WHERE email = '%s'" % (sqlEmail))
         loginResult = mycursor.fetchone()
-        print(loginResult)
+        # print(loginResult)
         try:
             if loginResult != None:
                 if sqlPassword == loginResult[3]:
@@ -134,7 +255,7 @@ def loginPage():
         if "memberEmail" in session:
             mydb.close()
             return jsonify({
-                "data": True,
+                "data": session["memberName"],
             })
         else:
             mydb.close()

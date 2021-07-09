@@ -11,7 +11,7 @@
 
 <body>
     <style>
-        #searchEngine {
+        .searchEngine {
             display: flex;
             flex-direction: row;
             align-items: center;
@@ -51,17 +51,20 @@
         }
 
         #bookSection {
+            width: auto;
+            max-width: 1200px;
             display: flex;
             flex-direction: row;
             flex-wrap: wrap;
             justify-content: center;
-            margin-top: 20px;
+            margin: 20px auto;
         }
 
         #book {
-            width: 250px;
-            height: 350px;
+            width: 200px;
+            height: 300px;
             text-align: center;
+            margin: 10px 20px;
         }
 
         #book_url {
@@ -80,12 +83,34 @@
             height: 200px;
         }
 
+        #bookTitle {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         #authors {
             color: gray;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #pageCount {
+            text-align: center;
+            padding-top: 30px;
+        }
+
+        #pageCount a {
+            text-decoration: none;
+            color: orange;
+            font-size: 28px;
+            margin: 10px;
+
         }
     </style>
 
-    <div id="searchEngine">
+    <div class="searchEngine">
         <div class="Header">
             <h1><a href="/">BooKÏ</a></h1>
         </div>
@@ -95,15 +120,20 @@
         </form>
 
         <div class="nav">
-            <div class="menu mybookIcon" id="mybookIcon"><a id="mybookProcess" class="mybookProcess" href="#"><i class="fas fa-book"></i></a></div>
-            <div class="menu signinIcon" id="signinIcon" style="display: none"><a id="signinProcess" class="signinProcess" href="/accounts">Sign in</a></div>
-            <div class="menu signoutIcon" id="signoutIcon" style="display: none"><a id="signoutProcess" class="signoutProcess" href="#"><i class="fas fa-user-cog"></i></a></div>
+            <div class="menu mybookIcon" id="mybookIcon"><a id="mybookProcess" class="mybookProcess" href="#"><i
+                        class="fas fa-book"></i></a></div>
+            <div class="menu signinIcon" id="signinIcon" style="display: none"><a id="signinProcess"
+                    class="signinProcess" href="/accounts">Sign in</a></div>
+            <div class="menu signoutIcon" id="signoutIcon" style="display: none"><a id="signoutProcess"
+                    class="signoutProcess" href="#"><i class="fas fa-user-cog"></i></a></div>
         </div>
     </div>
 
 
 
     <div id="bookSection"></div>
+
+    <div id="pageCount"></div>
 
 
 
@@ -116,10 +146,12 @@
         let src = window.location.href;
         let queryString = src.split("=")[1];
         let keyword;
+        let searchBarWord;
+        let targetPage = document.getElementById("pageCount")
+        let finalData;
+        let totalBooks;
 
-        bookSearch(queryString)
-
-
+        allBooks(0)
 
         document.getElementById("searchSection").onclick = () => {
             document.getElementById("searchSection").style.boxShadow = "block"
@@ -133,18 +165,45 @@
             window.location.href = `search?q=${query}`
         }
 
-        async function bookSearch(keyword) {
+        targetPage.addEventListener("click", function (e) {
+            let buttonPage = e.target.innerText
+            let pageCnt = buttonPage.length
 
-            url = `https://www.googleapis.com/books/v1/volumes?q=${keyword}&maxResults=40&startIndex=0&key=AIzaSyDbZ4ChEkPy6BsmTMPbLUmS55VWtfnrEJE`
+            if (pageCnt <= 2) {
+                bookSection.innerHTML = ""
+                dataNum = buttonPage - 1
+                thePageData = totalBooks[dataNum].items
+                window.scroll(0, 0)
+                getBooks(thePageData)
+            }
+        })
 
-            await fetch(url)
+        async function allBooks(num) {
+
+            // searchBarWord = queryString.replace(/%20/g, " ")
+            let searchBarWord = decodeURI(queryString)
+            document.getElementById("searchBar").value = searchBarWord
+
+            await fetch(`/api/eachPage?q=${queryString}`)
                 .then(response => {
-                    return response.json();
-                }).then(data => {
-                    console.log(data)
-                    data = data.items
+                    return response.json()
+                }).then(re => {
+                    console.log(re)
+                    totalBooks = re
+                    data = totalBooks[num].items
+                    totalData = totalBooks.length
+                    getPages(totalData)
                     getBooks(data)
                 })
+        }
+
+        function getPages(results) {
+            let page_str = ""
+            for (let p = 1; p < results + 1; p++) {
+                var a = '<a href="javascript:;">' + p + '</a>';
+                page_str += a;
+                targetPage.innerHTML = page_str;
+            }
         }
 
         function getBooks(items) {
@@ -208,9 +267,13 @@
             }
         }
 
+
+
+
     </script>
 
     <script>
+        // member system
         checkProcess()
 
         async function checkProcess() {
@@ -239,14 +302,15 @@
                     "content-type": "application/json"
                 },
             }).then(response => {
-                    return response.json()
-                }).then(result => {
-                    if (result.ok == true) {
-                        location.reload()
-                    }
-                })
+                return response.json()
+            }).then(result => {
+                if (result.ok == true) {
+                    location.reload()
+                }
+            })
         }
     </script>
+
 
 </body>
 
