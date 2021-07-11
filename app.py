@@ -1,37 +1,33 @@
 import json
 import ssl
-import traceback
-from concurrent.futures import ThreadPoolExecutor
+ssl._create_default_https_context = ssl._create_unverified_context
 import requests
+import boto3
 import os
 from dotenv import load_dotenv
-import mysql.connector
-from mysql.connector import pooling, Error
 from flask import Flask, jsonify, render_template, request, session, redirect
+from flask_sqlalchemy import SQLAlchemy
+from concurrent.futures import ThreadPoolExecutor
 
 
 load_dotenv()
 
-connection_pool = pooling.MySQLConnectionPool(
-    pool_name=os.getenv("DBpool"),
-    pool_size=10,
-    host=os.getenv("DBhost"),
-    user=os.getenv("DBuser"),
-    password=os.getenv("DBpw"),
-    database=os.getenv("DB")
-)
-
+s3 = boto3.resource(
+    service_name = 's3',
+    aws_access_key_id = os.getenv('awsKeyId'),
+    aws_secret_access_key = os.getenv('awsKey'),
+    )
 
 app = Flask(__name__, static_folder="static", static_url_path="/")
 app.secret_key = os.getenv("secretKey")
-
-# Pages
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("awsRDS")
+db = SQLAlchemy(app)
 
 
 @app.route("/")
 def index():
     return render_template("index.html")
-
 
 @app.route("/accounts")
 def accounts():
@@ -54,30 +50,29 @@ def bookPage(id):
 @app.route("/api/searchEngine", methods=["POST"])
 def searchEngine():
 
-    mydb = connection_pool.get_connection()
-    mycursor = mydb.cursor(buffered=True)
+    try:
+        data = request.get_json()
+        words = data["key"]
+        sEngine = f"SELECT DISTINCT title FROM books WHERE splitW LIKE '%%{words}%%' LIMIT 8;"
+        engine_data = db.engine.execute(sEngine)
 
-    data = request.get_json()
-    words = data["key"]
+        books = []
+        for titles in engine_data:
+            for title in titles:
+                books.append(title)
 
-    mycursor.execute(f"SELECT DISTINCT title FROM books WHERE splitW LIKE '%{words}%' LIMIT 8")
-    results = mycursor.fetchall()
-
-    books = []
-    for result in results:
-        books.append(result)
-
-    mydb.close()
-    return jsonify({
-        "ok": books
-    })
-
+        return jsonify({
+            "ok": books
+        })
+    except:
+        return jsonify({
+            "error": True,
+            "message": "Invalid Server"
+        })
+            
 @app.route("/api/eachPage")
 def eachPage():
-
     keyword = request.args.get("q")
-    # print(keyword)
-
     data = []
 
     first = f"https://www.googleapis.com/books/v1/volumes?q={keyword}&startIndex=0&maxResults=1"
@@ -107,168 +102,197 @@ def eachPage():
     for n in results:
         resultsArr.append(n)
 
-    # print(resultsArr)
     return jsonify(resultsArr)
-
 
 @app.route("/api/reviews", methods=["GET", "POST"])
 def reviews():
-
-    mydb = connection_pool.get_connection()
-    mycursor = mydb.cursor(buffered=True)
-
+    
     if request.method == "POST":
-        data = request.get_json()
-        cTitle = data["title"]
-        print(cTitle)
-        cUser = session["memberName"]
-        cTime = data["date"]
-        cContent = data["content"]
+        try:
+            if "memberName" in session:
+                if len(request.files) == 0:
+                    cTitle = request.form.get('title')
+                    cUser = session['memberName']
+                    cTime = request.form.get('date')
+                    cStar = request.form.get('stars')
+                    cContent = request.form.get('content')
+                    pReview = f"INSERT INTO reviews (book, user, time, rates, content) VALUES ('{cTitle}', '{cUser}', '{cTime}', '{cStar}', '{cContent}')"
+                    db.engine.execute(pReview)
 
-        mycursor.execute(
-            "INSERT INTO  reviews (book, user, time, content) VALUES (%s, %s, %s, %s)", (cTitle, cUser, cTime, cContent))
-        mydb.commit()
+                    return jsonify({
+                        "user": session["memberName"],
+                        "date": cTime,
+                        "rates":cStar,
+                        "content": cContent,
+                    })
+                else:
 
+                    uploadFile = request.files['selectFile']
+                    cImage = request.files['selectFile'].filename
+                    cTitle = request.form.get('title')
+                    cUser = session['memberName']
+                    cTime = request.form.get('date')
+                    cStar = request.form.get('stars')
+                    cContent = request.form.get('content')
 
-        return jsonify({
-            "user": session["memberName"],
-            "date": cTime,
-            "content": cContent
-        })
+                    s3.Bucket('t3-upload-bucket').put_object(ACL= 'public-read', Key=uploadFile.filename, Body=uploadFile)
+
+                    pReviewI = f"INSERT INTO reviews (book, user, time, rates, content, image) VALUES ('{cTitle}', '{cUser}', '{cTime}', '{cStar}', '{cContent}', '{cImage}')"
+                    db.engine.execute(pReviewI)
+
+                    return jsonify({
+                        "user": session["memberName"],
+                        "date": cTime,
+                        "rates":cStar,
+                        "content": cContent,
+                        "imageName": 'http://dqgc5yp61yvd.cloudfront.net/'+ cImage,
+                    })
+            else:
+                return jsonify({
+                    "error": True,
+                    "message": "Please sign in"
+                })
+        except:
+            return jsonify({
+                "error": True,
+                "message": "Invalid Server"
+            })
 
     elif request.method == "GET":
-        mydb = connection_pool.get_connection()
-        mycursor = mydb.cursor(buffered=True)
+        try:
+            bookId = request.args.get("t")
+            gReview = f"SELECT * FROM reviews WHERE book = '{bookId}'"
+            gReview_data = db.engine.execute(gReview)
 
-        bookId = request.args.get("t")
-        print(bookId)
+            reviewArr = []
+            for reviews in gReview_data:
+                if reviews[6] == None:
+                    reviewDic = {
+                        "name": reviews[2],
+                        "time": reviews[3],
+                        "rates": reviews[4],
+                        "content": reviews[5],
+                    }
+                    reviewData = reviewDic.copy()
+                    reviewArr.append(reviewData)
+                else:
+                    reviewDic = {
+                        "name": reviews[2],
+                        "time": reviews[3],
+                        "rates": reviews[4],
+                        "content": reviews[5],
+                        "image": 'http://dqgc5yp61yvd.cloudfront.net/' + reviews[6]
+                    }
+                    reviewData = reviewDic.copy()
+                    reviewArr.append(reviewData)
 
-        mycursor.execute(f"Select * FROM reviews WHERE book LIKE '%{bookId}%'")
-        allReviews = mycursor.fetchall()
-
-        reviewArr = []
-        for arr in allReviews:
-            reviewDic = {
-                "name": arr[2],
-                "time": arr[3],
-                "content": arr[4]
-            }
-
-            reviewData = reviewDic.copy()
-            reviewArr.append(reviewData)
-
-        mydb.close()
-        return jsonify({
-            "allReviews": reviewArr
-        })
-
+            return jsonify({
+                "allReviews": reviewArr
+            })
+        except:
+            return jsonify({
+                "error": True,
+                "message": "Invalid Server"
+            })
 
 @app.route("/api/user", methods=["GET", "POST", "PATCH", "DELETE"])
 def loginPage():
-    mydb = connection_pool.get_connection()
-    mycursor = mydb.cursor(buffered=True)
 
-    if request.method == "PATCH":
-        data = request.get_json()
-        sqlEmail = data.get('email')
-        sqlPassword = data['password']
-        mycursor.execute(
-            "SELECT * FROM member WHERE email = '%s'" % (sqlEmail))
-        loginResult = mycursor.fetchone()
-        # print(loginResult)
-        try:
-            if loginResult != None:
-                if sqlPassword == loginResult[3]:
-                    session["memberEmail"] = loginResult[2]
-                    session["memberName"] = loginResult[1]
-                    mydb.close()
-                    return jsonify({
-                        "data": {
-                            "id": loginResult[0],
-                            "name": loginResult[1],
-                            "email": loginResult[2]
-                        }
-                    }), 200
+        if request.method == "PATCH":
+            data = request.get_json()
+            sqlEmail = data.get('email')
+            sqlPassword = data['password']
+
+            login = f"SELECT * FROM member WHERE email = '{sqlEmail}'"
+            login_data = db.engine.execute(login)
+            loginResult = login_data.fetchone()
+
+            try:
+                if loginResult != None:
+                    if sqlPassword == loginResult[3]:
+                        session["memberEmail"] = loginResult[2]
+                        session["memberName"] = loginResult[1]
+
+                        return jsonify({
+                            "data": {
+                                "id": loginResult[0],
+                                "name": loginResult[1],
+                                "email": loginResult[2]
+                            }
+                        }), 200
+                    else:
+                        return jsonify({
+                            "error": True,
+                            "message": "Wrong Password"
+                        }), 400
+
                 else:
-                    mydb.close()
                     return jsonify({
                         "error": True,
-                        "message": "Wrong Password"
-                    }), 400
+                        "message": "Invalid Account"
+                    })
 
-            else:
-                mydb.close()
+            except:
                 return jsonify({
                     "error": True,
-                    "message": "Invalid Account"
+                    "message": "Invalid Server"
+                }), 500
+
+        elif request.method == "POST":
+            data = request.get_json()
+            sqlName = data['name']
+            sqlEmail = data['email']
+            sqlPassword = data['password']
+
+            register = f"SELECT * FROM member WHERE email = '{sqlEmail}'"
+            register_data = db.engine.execute(register)
+            registerResult = register_data.fetchone()
+
+            try:
+                if registerResult == None:
+                    if len(sqlName) == 0 or len(sqlEmail) == 0 or len(sqlPassword) == 0:
+                        
+                        return jsonify({
+                            "error": True,
+                            "message": "Please fill in the blanks"
+                        }), 400
+                    else:
+                        signin = f"INSERT INTO member (name, email, password) VALUES ({sqlName}, {sqlEmail}, {sqlPassword}))"
+                        signin_data = db.engine.execute(signin)
+
+                        return jsonify({
+                            "ok": True,
+                            "message": "Your account has been successfully activated, please re-sign-in"
+                        }), 200
+
+                else:
+                    return jsonify({
+                        "error": True,
+                        "message": "Email is used by another account.",
+                    }), 400
+
+            except:
+                return jsonify({
+                    "error": True,
+                    "message": "Invalid Server"
+                }), 500
+
+        elif request.method == "GET":
+            if "memberEmail" in session:
+                return jsonify({
+                    "data": True,
+                    "member": session["memberName"],
+                })
+            else:
+                return jsonify({
+                    "data": None,
                 })
 
-        except:
-            mydb.close()
+        elif request.method == "DELETE":
+            session.pop("memberEmail", None)
             return jsonify({
-                "error": True,
-                "message": "Invalid Server"
-            }), 500
-
-    elif request.method == "POST":
-        data = request.get_json()
-        sqlName = data['name']
-        sqlEmail = data['email']
-        sqlPassword = data['password']
-        mycursor.execute(
-            "SELECT * FROM member WHERE email = '%s'" % (sqlEmail))
-        registerResult = mycursor.fetchone()
-
-        try:
-            if registerResult == None:
-                if len(sqlName) == 0 or len(sqlEmail) == 0 or len(sqlPassword) == 0:
-                    mydb.close()
-                    return jsonify({
-                        "error": True,
-                        "message": "Please fill in the blanks"
-                    }), 400
-                else:
-                    mycursor.execute(
-                        "INSERT INTO member (name, email, password) VALUES (%s, %s, %s)", (sqlName, sqlEmail, sqlPassword))
-                    mydb.commit()
-                    mydb.close()
-                    return jsonify({
-                        "ok": True,
-                        "message": "Your account has been successfully activated, please re-sign-in"
-                    }), 200
-
-            else:
-                mydb.close()
-                return jsonify({
-                    "error": True,
-                    "message": "Email is used by another account.",
-                }), 400
-
-        except:
-            mydb.close()
-            return jsonify({
-                "error": True,
-                "message": "Invalid Server"
-            }), 500
-
-    elif request.method == "GET":
-        if "memberEmail" in session:
-            mydb.close()
-            return jsonify({
-                "data": session["memberName"],
+                "ok": True,
             })
-        else:
-            mydb.close()
-            return jsonify({
-                "data": None,
-            })
-
-    elif request.method == "DELETE":
-        session.pop("memberEmail", None)
-        mydb.close()
-        return jsonify({
-            "ok": True,
-        })
 
 
 app.run(host="0.0.0.0", port=3300, debug=True)

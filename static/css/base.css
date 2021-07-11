@@ -34,7 +34,10 @@ body {
 .mybookProcess {
     text-decoration: none;
     color: white;
+}
 
+.mybookProcess:hover {
+    color: orange;
 }
 
 .signinProcess {
@@ -48,12 +51,17 @@ body {
 }
 
 .signoutIcon {
-    padding-top: -5px;
+    padding-top: 5px;
 }
+
 
 .signoutProcess {
     text-decoration: none;
     color: white;
+}
+
+.signoutProcess:hover {
+    color: orange;
 }
 
 

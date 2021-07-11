@@ -11,6 +11,81 @@
 
 <body>
     <style>
+        .searchEngine {
+            position: fixed;
+            z-index: 5;
+            width: 100%;
+            height: 100px;
+            top: 0px;
+            padding-top: 30px;
+            background-color: #161B22;
+        }
+
+        #searchSection {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: absolute;
+            top: 55px;
+            left: 280px;
+        }
+
+        #bundle {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            position: relative;
+            width: auto;
+            max-width: 800px;
+            height: 46px;
+            margin: auto;
+            outline: none;
+            box-shadow: none;
+            border-radius: 24px;
+            border: 1px solid #dfe1e5
+        }
+
+        #toggle {
+            display: flex;
+            flex-direction: column;
+            background: gray;
+            width: 769px;
+            min-height: 35px;
+            border: 1px solid #dfe1e5;
+            padding: 1px;
+            border-bottom-left-radius: 24px;
+            border-bottom-right-radius: 24px;
+        }
+
+        #toggle a {
+            text-decoration: none;
+            color: white;
+            font-size: 21px;
+            margin: 10px 20px;
+            line-height: 2;
+        }
+
+        #searchBar {
+            width: 700px;
+            border: 0px;
+            background: none;
+            outline: none;
+            color: white;
+            font-size: 20px;
+            padding-left: 10px;
+            font-family: Helvetica;
+        }
+
+        #searchBtn {
+            width: 60px;
+            height: 46px;
+            background: none;
+            border: 0px;
+            cursor: pointer;
+            font-size: 20px;
+            color: white;
+        }
+
         .theBook {
             display: flex;
             width: 1200px;
@@ -79,6 +154,85 @@
             line-height: 30px;
         }
 
+        #bg {
+            background-color: white;
+            width: 100%;
+            height: 100%;
+            top: 0px;
+            position: fixed;
+            opacity: 0.3;
+            -webkit-opacity: 0.3;
+            display: none;
+            z-index: 100;
+        }
+
+        #reviewBox {
+            position: fixed;
+            width: 800px;
+            height: 600px;
+            left: 50%;
+            top: 80px;
+            transform: translateX(-50%);
+            box-shadow: 0px 4px 60px #AAAAAA;
+            z-index: 999;
+            background-color: white;
+            border-radius: 20px;
+        }
+
+        #rBox {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            top: 30px;
+            width: 750px;
+            height: 550px;
+            overflow: auto;
+            padding-left: 50px;
+        }
+
+        #sBox {
+            width: 750px;
+            height: 550px;
+            text-align: center;
+            margin: 120px auto;
+            font-size: 50px;
+            color: #161B22;
+        }
+
+        #infoStar {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #reviewTitle {
+            font-weight: bold;
+            font-size: 35px;
+            color: orange;
+            text-align: center;
+            margin-left: -30px;
+        }
+
+        #memberTitle {
+            font-size: 28px;
+            color: #161B22;
+            margin: 10px;
+        }
+
+        #stars {
+            display: flex;
+            flex-direction: row;
+            width: 150px;
+            justify-content: space-around;
+            color: gainsboro;
+            margin: 10px;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        i.fas.fa-star span {
+            font-size: 0px;
+        }
+
         #reviews {
             display: flex;
             flex-direction: column;
@@ -86,16 +240,121 @@
             padding: 10px;
         }
 
-        #commentSec {
-            display: flex;
-            flex-direction: row;
-            margin: 20px;
-            line-height: 30px;
+        #commentBox {
+            margin: 10px;
+            width: 650px;
+            border-bottom: 1px solid orange;
+            background-color: #f8f8f8;
+            min-height: 150px;
+            color: #161B22;
+            outline: none;
+            font-size: 20px
         }
 
-        #commentBox {
-            width: 360px;
-            border: 1px solid red;
+        #commentBox:empty:before {
+            content: attr(data-placeholder);
+            color: gray;
+        }
+
+        #photoTogether {
+            display: flex;
+            flex-direction: row;
+        }
+
+        #showimg {
+            width: 200px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .custom-file-upload {
+            width: 100px;
+            height: 100px;
+            margin: 10px;
+            border: 3px solid #DCDCDC;
+            display: inline-block;
+            padding: 6px 12px;
+            cursor: pointer;
+            text-align: center;
+            color: #161B22;
+            background-color: #f8f8f8
+        }
+
+        .custom-file-upload:hover {
+            background-color: orange;
+            color: white;
+        }
+
+        i.fa.fa-cloud-upload {
+            color: #161B22;
+            font-size: 40px;
+            margin-top: 20px;
+        }
+
+        #commentBtn {
+            position: absolute;
+            width: 100px;
+            height: 50px;
+            right: 85px;
+            margin-top: 10px;
+            color: #161B22;
+            background-color: orange;
+            border: 1px solid orange;
+            border-radius: 8px;
+            font-family: Helvetica;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        #cancelBtn {
+            position: absolute;
+            width: 100px;
+            height: 48px;
+            right: 200px;
+            font-size: 20px;
+            margin-top: 10px;
+            cursor: pointer;
+            border: none;
+            background-color: #D3D3D3;
+        }
+
+        #cancelBtn:hover {
+            border: 1px solid gray;
+            border-radius: 8px;
+        }
+
+        #gosigninBtn {
+            position: absolute;
+            width: 100px;
+            height: 50px;
+            right: 85px;
+            margin-top: 10px;
+            color: #161B22;
+            background-color: orange;
+            border: 1px solid orange;
+            border-radius: 8px;
+            font-family: Helvetica;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        #writeSec {
+            display: flex;
+            width: 1200px;
+            flex-direction: column;
+            margin: auto;
+        }
+
+        #write {
+            border: 1px solid orange;
+            color: #161B22;
+            font-size: 30px;
+            background-color: orange;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
         }
 
         #reviewSec {
@@ -106,11 +365,11 @@
         .indiReview {
             display: flex;
             flex-direction: column;
-            width: auto;
-            max-width: 480px;
+            width: 800px;
+            max-width: 1200px;
             margin: 10px 0px;
             border: 1px solid gray;
-            padding: 10px;
+            padding: 30px;
         }
 
         .together {
@@ -120,15 +379,28 @@
 
         .reviewer {
             flex-grow: 1;
+            font-size: 24px;
         }
 
-
+        .reviewImage {
+            width: 360px;
+        }
     </style>
+
 
     <div class="searchEngine">
         <div class="Header">
             <h1><a href="/">BooKÏ</a></h1>
         </div>
+
+        <form id="searchSection">
+
+            <div id="bundle">
+                <input type="text" id="searchBar" placeholder="Title or Author">
+                <button id="searchBtn" onclick="searchGo(event)"><i class="fas fa-search"></i></button>
+            </div>
+            <div id="toggle" style="display: none"></div>
+        </form>
 
         <div class="nav">
             <div class="menu mybookIcon" id="mybookIcon"><a id="mybookProcess" class="mybookProcess" href="#"><i
@@ -136,11 +408,11 @@
             <div class="menu signinIcon" id="signinIcon" style="display: none"><a id="signinProcess"
                     class="signinProcess" href="/accounts">Sign in</a></div>
             <div class="menu signoutIcon" id="signoutIcon" style="display: none"><a id="signoutProcess"
-                    class="signoutProcess" href="#"><i class="fas fa-user-cog"></i></a></div>
+                    class="signoutProcess" href="#"><i class="fas fa-user-astronaut"></i></a></div>
         </div>
     </div>
 
-    <div class="theBook">
+    <div class="theBook" style="margin-top: 150px">
         <div id="imgSec"></div>
         <div id="infoSec"></div>
 
@@ -151,12 +423,50 @@
         <div id="related"></div>
     </div>
 
-    <div id="reviews">
-        <div id="commentSec">
-            <div contenteditable="true" id="commentBox"></div><button id="commentBtn" onclick="uploadComment()">Send</button>
+    <label><a id="bgBtn" href="javascript:void(0)">
+            <div id="bg"></div>
+        </a></label>
+
+    <div id="reviewBox" style="display: none">
+        <div id="rBox" style="display: none">
+            <div id="reviewTitle">Write down your review</div>
+            <div id="infoStar">
+                <div id="memberTitle">{{session.memberName}}</div>
+                <div id="stars">
+                    <i class="fas fa-star"><span>1</span></i>
+                    <i class="fas fa-star"><span>2</span></i>
+                    <i class="fas fa-star"><span>3</span></i>
+                    <i class="fas fa-star"><span>4</span></i>
+                    <i class="fas fa-star"><span>5</span></i>
+                </div>
+            </div>
+            <div id="photoTogether">
+                <label for="uploadFile" class="custom-file-upload">
+                    <i class="fa fa-cloud-upload"></i> Upload
+                </label>
+                <input type="file" name="photo" id="uploadFile" onchange="showImg(this)">
+                <img id="showimg" src="" style="display:none;" />
+            </div>
+            <div contenteditable="true" id="commentBox" data-placeholder="Edit me"></div>
+            <button id="commentBtn" onclick="uploadComment(event)">Send</button>
         </div>
-        <div id="reviewSec"></div>
-    </div> 
+
+
+        <div id="sBox" style="display: none">
+            <i class="fas fa-user-cog"></i><br>
+            <p style=>Sign in with your BooKÏ Account to write a review</p>
+            <button id="cancelBtn">cancel</button><button id="gosigninBtn" onclick="goSignin()">Sign in</button>
+        </div>
+    </div>
+
+    <div id="writeSec">
+
+        <div id="write">write a review</div>
+
+        <div id="reviews">
+            <div id="reviewSec"></div>
+        </div>
+    </div>
 
     <script src="https://kit.fontawesome.com/cbebce4b6d.js" crossorigin="anonymous"></script>
     <script src="{{url_for('static',filename='js/base.js')}}"></script>
@@ -174,7 +484,6 @@
                 .then(response => {
                     return response.json();
                 }).then(result => {
-                    // console.log(result.id)
                     theBookInfo(result)
                     theBookSpec(result)
                 })
@@ -284,9 +593,6 @@
                 console.log("No dimensions")
             }
 
-
-
-            // if res.volumeInfo.categories.length >
             categories.innerHTML = "本書分類:<br>"
             for (let i = 0; i < res.volumeInfo.categories.length; i++) {
                 let url_tag = document.createElement("a")
@@ -309,115 +615,449 @@
     </script>
 
     <script>
-        // REVIEW BOARD
+        // SEARCH ENGINE
+
+        let searchBar = document.getElementById("searchBar")
+        let toggle = document.getElementById("toggle")
+        let bundle = document.getElementById("bundle")
+
+        function searchGo(e) {
+            e.preventDefault()
+            if (searchBar.value != "") {
+                searchPage()
+            }
+        }
+
+        function searchPage() {
+            let query;
+            query = searchBar.value
+            window.location.replace(`/search?q=${query}`)
+        }
+
+        document.addEventListener("click", function (e) {
+            if (e.target != document.getElementsByTagName("div")[6]) {
+                toggle.style.display = "none"
+                bundle.style.borderRadius = "24px"
+            }
+        })
+
+        toggle.addEventListener("click", function (e) {
+            let targetW = e.target.innerHTML
+            if ((targetW.indexOf("<") != -1) == false) {
+                window.location.replace(`/search?q=${targetW}`)
+                toggle.style.display = "none"
+                bundle.style.borderRadius = "24px"
+            }
+        })
+
+        searchBar.oninput = function () {
+
+            if (searchBar.value != "") {
+                fetch("/api/searchEngine", {
+                    method: "POST",
+                    headers: {
+                        "content-type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        key: searchBar.value
+                    }),
+                })
+                    .then(reponse => {
+                        return reponse.json()
+                    }).then(res => {
+                        let books = res.ok
+                        preview(books)
+                    })
+            } else {
+                searchBar.style.borderRadius = "24px"
+            }
+        }
+
+        function preview(data) {
+            // console.log(data)
+            if (data != "") {
+                bundle.style.borderRadius = "24px 24px 0px 0px"
+                toggle.style.display = "block"
+                toggle.innerHTML = ""
+                let search_str = ""
+                for (let i = 0; i < data.length; i++) {
+                    var a = '<a href="javascript:;">' + data[i] + '</a><br>'
+                    search_str += a
+                    toggle.innerHTML = search_str
+                }
+
+            } else {
+                toggle.style.display = "none"
+                bundle.style.borderRadius = "24px"
+            }
+        }
+    </script>
+
+    <script>
+        // REVIEW & STARS BOARD
 
         loadComment(srcId)
 
         let commentBox = document.getElementById("commentBox")
         let reviewSec = document.getElementById("reviewSec")
-        
-         
-        async function uploadComment(){
-            
-            let myDate = new Date();
-            let theDate = myDate.toLocaleString()
-            let theTitle = document.getElementById("theBookTitle").innerHTML
+        let bg = document.getElementById("bg");
+        let bgBtn = document.getElementById("bgBtn")
+        let writeBtn = document.getElementById("write")
+        let stars = document.getElementById("stars")
+        let oStar = document.getElementsByClassName("fas fa-star")
+        let starRates;
+        let reviewBox = document.getElementById("reviewBox")
+        let rBox = document.getElementById("rBox")
+        let sBox = document.getElementById("sBox")
 
-            db = {
-                title: srcId,
-                date: theDate,
-                content: commentBox.innerHTML,
-            }
-
-            await fetch("/api/reviews", {
-                method: "POST",
-                headers: {
-                    "content-type": "application/json",
-                },
-                body: JSON.stringify(db)
-            }).then(response => {
-                return response.json()
-            }).then(re => {
-                let indiReview_tag = document.createElement("div")
-                let reviewer_tag = document.createElement("div")
-                let review_tag = document.createElement("div")
-                let reviewTime_tag = document.createElement("div");
-                let together_tag = document.createElement("div")
-
-                indiReview_tag.className = "indiReview"
-                reviewer_tag.className = "reviewer"
-                review_tag.className = "review"
-                reviewTime_tag.className = "reviewtTme";
-                together_tag.className = "together"
-
-                reviewer_tag.innerHTML = re.user
-                review_tag.innerHTML = re.content
-                reviewTime_tag.innerHTML = re.date
-                together_tag.appendChild(reviewer_tag)
-                together_tag.appendChild(reviewTime_tag)
-                indiReview_tag.appendChild(together_tag)
-                indiReview_tag.appendChild(review_tag)
-                reviewSec.appendChild(indiReview_tag)
-                commentBox.innerHTML = ""
-
-                reviewSec.insertBefore(indiReview_tag, reviewSec.childNodes[0])
-            })
-            
+        bgBtn.onclick = function () {
+            bg.style.display = "none";
+            reviewBox.style.display = "none"
+            rBox.style.display = "none"
+            return false;
         }
 
-        async function loadComment(url) {
-            await fetch(`/api/reviews?t=${url}`, {method: "GET"})
-            .then(response => {
-                return response.json()
-            }).then(data => {
-                let oldReviews = data.allReviews
-                for (let n = 0; n < oldReviews.length; n++){
+        document.getElementById("cancelBtn").addEventListener("click", function () {
+            bg.style.display = "none"
+            reviewBox.style.display = "none"
+            sBox.style.display = "none"
+            rBox.style.display = "none"
+        })
 
+        stars.addEventListener("click", function (e) {
+            let targetS = e.target.innerHTML
+            if (targetS.indexOf("class") == -1) {
+                if ((targetS.indexOf(1) != -1) == true) {
+                    oStar[0].style.color = "orange"
+                    oStar[1].style.color = "gainsboro"
+                    oStar[2].style.color = "gainsboro"
+                    oStar[3].style.color = "gainsboro"
+                    oStar[4].style.color = "gainsboro"
+                    starRates = 1
+                } else if ((targetS.indexOf(2) != -1) == true) {
+                    oStar[0].style.color = "orange"
+                    oStar[1].style.color = "orange"
+                    oStar[2].style.color = "gainsboro"
+                    oStar[3].style.color = "gainsboro"
+                    oStar[4].style.color = "gainsboro"
+                    starRates = 2
+                } else if ((targetS.indexOf(3) != -1) == true) {
+                    oStar[0].style.color = "orange"
+                    oStar[1].style.color = "orange"
+                    oStar[2].style.color = "orange"
+                    oStar[3].style.color = "gainsboro"
+                    oStar[4].style.color = "gainsboro"
+                    starRates = 3
+                } else if ((targetS.indexOf(4) != -1) == true) {
+                    oStar[0].style.color = "orange"
+                    oStar[1].style.color = "orange"
+                    oStar[2].style.color = "orange"
+                    oStar[3].style.color = "orange"
+                    oStar[4].style.color = "gainsboro"
+                    starRates = 4
+                } else {
+                    oStar[0].style.color = "orange"
+                    oStar[1].style.color = "orange"
+                    oStar[2].style.color = "orange"
+                    oStar[3].style.color = "orange"
+                    oStar[4].style.color = "orange"
+                    starRates = 5
+                }
+            }
+
+        })
+
+        write.onclick = function () {
+            if (document.getElementById("signinIcon").style.display == "block") {
+                bg.style.display = "block"
+                reviewBox.style.display = "block"
+                reviewBox.style.backgroundColor = "#D3D3D3"
+                sBox.style.display = "block"
+                rBox.style.display = "none"
+            } else {
+                bg.style.display = "block";
+                reviewBox.style.display = "block"
+                reviewBox.style.backgroundColor = "white"
+                rBox.style.display = "block"
+                sBox.style.display = "none"
+            }
+        }
+
+        function goSignin() {
+            window.location.replace("/accounts")
+        }
+
+        function showImg(thisimg) {
+            var file = thisimg.files[0];
+            if (window.FileReader) {
+                var fr = new FileReader();
+
+                var showimg = document.getElementById('showimg');
+                fr.onloadend = function (e) {
+                    showimg.src = e.target.result;
+                };
+                fr.readAsDataURL(file);
+                showimg.style.display = 'block';
+            }
+        }
+
+        async function uploadComment() {
+            let selectedFile = document.getElementById('uploadFile').files[0];
+            let x = new Date()
+            let ydd = `${x.getFullYear()}-${x.getMonth() + 1 < 10 ? "0" + (x.getMonth() + 1) : x.getMonth()}-${x.getDate() + 1}`
+
+            if (selectedFile == null) {
+                let formData = new FormData()
+                formData.append('title', srcId)
+                formData.append('date', ydd)
+                formData.append('stars', starRates)
+                formData.append('content', commentBox.innerHTML)
+
+                await fetch("/api/reviews", {
+                    method: "POST",
+                    body: formData,
+                }).then(response => {
+                    return response.json()
+                }).then(re => {
+                    console.log(re)
                     let indiReview_tag = document.createElement("div")
                     let reviewer_tag = document.createElement("div")
                     let review_tag = document.createElement("div")
                     let reviewTime_tag = document.createElement("div");
                     let together_tag = document.createElement("div")
+                    let ratings_tag = document.createElement("div")
+                    let emptyStar_tag = document.createElement("div")
+                    let fullStar_tag = document.createElement("div")
+
+                    let emptyS = document.createTextNode("★★★★★")
+                    let fullS = document.createTextNode("★★★★★")
 
                     indiReview_tag.className = "indiReview"
                     reviewer_tag.className = "reviewer"
                     review_tag.className = "review"
-                    reviewTime_tag.className = "reviewtTme";
+                    reviewTime_tag.className = "reviewtTime";
                     together_tag.className = "together"
+                    ratings_tag.classList.add("ratings")
+                    emptyStar_tag.classList.add("empty_star")
+                    fullStar_tag.classList.add("full_star")
 
-                    reviewer_tag.innerHTML = oldReviews[n].name
-                    review_tag.innerHTML = oldReviews[n].content
-                    reviewTime_tag.innerHTML = oldReviews[n].time
+                    let mRates = re.rates
+                    if (mRates == 1) {
+                        fullStar_tag.setAttribute("style", "width: 20%")
+                    } else if (mRates == 2) {
+                        fullStar_tag.setAttribute("style", "width: 40%")
+                    } else if (mRates == 3) {
+                        fullStar_tag.setAttribute("style", "width: 60%")
+                    } else if (mRates == 4) {
+                        fullStar_tag.setAttribute("style", "width: 80%")
+                    } else {
+                        fullStar_tag.setAttribute("style", "width: 100%")
+                    }
+
+                    reviewer_tag.innerHTML = re.user
+                    review_tag.innerHTML = re.content
+                    reviewTime_tag.innerHTML = re.date
+                    emptyStar_tag.appendChild(emptyS)
+                    fullStar_tag.appendChild(fullS)
+                    ratings_tag.appendChild(emptyStar_tag)
+                    ratings_tag.appendChild(fullStar_tag)
+
                     together_tag.appendChild(reviewer_tag)
                     together_tag.appendChild(reviewTime_tag)
                     indiReview_tag.appendChild(together_tag)
+                    indiReview_tag.appendChild(ratings_tag)
                     indiReview_tag.appendChild(review_tag)
                     reviewSec.appendChild(indiReview_tag)
+                    commentBox.innerHTML = ""
 
                     reviewSec.insertBefore(indiReview_tag, reviewSec.childNodes[0])
-                }
-            })
+
+                    bg.style.display = "none";
+                    reviewBox.style.display = "none"
+                    rBox.style.display = "none"
+                    document.getElementById("showimg").style.display = "none"
+                    document.getElementById("commentBox").innerHTML = ""
+                    oStar[0].style.color = "gainsboro"
+                    oStar[1].style.color = "gainsboro"
+                    oStar[2].style.color = "gainsboro"
+                    oStar[3].style.color = "gainsboro"
+                    oStar[4].style.color = "gainsboro"
+                    location.reload()
+                })
+            } else {
+                let formData2 = new FormData()
+                formData2.append('selectFile', selectedFile); // 設定上傳的檔案
+                formData2.append('title', srcId)
+                formData2.append('date', ydd)
+                formData2.append('stars', starRates)
+                formData2.append('content', commentBox.innerHTML)
+
+                await fetch("/api/reviews", {
+                    method: "POST",
+                    body: formData2,
+                }).then(response => {
+                    return response.json()
+                }).then(re => {
+                    console.log(re)
+                    let indiReview_tag = document.createElement("div")
+                    let reviewer_tag = document.createElement("div")
+                    let review_tag = document.createElement("div")
+                    let reviewTime_tag = document.createElement("div");
+                    let together_tag = document.createElement("div")
+                    let ratings_tag = document.createElement("div")
+                    let emptyStar_tag = document.createElement("div")
+                    let fullStar_tag = document.createElement("div")
+                    let img = document.createElement("img")
+
+                    img.src = "/img/" + re.imageName
+
+                    let emptyS = document.createTextNode("★★★★★")
+                    let fullS = document.createTextNode("★★★★★")
+
+                    indiReview_tag.className = "indiReview"
+                    reviewer_tag.className = "reviewer"
+                    review_tag.className = "review"
+                    reviewTime_tag.className = "reviewtTime";
+                    together_tag.className = "together"
+                    ratings_tag.classList.add("ratings")
+                    emptyStar_tag.classList.add("empty_star")
+                    fullStar_tag.classList.add("full_star")
+                    img.classList.add("reviewImage")
+
+                    let mRates = re.rates
+                    if (mRates == 1) {
+                        fullStar_tag.setAttribute("style", "width: 20%")
+                    } else if (mRates == 2) {
+                        fullStar_tag.setAttribute("style", "width: 40%")
+                    } else if (mRates == 3) {
+                        fullStar_tag.setAttribute("style", "width: 60%")
+                    } else if (mRates == 4) {
+                        fullStar_tag.setAttribute("style", "width: 80%")
+                    } else {
+                        fullStar_tag.setAttribute("style", "width: 100%")
+                    }
+
+                    reviewer_tag.innerHTML = re.user
+                    review_tag.innerHTML = re.content
+                    reviewTime_tag.innerHTML = re.date
+                    emptyStar_tag.appendChild(emptyS)
+                    fullStar_tag.appendChild(fullS)
+                    ratings_tag.appendChild(emptyStar_tag)
+                    ratings_tag.appendChild(fullStar_tag)
+
+                    together_tag.appendChild(reviewer_tag)
+                    together_tag.appendChild(reviewTime_tag)
+                    indiReview_tag.appendChild(together_tag)
+                    indiReview_tag.appendChild(ratings_tag)
+                    indiReview_tag.appendChild(review_tag)
+                    indiReview_tag.appendChild(img)
+                    reviewSec.appendChild(indiReview_tag)
+                    commentBox.innerHTML = ""
+
+                    reviewSec.insertBefore(indiReview_tag, reviewSec.childNodes[0])
+
+                    bg.style.display = "none";
+                    reviewBox.style.display = "none"
+                    rBox.style.display = "none"
+                    document.getElementById("showimg").style.display = "none"
+                    document.getElementById("commentBox").innerHTML = ""
+                    oStar[0].style.color = "gainsboro"
+                    oStar[1].style.color = "gainsboro"
+                    oStar[2].style.color = "gainsboro"
+                    oStar[3].style.color = "gainsboro"
+                    oStar[4].style.color = "gainsboro"
+                    location.reload()
+                })
+            }
+        }
+
+        async function loadComment(url) {
+            await fetch(`/api/reviews?t=${url}`, { method: "GET" })
+                .then(response => {
+                    return response.json()
+                }).then(data => {
+                    let oldReviews = data.allReviews
+                    // console.log(oldReviews)
+                    for (let n = 0; n < oldReviews.length; n++) {
+
+                        let indiReview_tag = document.createElement("div")
+                        let reviewer_tag = document.createElement("div")
+                        let review_tag = document.createElement("div")
+                        let reviewTime_tag = document.createElement("div");
+                        let together_tag = document.createElement("div")
+                        let ratings_tag = document.createElement("div")
+                        let emptyStar_tag = document.createElement("div")
+                        let fullStar_tag = document.createElement("div")
+                        let img = document.createElement("img")
+
+                        let emptyS = document.createTextNode("★★★★★")
+                        let fullS = document.createTextNode("★★★★★")
+
+                        indiReview_tag.className = "indiReview"
+                        reviewer_tag.className = "reviewer"
+                        review_tag.className = "review"
+                        reviewTime_tag.className = "reviewtTme";
+                        together_tag.className = "together"
+                        ratings_tag.classList.add("ratings")
+                        emptyStar_tag.classList.add("empty_star")
+                        fullStar_tag.classList.add("full_star")
+                        img.classList.add("reviewImage")
+
+                        let mRates = oldReviews[n].rates
+                        if (mRates == 1) {
+                            fullStar_tag.setAttribute("style", "width: 20px")
+                        } else if (mRates == 2) {
+                            fullStar_tag.setAttribute("style", "width: 40px")
+                        } else if (mRates == 3) {
+                            fullStar_tag.setAttribute("style", "width: 60px")
+                        } else if (mRates == 4) {
+                            fullStar_tag.setAttribute("style", "width: 80px")
+                        } else {
+                            fullStar_tag.setAttribute("style", "width: 100px")
+                        }
+
+                        reviewer_tag.innerHTML = oldReviews[n].name
+                        review_tag.innerHTML = oldReviews[n].content
+                        reviewTime_tag.innerHTML = oldReviews[n].time
+                        emptyStar_tag.appendChild(emptyS)
+                        fullStar_tag.appendChild(fullS)
+                        ratings_tag.appendChild(emptyStar_tag)
+                        ratings_tag.appendChild(fullStar_tag)
+
+                        together_tag.appendChild(reviewer_tag)
+                        together_tag.appendChild(reviewTime_tag)
+                        indiReview_tag.appendChild(together_tag)
+                        indiReview_tag.appendChild(ratings_tag)
+                        indiReview_tag.appendChild(review_tag)
+                        if (oldReviews[n].image != null) {
+                            img.src = oldReviews[n].image
+                            indiReview_tag.appendChild(img)
+                        }
+                        reviewSec.appendChild(indiReview_tag)
+
+                        reviewSec.insertBefore(indiReview_tag, reviewSec.childNodes[0])
+                    }
+                })
         }
 
     </script>
 
     <script>
-        // MEMBER SYSTEM
+        //MEMBER SYSTEM
+
         checkProcess()
 
         async function checkProcess() {
             await fetch("/api/user", { method: "GET" })
-
                 .then(response => {
                     return response.json()
-                })
-                .then(res => {
+                }).then(res => {
                     if (res.data == true) {
-                        document.getElementById("signinIcon").style.display = "none"
-                        document.getElementById("signoutIcon").style.display = "block"
+                        signinIcon.style.display = "none"
+                        signoutIcon.style.display = "block"
                     } else {
-                        document.getElementById("signinIcon").style.display = "block"
-                        document.getElementById("signoutIcon").style.display = "none"
+                        signinIcon.style.display = "block"
+                        signoutIcon.style.display = "none"
                     }
                 })
         }
@@ -439,6 +1079,7 @@
             })
         }
     </script>
+
 </body>
 
 </html>
