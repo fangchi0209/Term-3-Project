@@ -5,7 +5,11 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <meta name="google-signin-client_id"
+        content="807588094774-v7tcl63kqsj96r64gaqhtu8gsn81ffnt.apps.googleusercontent.com">
     <link rel="stylesheet" href="{{url_for('static',filename='css/base.css')}}">
+
     <title>Accounts</title>
 </head>
 
@@ -89,7 +93,6 @@
             text-align: center;
             font-size: 25px;
         }
-
     </style>
     <div id="signinBox" class="memberBox">
         <div class="memberLittleBox">
@@ -106,6 +109,8 @@
                 </div>
             </form>
 
+            <div class="g-signin2" data-onsuccess="onSignIn"></div>
+
             <div id="signinNotice" class="notice"></div>
             <div id="signinNotice2" class="notice"></div>
         </div>
@@ -114,7 +119,7 @@
         <div id="reBox" class="memberLittleBox">
             <div class="Header">
                 <h1><a href="/">BooKÏ</a></h1>
-            </div>        
+            </div>
             <form id="registerForm">
                 <p class="memberProcess">Create your account</p>
                 <input type="text" id="registerName" class="enterBar" placeholder="Enter your name"><br>
@@ -135,7 +140,7 @@
 
         checkProcess()
 
-        document.getElementById("changeCreate").addEventListener("click", function(){
+        document.getElementById("changeCreate").addEventListener("click", function () {
             document.getElementById("signinBox").style.display = "none"
             document.getElementById("registerBox").style.display = "block"
             document.getElementById("registerName").value = ""
@@ -148,7 +153,7 @@
             document.getElementById("registerPwd").style.border = "1px solid #dfe1e5"
         })
 
-        document.getElementById("changeSign").addEventListener("click", function(){
+        document.getElementById("changeSign").addEventListener("click", function () {
             document.getElementById("signinBox").style.display = "block"
             document.getElementById("registerBox").style.display = "none"
             document.getElementById("signinAcc").value = ""
@@ -163,47 +168,47 @@
         async function signinProcess(e) {
 
             e.preventDefault()
-            
+
             let signinEmail = document.getElementById("signinAcc")
             let signinPassword = document.getElementById("signinPwd")
             emailRule = /^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z]+$/
 
-            if (signinEmail.value == "" & signinPassword.value == ""){
+            if (signinEmail.value == "" & signinPassword.value == "") {
                 document.getElementById("signinNotice").innerHTML = "Enter the email & password"
                 document.getElementById("signinNotice2").innerHTML = ""
                 signinEmail.style.border = "2px solid red"
                 signinPassword.style.border = "2px solid red"
                 return
-            }else if(signinEmail.value == ""){
+            } else if (signinEmail.value == "") {
                 document.getElementById("signinNotice").innerHTML = "Enter the email"
                 document.getElementById("signinNotice2").innerHTML = ""
                 signinEmail.style.border = "2px solid red"
                 signinPassword.style.border = "1px solid #dfe1e5"
                 return
-            }else if(signinPassword.value == ""){
+            } else if (signinPassword.value == "") {
                 document.getElementById("signinNotice").innerHTML = "Enter the password"
                 signinPassword.style.border = "2px solid red"
-                if (emailRule.test(signinEmail.value) == false){
+                if (emailRule.test(signinEmail.value) == false) {
                     document.getElementById("signinNotice2").innerHTML = "Email format is not correct"
                     signinEmail.style.border = "2px solid red"
                     return
-                }else{
+                } else {
                     signinEmail.style.border = "1px solid #dfe1e5"
                     document.getElementById("signinNotice2").innerHTML = ""
                     return
-                }              
-            }else if(signinEmail.value != null & signinPassword.value != null){
+                }
+            } else if (signinEmail.value != null & signinPassword.value != null) {
                 signinPassword.style.border = "1px solid #dfe1e5"
                 document.getElementById("signinNotice").innerHTML = ""
-                if (emailRule.test(signinEmail.value) == false){
+                if (emailRule.test(signinEmail.value) == false) {
                     document.getElementById("signinNotice2").innerHTML = "Email format is not correct"
                     signinEmail.style.border = "2px solid red"
                     return
-                }else{
+                } else {
                     signinEmail.style.border = "1px solid #dfe1e5"
                     document.getElementById("signinNotice2").innerHTML = ""
                 }
-            }      
+            }
 
             await fetch("/api/user", {
                 method: "PATCH",
@@ -224,7 +229,7 @@
                     if (data.error == true) {
                         document.getElementById("signinNotice").innerHTML = data.message
                     } else {
-                        location.href=document.referrer
+                        location.href = document.referrer
                     }
                 })
 
@@ -242,82 +247,82 @@
             let registerPassword = document.getElementById("registerPwd")
             emailRule = /^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z]+$/
 
-            if (registerName.value == "" & registerEmail.value == "" & registerPassword.value == ""){
+            if (registerName.value == "" & registerEmail.value == "" & registerPassword.value == "") {
                 document.getElementById("registerNotice").innerHTML = "Please fill in the blanks"
                 document.getElementById("registerNotice2").innerHTML = ""
                 registerName.style.border = "2px solid red"
                 registerEmail.style.border = "2px solid red"
                 registerPassword.style.border = "2px solid red"
                 return
-            }else if(registerName.value =="" & registerEmail.value == "" & registerPassword.value != ""){
+            } else if (registerName.value == "" & registerEmail.value == "" & registerPassword.value != "") {
                 document.getElementById("registerNotice").innerHTML = "Enter your name & email"
                 document.getElementById("registerNotice2").innerHTML = ""
                 registerName.style.border = "2px solid red"
                 registerEmail.style.border = "2px solid red"
                 registerPassword.style.border = "1px solid #dfe1e5"
                 return
-            }else if(registerName.value =="" & registerEmail.value != "" & registerPassword.value == ""){
+            } else if (registerName.value == "" & registerEmail.value != "" & registerPassword.value == "") {
                 document.getElementById("registerNotice").innerHTML = "Enter your name & password"
                 registerName.style.border = "2px solid red"
                 registerPassword.style.border = "2px solid red"
-                if (emailRule.test(registerEmail.value) == false){
+                if (emailRule.test(registerEmail.value) == false) {
                     document.getElementById("registerNotice2").innerHTML = "Email format is not correct"
                     registerEmail.style.border = "2px solid red"
                     return
-                }else{
+                } else {
                     document.getElementById("registerNotice2").innerHTML = ""
                     registerEmail.style.border = "1px solid #dfe1e5"
                     return
                 }
-            }else if(registerName.value =="" & registerEmail.value != "" & registerPassword.value != ""){
+            } else if (registerName.value == "" & registerEmail.value != "" & registerPassword.value != "") {
                 document.getElementById("registerNotice").innerHTML = "Enter your name"
                 registerName.style.border = "2px solid red"
                 registerPassword.style.border = "1px solid #dfe1e5"
-                if (emailRule.test(registerEmail.value) == false){
+                if (emailRule.test(registerEmail.value) == false) {
                     document.getElementById("registerNotice2").innerHTML = "Email format is not correct"
                     registerEmail.style.border = "2px solid red"
                     return
-                }else{
+                } else {
                     document.getElementById("registerNotice2").innerHTML = ""
                     registerEmail.style.border = "1px solid #dfe1e5"
                     return
                 }
-            }else if(registerName.value !="" & registerEmail.value == "" & registerPassword.value == ""){
+            } else if (registerName.value != "" & registerEmail.value == "" & registerPassword.value == "") {
                 document.getElementById("registerNotice").innerHTML = "Enter your email & password"
                 document.getElementById("registerNotice2").innerHTML = ""
                 registerName.style.border = "1px solid #dfe1e5"
                 registerEmail.style.border = "2px solid red"
                 registerPassword.style.border = "2px solid red"
                 return
-            }else if(registerName.value !="" & registerEmail.value == "" & registerPassword.value != ""){
+            } else if (registerName.value != "" & registerEmail.value == "" & registerPassword.value != "") {
                 document.getElementById("registerNotice").innerHTML = "Enter your email"
                 document.getElementById("registerNotice2").innerHTML = ""
                 registerName.style.border = "1px solid #dfe1e5"
                 registerEmail.style.border = "2px solid red"
                 registerPassword.style.border = "1px solid #dfe1e5"
                 return
-            }else if(registerName.value !="" & registerEmail.value != "" & registerPassword.value == ""){
+            } else if (registerName.value != "" & registerEmail.value != "" & registerPassword.value == "") {
                 document.getElementById("registerNotice").innerHTML = "Enter your password"
                 registerName.style.border = "1px solid #dfe1e5"
                 registerPassword.style.border = "2px solid red"
-                if (emailRule.test(registerEmail.value) == false){
+                if (emailRule.test(registerEmail.value) == false) {
                     document.getElementById("registerNotice2").innerHTML = "Email format is not correct"
                     registerEmail.style.border = "2px solid red"
                     return
-                }else{
+                } else {
                     document.getElementById("registerNotice2").innerHTML = ""
                     registerEmail.style.border = "1px solid #dfe1e5"
                     return
                 }
-            }else if(registerName.value !="" & registerEmail.value != "" & registerPassword.value != ""){
+            } else if (registerName.value != "" & registerEmail.value != "" & registerPassword.value != "") {
                 document.getElementById("registerNotice").innerHTML = ""
                 registerName.style.border = "1px solid #dfe1e5"
                 registerPassword.style.border = "1px solid #dfe1e5"
-                if (emailRule.test(registerEmail.value) == false){
+                if (emailRule.test(registerEmail.value) == false) {
                     document.getElementById("registerNotice2").innerHTML = "Email format is not correct"
                     registerEmail.style.border = "2px solid red"
                     return
-                }else{
+                } else {
                     document.getElementById("registerNotice2").innerHTML = ""
                     registerEmail.style.border = "1px solid #dfe1e5"
                 }
@@ -364,6 +369,14 @@
                         console.log("sign in or register")
                     }
                 })
+        }
+
+        function onSignIn(googleUser) {
+            var profile = googleUser.getBasicProfile();
+            console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+            console.log('Name: ' + profile.getName());
+            console.log('Image URL: ' + profile.getImageUrl());
+            console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
         }
     </script>
 </body>
