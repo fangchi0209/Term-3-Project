@@ -66,7 +66,8 @@ def searchEngine():
         return jsonify({
             "ok": books
         })
-    except:
+    except Exception as e:
+        print(e)
         return jsonify({
             "error": True,
             "message": "Invalid Server"
