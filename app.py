@@ -1,6 +1,8 @@
 import json
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
+import bs4
+from bs4 import BeautifulSoup
 import requests
 import boto3
 import os
@@ -78,7 +80,11 @@ def eachPage():
     first = f"https://www.googleapis.com/books/v1/volumes?q={keyword}&startIndex=0&maxResults=1"
     f = requests.get(first)
     final = json.loads(f.text)
-    totalCount = final["totalItems"] - 80
+
+    if final["totalItems"] < 10:
+        totalCount = final["totalItems"]
+    else:
+        totalCount = final["totalItems"] - 80
 
     i = 0
     while i < totalCount:
@@ -104,6 +110,25 @@ def eachPage():
 
     return jsonify(resultsArr)
 
+@app.route("/api/authors")
+def authors():
+
+    bookIdforA = request.args.get("a")
+    authorUrl = f"https://books.google.com.tw/books?id={bookIdforA}"
+
+    authorHtml = requests.get(authorUrl)
+    authorData = BeautifulSoup(authorHtml.text, 'html.parser')
+    aboutAuthor = authorData.find("div", class_="textmodulecontent")
+
+    if aboutAuthor != None:
+        return jsonify({
+            "aboutAuthor": aboutAuthor.text
+        })
+    else:
+        return jsonify({
+            "aboutAuthor": "no data"
+        })
+    
 @app.route("/api/reviews", methods=["GET", "POST"])
 def reviews():
     
@@ -160,12 +185,14 @@ def reviews():
 
     elif request.method == "GET":
         try:
-            bookId = request.args.get("t")
+            bookId = request.args.get("r")
             gReview = f"SELECT * FROM reviews WHERE book = '{bookId}'"
             gReview_data = db.engine.execute(gReview)
 
             reviewArr = []
+            starsArr = []
             for reviews in gReview_data:
+                starsArr.append(reviews[4])
                 if reviews[6] == None:
                     reviewDic = {
                         "name": reviews[2],
@@ -185,9 +212,12 @@ def reviews():
                     }
                     reviewData = reviewDic.copy()
                     reviewArr.append(reviewData)
+            
+            avgStar = sum(starsArr) // len(starsArr)
 
             return jsonify({
-                "allReviews": reviewArr
+                "allReviews": reviewArr,
+                "avgStar": avgStar
             })
         except:
             return jsonify({

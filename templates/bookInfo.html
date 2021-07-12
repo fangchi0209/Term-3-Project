@@ -110,7 +110,7 @@
         }
 
         #theBookTitle {
-            font-size: 28px;
+            font-size: 35px;
             margin: 10px 0;
             font-weight: bold;
         }
@@ -126,8 +126,26 @@
             line-height: 30px;
         }
 
+        #rateSec {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
         .ratings {
-            margin: 10px 0;
+            margin: 10px 20px 10px 0px;
+        }
+
+        #googleRatesNum {
+            font-size: 28px;
+        }
+
+
+
+        #googleRates {
+            margin-left: 20px;
+            color: gray;
+            font-style: italic
         }
 
         .extraLink a {
@@ -149,7 +167,7 @@
             font-size: 40px;
         }
 
-        #bookSpec {
+        #bookSpec, #authorSec {
             margin: 20px;
             line-height: 30px;
         }
@@ -415,12 +433,11 @@
     <div class="theBook" style="margin-top: 150px">
         <div id="imgSec"></div>
         <div id="infoSec"></div>
-
     </div>
 
     <div class="theBook">
         <div id="bookSpec"></div>
-        <div id="related"></div>
+        <div id="authorSec"></div>
     </div>
 
     <label><a id="bgBtn" href="javascript:void(0)">
@@ -460,7 +477,6 @@
     </div>
 
     <div id="writeSec">
-
         <div id="write">write a review</div>
 
         <div id="reviews">
@@ -470,6 +486,7 @@
 
     <script src="https://kit.fontawesome.com/cbebce4b6d.js" crossorigin="anonymous"></script>
     <script src="{{url_for('static',filename='js/base.js')}}"></script>
+
     <script>
         // MAIN SCRIPT
         let src = window.location.href;
@@ -478,6 +495,7 @@
         let moreIcon = false
 
         getTheBook(srcId)
+
 
         async function getTheBook(bookId) {
             await fetch("https://www.googleapis.com/books/v1/volumes/" + `${bookId}`)
@@ -500,6 +518,9 @@
             let ratings_tag = document.createElement("div")
             let emptyStar_tag = document.createElement("div")
             let fullStar_tag = document.createElement("div")
+            let rateSec_tag = document.createElement("div")
+            let ratesNum_tag = document.createElement("div")
+            let googleRates_tag = document.createElement("div")
             let theBookDes_tag = document.createElement("div")
             let more_tag = document.createElement("div")
             let a_tag = document.createElement("a")
@@ -512,10 +533,15 @@
             let emptyS = document.createTextNode("★★★★★")
             let fullS = document.createTextNode("★★★★★")
 
+
             theBookCover_img.setAttribute("id", "theBookCover")
             theBookTitle_tag.setAttribute("id", "theBookTitle")
             authors_tag.classList.add("extraLink")
+            authors_tag.setAttribute("style", "font-size: 28px")
+            rateSec_tag.setAttribute("id", "rateSec")
             ratings_tag.classList.add("ratings")
+            ratesNum_tag.setAttribute("id", "googleRatesNum")
+            googleRates_tag.setAttribute("id", "googleRates")
             emptyStar_tag.classList.add("empty_star")
             fullStar_tag.classList.add("full_star")
             theBookDes_tag.setAttribute("id", "theBookDes")
@@ -532,28 +558,36 @@
                     return element.ratingNum == ratingData
                 })
                 fullStar_tag.style.width = filterStar[0].ratingLen
+                ratesNum_tag.innerHTML = ratingData
+                googleRates_tag.innerHTML = "(from Google rating)"
+
             } else {
                 fullStar_tag.setAttribute("style", "width: 0%");
+                googleRates_tag.innerHTML = "0 Reviews"
             }
+
 
             // whether book description exits or not
             let theBookDes = data.volumeInfo.description
             !theBookDes ? theBookDes_tag.innerHTML = "no description" : theBookDes_tag.innerHTML = theBookDes
 
             theBookTitle_tag.appendChild(theBookTitle)
-            aForauthors_tag.innerHTML = data.volumeInfo.authors
+            aForauthors_tag.innerHTML = "by" + " " + data.volumeInfo.authors
             authors_tag.appendChild(aForauthors_tag)
             emptyStar_tag.appendChild(emptyS)
             fullStar_tag.appendChild(fullS)
             ratings_tag.appendChild(emptyStar_tag)
             ratings_tag.appendChild(fullStar_tag)
+            rateSec_tag.appendChild(ratings_tag)
+            rateSec_tag.appendChild(ratesNum_tag)
+            rateSec_tag.appendChild(googleRates_tag)
 
             a_tag.appendChild(i_tag)
             more_tag.appendChild(a_tag)
             imgSec.appendChild(theBookCover_img)
             infoSec.appendChild(theBookTitle_tag)
             infoSec.appendChild(authors_tag)
-            infoSec.appendChild(ratings_tag)
+            infoSec.appendChild(rateSec_tag)
             infoSec.appendChild(theBookDes_tag)
             infoSec.appendChild(more_tag)
             theBook.appendChild(imgSec)
@@ -611,7 +645,26 @@
 
         }
 
+    </script>
 
+    <script>
+        getAuthor(srcId)
+
+        async function getAuthor(bId) {
+            await fetch(`/api/authors?a=${bId}`, { method: "GET" })
+                .then(response => {
+                    return response.json()
+                }).then(re => {
+                    let author = re.aboutAuthor
+                    let authorSec = document.getElementById("authorSec")
+                    let aboutAuthor_tag = document.createElement("div")
+
+                    aboutAuthor_tag.setAttribute("id", "aboutAuthor")
+
+                    aboutAuthor_tag.innerHTML = author
+                    authorSec.appendChild(aboutAuthor_tag)
+                })
+        }
     </script>
 
     <script>
@@ -972,11 +1025,13 @@
         }
 
         async function loadComment(url) {
-            await fetch(`/api/reviews?t=${url}`, { method: "GET" })
+            await fetch(`/api/reviews?r=${url}`, { method: "GET" })
                 .then(response => {
                     return response.json()
                 }).then(data => {
                     let oldReviews = data.allReviews
+                    let avgStar = data.avgStar
+
                     // console.log(oldReviews)
                     for (let n = 0; n < oldReviews.length; n++) {
 

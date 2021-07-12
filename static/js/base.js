@@ -13,8 +13,6 @@ for (let i = 0; i < 5;) {
 }
 
 
-
-
 async function checkProcess() {
     await fetch("/api/user", { method: "GET" })
         .then(response => {
