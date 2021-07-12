@@ -178,7 +178,8 @@ def reviews():
                     "error": True,
                     "message": "Please sign in"
                 })
-        except:
+        except Exception as e:
+            print(e)
             return jsonify({
                 "error": True,
                 "message": "Invalid Server"
