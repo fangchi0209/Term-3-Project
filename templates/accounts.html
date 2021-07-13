@@ -61,6 +61,13 @@
             font-family: Helvetica;
         }
 
+        #orAccount {
+            margin: 1px auto;
+            font-size: 20px;
+            text-align: center;
+            color: orange;
+        }
+
         .memberAction {
             display: flex;
             flex-direction: row;
@@ -103,13 +110,13 @@
                 <p class="memberProcess">Sign in</p>
                 <input type="text" id="signinAcc" class="enterBar" placeholder="Enter your email"><br>
                 <input type="password" id="signinPwd" class="enterBar" placeholder="Enter your password"><br>
+                <p id="orAccount">or</p><br>
+                <div class="g-signin2" data-onsuccess="onSignIn"></div>
                 <div class="memberAction">
                     <p class="memberLink"><a id="changeCreate" href="#">Create account</a></p>
                     <button id="signinBtn" class="memberBtn" onclick="signinProcess(event)">Sign in</button>
                 </div>
             </form>
-
-            <div class="g-signin2" data-onsuccess="onSignIn"></div>
 
             <div id="signinNotice" class="notice"></div>
             <div id="signinNotice2" class="notice"></div>
@@ -135,6 +142,28 @@
             <div id="registerNotice2" class="notice"></div>
         </div>
     </div>
+
+
+    <script>
+        async function onSignIn(googleUser) {
+
+            console.log(BasicProfile.getName())
+
+            // await fetch ("/api/google", {
+            //     method: "POST",
+            //     headers: {
+            //         "content-type": "application/json"
+            //     },
+            //     body: JSON.stringify({
+            //         name: BasicProfile.getName(),
+
+                    
+            //         // email: document.getElementById("registerAcc").value,
+            //         // password: document.getElementById("registerPwd").value,
+            //     }),
+            // })
+        }
+    </script>
 
     <script>
 

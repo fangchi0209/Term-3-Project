@@ -227,6 +227,12 @@ def reviews():
                 "message": "Invalid Server"
             })
 
+
+# @app.route("/api/google", methods=["POST"])
+# def google():
+#     try:
+#         gdata = request.get_json()    
+
 @app.route("/api/user", methods=["GET", "POST", "PATCH", "DELETE"])
 def loginPage():
 
