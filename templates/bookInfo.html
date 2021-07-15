@@ -467,7 +467,7 @@
 
         #recBox {
             position: relative;
-            width: 1800px;
+            width: 2000px;
             height: 220px;
         }
 
@@ -910,16 +910,21 @@
         })
 
         arrowLicon.addEventListener("click", function(){
-            if (LR > -959 & arrL == false){
-                LR -= 480
+            if (LR < -241 & arrR == false){
+                LR += 480
                 recBox.style.left= LR + "px"
                 arrL = false
                 arrR = false
-            }else{
-                LR = -1200
-                recBox.style.left = "-1200px"
-                arrL = true
+            }else if(LR == -1200){
+                LR += 480
+                recBox.style.left = LR + "px"
+                arrL = false
                 arrR = false
+            }else{
+                LR = 0
+                recBox.style.left = "0px"
+                arrL = false
+                arrR = true
             }
         })
 
