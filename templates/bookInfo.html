@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
+    <meta name="google-signin-client_id"
+        content="807588094774-v7tcl63kqsj96r64gaqhtu8gsn81ffnt.apps.googleusercontent.com">
     <title>BookTitle</title>
     <link rel="stylesheet" href="{{url_for('static',filename='css/base.css')}}">
 </head>
@@ -13,7 +16,7 @@
     <style>
         .searchEngine {
             position: fixed;
-            z-index: 5;
+            z-index: 10;
             width: 100%;
             height: 100px;
             top: 0px;
@@ -97,6 +100,7 @@
         #theBookCover {
             width: 150px;
             height: 200px;
+            box-shadow: 10px 1px;
         }
 
         #imgSec {
@@ -142,7 +146,7 @@
 
 
 
-        #googleRates {
+        .subRates {
             margin-left: 20px;
             color: gray;
             font-style: italic
@@ -167,7 +171,8 @@
             font-size: 40px;
         }
 
-        #bookSpec, #authorSec {
+        #bookSpec,
+        #authorSec {
             margin: 20px;
             line-height: 30px;
         }
@@ -259,8 +264,6 @@
         #reviews {
             display: flex;
             flex-direction: column;
-            margin: 10px auto;
-            padding: 10px;
         }
 
         #commentBox {
@@ -365,9 +368,34 @@
 
         #writeSec {
             display: flex;
-            width: 1200px;
             flex-direction: column;
-            margin: auto;
+            width: 600px;
+            padding: 0px 10px;
+        }
+
+        #relatedSec {
+            display: flex;
+            flex-direction: column;
+            width: 600px;
+            padding: 0px 10px;
+        }
+
+        #thumbW {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-around;
+            background-color: black;
+            height: 150px;
+            margin-bottom: 10px;
+            padding: 0px 10px
+        }
+
+        .fa-thumbs-up,
+        .fa-google {
+            font-size: 50px;
+            color: orange;
+            margin-bottom: 10px;
         }
 
         #write {
@@ -375,9 +403,35 @@
             color: #161B22;
             font-size: 30px;
             background-color: orange;
-            border-radius: 12px;
+            border-radius: 8px;
             text-align: center;
             cursor: pointer;
+            padding: 0px 5px;
+        }
+
+        .secBar {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-bottom: 35px;
+        }
+
+        .orangeBarS {
+            background-color: orange;
+            height: 20px;
+            width: 20px;
+        }
+
+        .orangeBarL {
+            background-color: orange;
+            height: 10px;
+            flex-grow: 2;
+        }
+
+        .secBarTitle {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 0px 10px;
         }
 
         #reviewSec {
@@ -388,11 +442,8 @@
         .indiReview {
             display: flex;
             flex-direction: column;
-            width: 800px;
-            max-width: 1200px;
-            margin: 10px 0px;
             border: 1px solid gray;
-            padding: 30px;
+            padding: 20px
         }
 
         .together {
@@ -407,6 +458,64 @@
 
         .reviewImage {
             width: 360px;
+        }
+
+        #recommendBox {
+            overflow: hidden;
+            position: relative
+        }
+
+        #recBox {
+            position: relative;
+            width: 1800px;
+            height: 220px;
+        }
+
+
+        .arrowL {
+            width: 40px;
+            height: 200px;
+            position: absolute;
+            cursor:pointer;
+        }
+
+
+        .fa-arrow-alt-circle-left {
+            font-size: 30px;
+            position: absolute;
+            top: 50%;
+            left: 5px;
+            z-index: 5;
+            opacity: 0.7;
+            cursor: pointer;
+        }
+
+        .arrowR {
+            width: 40px;
+            height: 200px;
+            position: absolute;
+            right: 0px;
+            cursor:pointer;
+        }
+
+
+        .fa-arrow-alt-circle-right {
+            font-size: 30px;
+            position: absolute;
+            top: 50%;
+            right: 5px;
+            z-index: 5;
+            opacity: 0.7;
+            cursor: pointer;
+        }
+
+        .recUrl {
+            margin: 0px 5px;
+            box-shadow: 0px 4px 10px #AAAAAA;
+        }
+
+        .recUrl img{
+            height: 190px;
         }
     </style>
 
@@ -441,8 +550,61 @@
     </div>
 
     <div class="theBook">
-        <div id="bookSpec"></div>
-        <div id="authorSec"><p>About Author</p></div>
+        <div id="bookSpec">
+            <div class="secBar">
+                <div class="orangeBarS"></div>
+                <div class="secBarTitle">Book Details</div>
+                <div class="orangeBarL"></div>
+            </div>
+        </div>
+
+
+        <div id="authorSec">
+            <div class="secBar">
+                <div class="orangeBarS"></div>
+                <div class="secBarTitle">About Author</div>
+                <div class="orangeBarL"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="theBook">
+        <div id="writeSec">
+            <div id="thumbW">
+                <div>
+                    <i id="googleRate" class="fab fa-google"></i>
+                    <div class="subRates">Googler Score</div>
+                </div>
+                <div>
+                    <i id="thumbRate" class="far fa-thumbs-up"></i>
+                    <div class="subRates">BooKÏer Score</div>
+                </div>
+                <div id="write">write a review</div>
+            </div>
+            <div class="secBar">
+                <div class="orangeBarS"></div>
+                <div class="secBarTitle">Rate and Review</div>
+                <div class="orangeBarL"></div>
+            </div>
+            <div id="reviews">
+                <div id="reviewSec"></div>
+            </div>
+        </div>
+        <div id="relatedSec">
+            <div id="recommendBox">
+                <div class="secBar">
+                    <div class="orangeBarS"></div>
+                    <div class="secBarTitle">Readers also enjoyed...</div>
+                    <div class="orangeBarL"></div>
+                </div>
+                <div class="arrowL"></div>
+                <i id="arrowLicon" class="fas fa-arrow-alt-circle-left"></i>
+                <div class="arrowR"></div>
+                <i id="arrowRicon" class="fas fa-arrow-alt-circle-right"></i>
+                <div id="recBox"></div>
+            </div>
+
+        </div>
     </div>
 
     <!-- <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> -->
@@ -483,13 +645,7 @@
         </div>
     </div>
 
-    <div id="writeSec">
-        <div id="write">write a review</div>
 
-        <div id="reviews">
-            <div id="reviewSec"></div>
-        </div>
-    </div>
 
     <script src="https://kit.fontawesome.com/cbebce4b6d.js" crossorigin="anonymous"></script>
     <script src="{{url_for('static',filename='js/base.js')}}"></script>
@@ -502,7 +658,6 @@
         let moreIcon = false
 
         getTheBook(srcId)
-
 
         async function getTheBook(bookId) {
             await fetch("https://www.googleapis.com/books/v1/volumes/" + `${bookId}`)
@@ -548,7 +703,7 @@
             rateSec_tag.setAttribute("id", "rateSec")
             ratings_tag.classList.add("ratings")
             ratesNum_tag.setAttribute("id", "googleRatesNum")
-            googleRates_tag.setAttribute("id", "googleRates")
+            googleRates_tag.classList.add("subRates")
             emptyStar_tag.classList.add("empty_star")
             fullStar_tag.classList.add("full_star")
             theBookDes_tag.setAttribute("id", "theBookDes")
@@ -560,6 +715,7 @@
 
             // whether rating exits or not
             let ratingData = data.volumeInfo.averageRating
+            let googleRate = document.getElementById("googleRate")
             if (ratingData != null) {
                 let filterStar = rateArr.filter(function (element, index, array) {
                     return element.ratingNum == ratingData
@@ -567,10 +723,13 @@
                 fullStar_tag.style.width = filterStar[0].ratingLen
                 ratesNum_tag.innerHTML = ratingData
                 googleRates_tag.innerHTML = "(from Google rating)"
+                googleRate.innerHTML = ratingData * 20 + "%"
 
             } else {
                 fullStar_tag.setAttribute("style", "width: 0%");
                 googleRates_tag.innerHTML = "0 Reviews"
+                googleRate.style.color = "gray"
+                googleRate.innerHTML = " --"
             }
 
 
@@ -655,9 +814,118 @@
     </script>
 
     <script>
+        //GET AUTHOR
+        //RECOMMEND BOOKS
+
         getAuthor(srcId)
+        recCounts(srcId)
+
+        let recBox = document.getElementById("recBox")
+        let arrowL = document.getElementsByClassName("arrowL")[0]
+        let arrowR = document.getElementsByClassName("arrowR")[0]
+        let arrowLicon = document.getElementById("arrowLicon")
+        let arrowRicon = document.getElementById("arrowRicon")
+
+        recBox.addEventListener("mouseover", function(){
+            arrowL.style.opacity = "0.2"
+            arrowL.style.backgroundColor = "white"
+            arrowL.style.zIndex = "2"
+            arrowR.style.opacity = "0.2"
+            arrowR.style.backgroundColor = "white"
+            arrowR.style.zIndex = "2"
+        })
+
+        recBox.addEventListener("mouseout", function(){
+            arrowL.style.opacity = "0"
+            arrowR.style.opacity = "0"
+        })
+
+        arrowL.addEventListener("mouseover", function(){
+            arrowL.style.opacity = "0.5"
+            arrowL.style.backgroundColor = "white"
+            arrowL.style.zIndex = "2"
+            arrowR.style.opacity = "0.2"
+            arrowR.style.backgroundColor = "white"
+            arrowR.style.zIndex = "2"
+        })
+
+        arrowR.addEventListener("mouseover", function(){
+            arrowL.style.opacity = "0.2"
+            arrowL.style.backgroundColor = "white"
+            arrowL.style.zIndex = "2"
+            arrowR.style.opacity = "0.5"
+            arrowR.style.backgroundColor = "white"
+            arrowR.style.zIndex = "2"
+        })
+
+        let LR = 0
+        let arrL = false
+        let arrR = true
+        console.log(recBox.style.left)
+        arrowR.addEventListener("click", function(){
+            if (LR > -959 & arrL == false){
+                LR -= 480
+                recBox.style.left= LR + "px"
+                arrL = false
+                arrR = false
+            }else{
+                LR = -1200
+                recBox.style.left = "-1200px"
+                arrL = true
+                arrR = false
+            }
+        })
+
+        arrowRicon.addEventListener("click", function(){
+            if (LR > -959 & arrL == false){
+                LR -= 480
+                recBox.style.left= LR + "px"
+                arrL = false
+                arrR = false
+            }else{
+                LR = -1200
+                recBox.style.left = "-1200px"
+                arrL = true
+                arrR = false
+            }
+        })
+
+        arrowL.addEventListener("click", function(){
+            if (LR < -241 & arrR == false){
+                LR += 480
+                recBox.style.left= LR + "px"
+                arrL = false
+                arrR = false
+            }else if(LR == -1200){
+                LR += 480
+                recBox.style.left = LR + "px"
+                arrL = false
+                arrR = false
+            }else{
+                LR = 0
+                recBox.style.left = "0px"
+                arrL = false
+                arrR = true
+            }
+        })
+
+        arrowLicon.addEventListener("click", function(){
+            if (LR > -959 & arrL == false){
+                LR -= 480
+                recBox.style.left= LR + "px"
+                arrL = false
+                arrR = false
+            }else{
+                LR = -1200
+                recBox.style.left = "-1200px"
+                arrL = true
+                arrR = false
+            }
+        })
+
 
         async function getAuthor(bId) {
+
             await fetch(`/api/authors?a=${bId}`, { method: "GET" })
                 .then(response => {
                     return response.json()
@@ -672,6 +940,32 @@
                     authorSec.appendChild(aboutAuthor_tag)
                 })
         }
+
+
+        async function recCounts(recId) {
+            console.log(recId)
+
+            await fetch(`/api/recommend?rec=${recId}`, { method: "GET" })
+                .then(response => {
+                    return response.json()
+                }).then(data => {
+                    let results = data.recBooks
+                    for (let i = 0; i < results.length; i++) {
+                        let d = results[i].items[0].volumeInfo
+                        let a_tag = document.createElement("a")
+                        let img_tag = document.createElement("img")
+
+                        a_tag.classList.add("recUrl")
+                        img_tag.src = d.imageLinks.thumbnail
+                        a_tag.href = `/bookInfo/${results[i].items[0].id}`
+                        a_tag.appendChild(img_tag)
+                        recBox.appendChild(a_tag)
+                    }
+                })
+        }
+
+
+
     </script>
 
     <script>
@@ -1037,7 +1331,16 @@
                     return response.json()
                 }).then(data => {
                     let oldReviews = data.allReviews
-                    let avgStar = data.avgStar
+                    let thumbRate = document.getElementById("thumbRate")
+
+                    if (data.avgStar != null) {
+                        let avgStar = data.avgStar * 20 + "%"
+                        thumbRate.innerHTML = avgStar
+                    } else {
+                        thumbRate.style.color = "gray"
+                        thumbRate.innerHTML = " --"
+                    }
+
 
                     // console.log(oldReviews)
                     for (let n = 0; n < oldReviews.length; n++) {
@@ -1091,6 +1394,7 @@
                         indiReview_tag.appendChild(together_tag)
                         indiReview_tag.appendChild(ratings_tag)
                         indiReview_tag.appendChild(review_tag)
+
                         if (oldReviews[n].image != null) {
                             img.src = oldReviews[n].image
                             indiReview_tag.appendChild(img)
@@ -1124,9 +1428,23 @@
                 })
         }
 
-        document.getElementById("signoutProcess").addEventListener("click", logoutProcess)
+        document.getElementById("signoutProcess").addEventListener("click", function () {
+            logoutProcess()
+            signOut()
+        })
+
+
+        function onLoad() {
+            gapi.load('auth2', function () {
+                gapi.auth2.init();
+            });
+        }
 
         async function logoutProcess() {
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
+                console.log('User signed out.');
+            });
             await fetch("/api/user", {
                 method: "DELETE",
                 headers: {

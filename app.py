@@ -55,7 +55,7 @@ def searchEngine():
     try:
         data = request.get_json()
         words = data["key"]
-        sEngine = f"SELECT DISTINCT title FROM books WHERE splitW LIKE '%%{words}%%' LIMIT 8;"
+        sEngine = f"SELECT DISTINCT title FROM books WHERE splitW = '{words}' LIMIT 8;"
         engine_data = db.engine.execute(sEngine)
 
         books = []
@@ -66,6 +66,7 @@ def searchEngine():
         return jsonify({
             "ok": books
         })
+
     except Exception as e:
         print(e)
         return jsonify({
@@ -75,24 +76,32 @@ def searchEngine():
             
 @app.route("/api/eachPage")
 def eachPage():
-    keyword = request.args.get("q")
-    data = []
 
-    first = f"https://www.googleapis.com/books/v1/volumes?q={keyword}&startIndex=0&maxResults=1"
-    f = requests.get(first)
-    final = json.loads(f.text)
+    try:
+        keyword = request.args.get("q")
+        data = []
 
-    if final["totalItems"] < 10:
-        totalCount = final["totalItems"]
-    else:
-        totalCount = final["totalItems"] - 80
+        first = f"https://www.googleapis.com/books/v1/volumes?q={keyword}&startIndex=0&maxResults=1"
+        f = requests.get(first)
+        final = json.loads(f.text)
 
-    i = 0
-    while i < totalCount:
-        links = f"https://www.googleapis.com/books/v1/volumes?q={keyword}&startIndex={i}&maxResults=30"
-        # links = f"https://www.googleapis.com/books/v1/volumes?q={keyword}&startIndex={i}&maxResults=30&key=AIzaSyDbZ4ChEkPy6BsmTMPbLUmS55VWtfnrEJE&country=TW"
-        data.append(links)
-        i += 30
+        if final["totalItems"] < 10:
+            totalCount = final["totalItems"]
+        else:
+            totalCount = final["totalItems"] - 80
+
+        i = 0
+        while i < totalCount:
+            links = f"https://www.googleapis.com/books/v1/volumes?q={keyword}&startIndex={i}&maxResults=30"
+            # links = f"https://www.googleapis.com/books/v1/volumes?q={keyword}&startIndex={i}&maxResults=30&key=AIzaSyDbZ4ChEkPy6BsmTMPbLUmS55VWtfnrEJE&country=TW"
+            data.append(links)
+            i += 30
+    except Exception as e:
+        print(e)
+        return jsonify({
+            "error": True,
+            "message": "Invalid Server"
+        })
 
     def allBooks(url):
 
@@ -121,15 +130,94 @@ def authors():
     authorData = BeautifulSoup(authorHtml.text, 'html.parser')
     aboutAuthor = authorData.find("div", class_="textmodulecontent")
 
-    if aboutAuthor != None:
+    try:
+        if aboutAuthor != None:
+            return jsonify({
+                "aboutAuthor": aboutAuthor.text
+            })
+        else:
+            return jsonify({
+                "aboutAuthor": "no data"
+            })
+    except Exception as e:
+        print(e)
         return jsonify({
-            "aboutAuthor": aboutAuthor.text
+            "error": True,
+            "message": "Invalid Server"
         })
-    else:
+
+@app.route("/api/recommend")
+def recommend():
+    bookIdforRec = request.args.get("rec")
+    print(bookIdforRec)
+    count_data = db.engine.execute(f"SELECT * from counts WHERE bookId = '{bookIdforRec}'")
+    count_Result = count_data.fetchone()
+
+    try:
+        if count_Result != None:
+            print(type(count_Result[2]))
+            countAdd = count_Result[2]+ 1
+            print(countAdd)
+            db.engine.execute(f"UPDATE counts SET visitSite = '{countAdd}' WHERE (bookId = '{bookIdforRec}')")
+
+            ctsRank = db.engine.execute("SELECT * FROM counts ORDER BY visitSite DESC LIMIT 13")
+
+            def recBookInfo(recURL):
+                recBookHTML = requests.get(recURL)
+                recBook_data = json.loads(recBookHTML.text)
+
+                return recBook_data
+
+            ctsBookArr = []
+            for ctsBook in ctsRank:
+                recBook = f"https://www.googleapis.com/books/v1/volumes?q={ctsBook[1]}&maxResults=1"
+                ctsBookArr.append(recBook)
+
+            with ThreadPoolExecutor(max_workers=15) as executor:
+                recBookResults = executor.map(recBookInfo, ctsBookArr)
+
+            top13Arr = []
+            for i in recBookResults:
+                top13Arr.append(i)
+
+            return jsonify({
+                "recBooks": top13Arr,
+            })
+
+        else:
+            db.engine.execute(f"INSERT INTO counts (bookId, visitSite) VALUES ('{bookIdforRec}', '1')")
+
+            ctsRank = db.engine.execute("SELECT * FROM counts ORDER BY visitSite DESC LIMIT 13")
+
+            def recBookInfo(recURL):
+                recBookHTML = requests.get(recURL)
+                recBook_data = json.loads(recBookHTML.text)
+
+                return recBook_data
+
+            ctsBookArr = []
+            for ctsBook in ctsRank:
+                recBook = f"https://www.googleapis.com/books/v1/volumes?q={ctsBook[1]}&maxResults=1"
+                ctsBookArr.append(recBook)
+
+            with ThreadPoolExecutor(max_workers=15) as executor:
+                recBookResults = executor.map(recBookInfo, ctsBookArr)
+
+            top13Arr = []
+            for i in recBookResults:
+                top13Arr.append(i)
+
+            return jsonify({
+                "recBooks": top13Arr,
+            })
+
+    except Exception as e:
+        print(e)
         return jsonify({
-            "aboutAuthor": "no data"
+            "error": True,
+            "message": "Invalid Server"
         })
-    
+
 @app.route("/api/reviews", methods=["GET", "POST"])
 def reviews():
     
@@ -221,17 +309,45 @@ def reviews():
                 "allReviews": reviewArr,
                 "avgStar": avgStar
             })
-        except:
+        except Exception as e:
+            print(e)
             return jsonify({
                 "error": True,
                 "message": "Invalid Server"
             })
 
+@app.route("/api/google", methods=["POST"])
+def google():
 
-# @app.route("/api/google", methods=["POST"])
-# def google():
-#     try:
-#         gdata = request.get_json()    
+    gdata = request.get_json()
+    gn = gdata["gName"]
+    ge = gdata["gEmail"]
+
+    session["memberName"] = gn
+    session["memberEmail"] = ge
+
+    gmail = db.engine.execute(f"SELECT * FROM member WHERE email = '{ge}'")
+    result = gmail.fetchone()
+
+    try:
+        if result != None:
+            return jsonify({
+                "gname": gn,
+                "gmail": ge
+            })
+        else:
+            demo = db.engine.execute(f"INSERT INTO member (name, email) VALUES ('{gn}', '{ge}')")
+            return jsonify({
+                "gname": gn,
+                "gmail": ge
+            })
+
+    except Exception as e:
+        print(e)
+        return jsonify({
+            "error": True,
+            "message": "Invalid Server"
+        })
 
 @app.route("/api/user", methods=["GET", "POST", "PATCH", "DELETE"])
 def loginPage():
@@ -270,7 +386,7 @@ def loginPage():
                         "message": "Invalid Account"
                     })
 
-            except:
+            except Exception as e:
                 return jsonify({
                     "error": True,
                     "message": "Invalid Server"
@@ -295,7 +411,7 @@ def loginPage():
                             "message": "Please fill in the blanks"
                         }), 400
                     else:
-                        signin = f"INSERT INTO member (name, email, password) VALUES ({sqlName}, {sqlEmail}, {sqlPassword}))"
+                        signin = f"INSERT INTO member (name, email, password) VALUES ({sqlName}, {sqlEmail}, {sqlPassword})"
                         signin_data = db.engine.execute(signin)
 
                         return jsonify({
@@ -309,7 +425,8 @@ def loginPage():
                         "message": "Email is used by another account.",
                     }), 400
 
-            except:
+            except Exception as e:
+                print(e)
                 return jsonify({
                     "error": True,
                     "message": "Invalid Server"
@@ -317,9 +434,11 @@ def loginPage():
 
         elif request.method == "GET":
             if "memberEmail" in session:
+                print(session["memberName"])
+                print(session["memberEmail"])
                 return jsonify({
                     "data": True,
-                    "member": session["memberName"],
+                    "member": session["memberName"]
                 })
             else:
                 return jsonify({
@@ -327,6 +446,7 @@ def loginPage():
                 })
 
         elif request.method == "DELETE":
+            session.pop("memberName", None)
             session.pop("memberEmail", None)
             return jsonify({
                 "ok": True,

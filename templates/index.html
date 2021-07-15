@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
+    <meta name="google-signin-client_id"
+        content="807588094774-v7tcl63kqsj96r64gaqhtu8gsn81ffnt.apps.googleusercontent.com">
     <title>BooKÏ</title>
     <link rel="stylesheet" href="{{url_for('static',filename='css/base.css')}}">
 </head>
@@ -101,9 +104,6 @@
         <div id="toggle" style="display: none"></div>
     </form>
 
-    <div class="g-signin2" data-onsuccess="onSignIn"></div>
-
-
     <script src="https://kit.fontawesome.com/cbebce4b6d.js" crossorigin="anonymous"></script>
     <script>
 
@@ -141,7 +141,7 @@
             if ((targetW.indexOf("<") != -1) == false) {
                 window.location.href = `search?q=${targetW}`
                 toggle.style.display = "none"
-                    bundle.style.borderRadius = "24px"
+                bundle.style.borderRadius = "24px"
             }
         })
 
@@ -195,8 +195,14 @@
     <script>
 
         //MEMBER SYSTEM
-        
+
         checkProcess()
+
+        function onSignIn(googleUser) {
+            var profile = googleUser.getBasicProfile();
+            console.log('Name: ' + profile.getName());
+            console.log('Image URL: ' + profile.getImageUrl());
+        }
 
         async function checkProcess() {
             await fetch("/api/user", { method: "GET" })
@@ -213,9 +219,21 @@
                 })
         }
 
-        document.getElementById("signoutProcess").addEventListener("click", logoutProcess)
+        document.getElementById("signoutProcess").addEventListener("click", function () {
+            logoutProcess()
+        })
+
+        function onLoad() {
+            gapi.load('auth2', function () {
+                gapi.auth2.init();
+            });
+        }
 
         async function logoutProcess() {
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
+                console.log('User signed out.');
+            });
             await fetch("/api/user", {
                 method: "DELETE",
                 headers: {

@@ -146,23 +146,29 @@
 
     <script>
         async function onSignIn(googleUser) {
+            var profile = googleUser.getBasicProfile();
+            // console.log('Name: ' + profile.getName());
+            // console.log('Image URL: ' + profile.getImageUrl());
 
-            console.log(BasicProfile.getName())
-
-            // await fetch ("/api/google", {
-            //     method: "POST",
-            //     headers: {
-            //         "content-type": "application/json"
-            //     },
-            //     body: JSON.stringify({
-            //         name: BasicProfile.getName(),
-
-                    
-            //         // email: document.getElementById("registerAcc").value,
-            //         // password: document.getElementById("registerPwd").value,
-            //     }),
-            // })
+            db = {
+                gName: profile.getName(),
+                gEmail: profile.getEmail()
+            }
+            
+            await fetch ("/api/google", {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json"
+                },
+                body: JSON.stringify(db)
+            }).then(response => {
+                return response.json()
+            }).then(data => {
+                alert("Welcome back " + data.gname + ", Happy Reading!")
+                location.href = document.referrer
+            })
         }
+
     </script>
 
     <script>
@@ -258,6 +264,7 @@
                     if (data.error == true) {
                         document.getElementById("signinNotice").innerHTML = data.message
                     } else {
+                        alert("Welcome back " + data.data.name + ", Happy Reading!")
                         location.href = document.referrer
                     }
                 })
@@ -400,13 +407,6 @@
                 })
         }
 
-        function onSignIn(googleUser) {
-            var profile = googleUser.getBasicProfile();
-            console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-            console.log('Name: ' + profile.getName());
-            console.log('Image URL: ' + profile.getImageUrl());
-            console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
-        }
     </script>
 </body>
 
