@@ -10,6 +10,8 @@ from dotenv import load_dotenv
 from flask import Flask, jsonify, render_template, request, session, redirect
 from flask_sqlalchemy import SQLAlchemy
 from concurrent.futures import ThreadPoolExecutor
+import email.message
+import smtplib
 
 
 load_dotenv()
@@ -49,6 +51,13 @@ def bookPage(id):
     return render_template("bookInfo.html")
 
 
+@app.route("/events")
+def events():
+    return render_template("events.html")
+
+@app.route("/e/<eventId>")
+def e(eventId):
+    return render_template("e.html")
 @app.route("/api/searchEngine", methods=["POST"])
 def searchEngine():
 
@@ -149,15 +158,12 @@ def authors():
 @app.route("/api/recommend")
 def recommend():
     bookIdforRec = request.args.get("rec")
-    print(bookIdforRec)
     count_data = db.engine.execute(f"SELECT * from counts WHERE bookId = '{bookIdforRec}'")
     count_Result = count_data.fetchone()
 
     try:
         if count_Result != None:
-            print(type(count_Result[2]))
             countAdd = count_Result[2]+ 1
-            print(countAdd)
             db.engine.execute(f"UPDATE counts SET visitSite = '{countAdd}' WHERE (bookId = '{bookIdforRec}')")
 
             ctsRank = db.engine.execute("SELECT * FROM counts ORDER BY visitSite DESC LIMIT 13")
@@ -316,6 +322,156 @@ def reviews():
                 "message": "Invalid Server"
             })
 
+@app.route("/api/bookievents", methods=["GET", "POST"])
+def bookievents():
+
+    if request.method == "POST":
+        try:
+            if len(request.files) == 0:
+                return jsonify({
+                    "error": True,
+                    "message": "Please upload event image"
+                })
+            else:
+                nTitle = request.form.get('eTitle')
+                nUser = session['memberName']
+                nsDateData = request.form.get('sDate')
+                nsDate = bsDateData.split(",")
+                nsTime = request.form.get('sTime')
+                neDateData = request.form.get('eDate')
+                neDate = beDateData.split(",")
+                neTime = request.form.get('eTime')
+                nURL = request.form.get('online')
+                eventCover = request.files['selectFile']
+                nImage = request.files['selectFile'].filename
+                nDes = request.form.get('description')
+
+                s3.Bucket('t3-upload-bucket').put_object(ACL= 'public-read', Key=eventCover.filename, Body=eventCover)
+
+                db.engine.execute(
+                    f"INSERT INTO events (organiser, eventName, sDay, sDate, sMonth, sYear, sTime, eDay, eDate, eMonth, eYear, eTime, location, cover, eventDes) VALUES ('{nUser}', '{nTitle}', '{nsDate[0]}', '{nsDate[1]}', '{nsDate[2]}', '{nsDate[3]}', '{nsTime}', '{neDate[0]}', '{neDate[1]}', '{neDate[2]}', '{neDate[3]}', '{neTime}', '{nURL}', '{nImage}', '{nDes}')")
+
+                return jsonify({
+                    "nTitle": nTitle,
+                    "nUser": nUser,
+                    "nsDay": nsDate[0],
+                    "nsDate": nsDate[1],
+                    "nsMonth": nsDate[2],
+                    "nsYear": nsDate[3],
+                    "nsTime": nsTime,
+                    "neDay": neDate[0],
+                    "neDate": neDate[1],
+                    "neMonth": neDate[2],
+                    "neYear": neDate[3],
+                    "neTime": neTime,
+                    "nURL": nURL,
+                    "nCover": 'http://dqgc5yp61yvd.cloudfront.net/' + nImage,
+                    "nDes": nDes
+                })
+        except Exception as e:
+            print(e)
+            return jsonify({
+                "error": True,
+                "message": "Invalid Server"
+            })
+
+    if request.method == "GET":
+        try:
+            allEventsData = db.engine.execute("SELECT * FROM events ORDER BY id DESC")
+
+            eventsArr = []
+            for allEvents in allEventsData:
+                eventsDict = {
+                    "aTitle": allEvents[2],
+                    "aUser": allEvents[1],
+                    "asDay": allEvents[3],
+                    "asDate": allEvents[4],
+                    "asMonth": allEvents[5],
+                    "asYear": allEvents[6],
+                    "asTime": allEvents[7],
+                    "aeDay": allEvents[8],
+                    "aeDate": allEvents[9],
+                    "aeMonth": allEvents[10],
+                    "aeYear": allEvents[11],
+                    "aeTime": allEvents[12],
+                    "aURL": allEvents[13],
+                    "aCover": 'http://dqgc5yp61yvd.cloudfront.net/' + allEvents[14],
+                    "aDes": allEvents[15],
+                }
+
+                eventsData = eventsDict.copy()
+                eventsArr.append(eventsData)
+            
+            return jsonify({
+                "allEvents": eventsArr
+            })
+        except Exception as e:
+            print(e)
+            return jsonify({
+                "error": True,
+                "message": "Invalid Server"
+            })
+
+@app.route("/api/theevent", methods=["GET", "POST"])
+def theevent():
+
+    if request.method == "GET":
+        try:
+            eventId = request.args.get("e")
+            theEventData = db.engine.execute(f"SELECT * FROM events WHERE eventName = '{eventId}'")
+            theEvent = theEventData.fetchone()
+
+            return jsonify({
+                "theTitle": theEvent[2],
+                "theUser": theEvent[1],
+                "thesDay": theEvent[3],
+                "thesDate": theEvent[4],
+                "thesMonth": theEvent[5],
+                "thesYear": theEvent[6],
+                "thesTime": theEvent[7],
+                "theeDay": theEvent[8],
+                "theeDate": theEvent[9],
+                "theeMonth": theEvent[10],
+                "theeYear": theEvent[11],
+                "theeTime": theEvent[12],
+                "theURL": theEvent[13],
+                "theCover": 'http://dqgc5yp61yvd.cloudfront.net/' + theEvent[14],
+                "theDes": theEvent[15]
+            })
+        except Exception as e:
+            print(e)
+            return jsonify({
+                "error": True,
+                "message": "Invalid Server"
+            })
+    if request.method == "POST":
+        try:
+            attendeeData = request.get_json()
+            attendeeEmail = attendeeData["registerEmail"]
+
+            msg = email.message.EmailMessage()
+            msg["From"]= os.getenv('gmail')
+            msg["To"]= f"{attendeeEmail}"
+            msg["Subject"]="你好, 彭彭"
+
+            msg.add_alternative("<h3>Online Event from BooKÏ</h3>滿五百送一百喔", subtype="html")
+
+            server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
+            server.login(os.getenv('gmail'), os.getenv('gmailP'))
+            server.send_message(msg)
+            server.close()
+
+            return jsonify({
+                "ok": "ok"
+            })
+
+        except Exception as e:
+            print(e)
+            return jsonify({
+                "error": True,
+                "message": "Invalid Server"
+            })
+
 @app.route("/api/google", methods=["POST"])
 def google():
 
@@ -434,8 +590,6 @@ def loginPage():
 
         elif request.method == "GET":
             if "memberEmail" in session:
-                print(session["memberName"])
-                print(session["memberEmail"])
                 return jsonify({
                     "data": True,
                     "member": session["memberName"]

@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
+    <meta name="google-signin-client_id"
+        content="807588094774-v7tcl63kqsj96r64gaqhtu8gsn81ffnt.apps.googleusercontent.com">
+    <title>Events</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='css/base.css')}}">
+</head>
+
+<body>
+
+    <style>
+        #pageCover {
+            display: flex;
+            flex-direction: row;
+            width: 1200px;
+            height: 400px;
+            margin: auto;
+            border: 1px solid gray;
+        }
+
+        #createEvents {
+            width: 300px;
+            height: 300px;
+            border: 1px solid gray;
+            margin: 20px;
+        }
+
+        #coverImg {
+            width: 500px;
+            height: 400px;
+            background-color: pink
+        }
+
+        #events {
+            margin: auto;
+            border: 1px solid black;
+            display: flex;
+            flex-direction: row;
+        }
+
+
+        #ownEvents {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .indiLink {
+            text-decoration: none;
+            color: white;
+        }
+
+        .indiEvent {
+            display: flex;
+            flex-direction: column;
+            width: 330px;
+            margin: 20px 30px;
+            height: 275px;
+            border: 1px solid orange;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .indiCover {
+            height: 180px;
+        }
+
+        .indiInfo{
+            display: flex;
+            flex-direction: column;
+        }
+
+        .indiTitle {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 10px 0px;
+        }
+
+        .indiTime {
+            color: orange;
+            font-weight: 600;
+            margin: 10px 0px;
+        }
+
+        .indiDes {
+            font-weight: 600;
+            margin: 10px 0px;
+        }
+
+        .indi #bg {
+            background-color: white;
+            width: 100%;
+            height: 100%;
+            top: 0px;
+            position: fixed;
+            opacity: 0.3;
+            -webkit-opacity: 0.3;
+            display: none;
+            z-index: 100;
+        }
+
+        #createpopup {
+            position: fixed;
+            width: 900px;
+            height: 800px;
+            left: 50%;
+            top: 80px;
+            transform: translateX(-50%);
+            box-shadow: 0px 4px 60px #AAAAAA;
+            z-index: 999;
+            background-color: #f9f8f4;
+            border-radius: 20px;
+            font-size: 28px;
+        }
+
+        #cBox {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            top: 50px;
+            width: 850px;
+            height: 750px;
+            overflow: auto;
+            padding-left: 75px;
+        }
+
+        #eInfo {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .eventinput {
+            height: 100px;
+            margin-top: 20px;
+            width: 700px;
+            border-radius: 8px;
+            border: 1px solid gray;
+            padding-left: 15px;
+            font-size: 28px;
+        }
+
+        #timeBox {
+            display: flex;
+            flex-direction: column;
+            margin: 40px 0px 20px 0px;
+        }
+
+        .eventT {
+            display: flex;
+            flex-direction: row;
+            margin: 10px 0px;
+            font-size: 28px;
+        }
+
+        .eventDT {
+
+            font-size: 28px;
+            width: 240px;
+            height: 100px;
+            margin: 0px 10px;
+            border-radius: 8px;
+            border: 1px solid gray;
+            padding-left: 30px
+        }
+
+        .cTitle {
+            color: #030305;
+        }
+
+        #sBox {
+            width: 750px;
+            height: 550px;
+            text-align: center;
+            margin: 120px auto;
+            font-size: 50px;
+            color: #161B22;
+        }
+
+        #description {
+            margin: 10px;
+            width: 650px;
+            border-bottom: 1px solid;
+            background-color: white;
+            border: 1px solid gray;
+            min-height: 250px;
+            color: #030305;
+            outline: none;
+            font-size: 20px
+        }
+
+        #eventDes {
+            margin: 10px;
+            width: 700px;
+            border: 1px solid gray;
+            border-radius: 8px;
+            background-color: white;
+            min-height: 250px;
+            color: #030305;
+            outline: none;
+            font-size: 28px;
+            padding: 20px;
+        }
+
+        #photoTogether {
+            display: flex;
+            flex-direction: row;
+            margin-bottom: 60px;
+        }
+
+        #showimg {
+            width: 300px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .custom-file-upload {
+            width: 100px;
+            height: 100px;
+            margin: 10px;
+            border: 3px solid #DCDCDC;
+            display: inline-block;
+            padding: 6px 12px;
+            cursor: pointer;
+            text-align: center;
+            color: #161B22;
+            background-color: #f8f8f8
+        }
+
+        .custom-file-upload:hover {
+            background-color: orange;
+            color: white;
+        }
+
+        i.fa.fa-cloud-upload {
+            color: #161B22;
+            font-size: 40px;
+            margin-top: 20px;
+        }
+
+        #nextBtn {
+            position: absolute;
+            width: 100px;
+            height: 50px;
+            bottom: 35px;
+            right: 85px;
+            color: #030305;
+            background-color: #EFB730;
+            border: 1px solid #EFB730;
+            border-radius: 8px;
+            font-family: Helvetica;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        #launchSec {
+            display: flex;
+            flex-direction: row;
+            width: 750px;
+            margin: 20px 0px;
+            justify-content: flex-end;
+        }
+
+        #launchBtn {
+            width: 100px;
+            height: 50px;
+            color: #030305;
+            background-color: #EFB730;
+            border: 1px solid #EFB730;
+            border-radius: 8px;
+            font-family: Helvetica;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        #previousBtn {
+            width: 130px;
+            height: 48px;
+            font-size: 28px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            margin-right: 10px;
+        }
+
+        #previousBtn:hover {
+            border: 1px solid gray;
+            border-radius: 8px;
+        }
+
+        #cancelBtn {
+            width: 100px;
+            height: 48px;
+            right: 200px;
+            font-size: 20px;
+            margin-top: 10px;
+            cursor: pointer;
+            border: none;
+            background-color: #D3D3D3;
+        }
+
+        #cancelBtn:hover {
+            border: 1px solid gray;
+            border-radius: 8px;
+        }
+
+        #gosigninBtn {
+            position: absolute;
+            width: 100px;
+            height: 50px;
+            right: 85px;
+            margin-top: 10px;
+            color: #161B22;
+            background-color: orange;
+            border: 1px solid orange;
+            border-radius: 8px;
+            font-family: Helvetica;
+            font-size: 20px;
+            cursor: pointer;
+        }
+    </style>
+    <div class="searchEngine">
+        <div class="Header">
+            <h1><a href="/">BooKÏ</a></h1>
+        </div>
+
+        <div class="nav">
+            <div class="menu mybookIcon" id="mybookIcon"><a id="mybookProcess" class="mybookProcess" href="#"><i
+                        class="fas fa-book"></i></a></div>
+            <div class="menu signinIcon" id="signinIcon" style="display: none"><a id="signinProcess"
+                    class="signinProcess" href="/accounts">Sign in</a></div>
+            <div class="menu signoutIcon" id="signoutIcon" style="display: none"><a id="signoutProcess"
+                    class="signoutProcess" href="#"><i class="fas fa-user-astronaut"></i></a></div>
+        </div>
+    </div>
+
+    <div id="pageCover">
+        <div id="createEvents">
+            dsfdsafdsa
+            <button id="createBtn">create</button>
+        </div>
+        <!-- <div id="coverImg">
+            dfdfd
+        </div> -->
+    </div>
+
+    <!-- <button id="changecolour">change</button> -->
+
+    <div id="events">
+        <div id="ownEvents" class="eventBox">
+        </div>
+        <div id="outerEvents" class="eventBox" style="display: none">
+            outer
+        </div>
+        <div id="fairs" class="eventBox" style="display: none">
+            fairs
+        </div>
+    </div>
+
+    <label><a id="bgBtn" href="javascript:void(0)">
+            <div id="bg"></div>
+        </a></label>
+
+    <div id="createpopup" style="display: none;">
+        <div id="cBox" style="display: none;">
+            <div id="eInfo1" class="eInfo">
+                <div class="cTitle">Event Title:</div><input type="text" id="eventName" class="eventinput"
+                    placeholder="BooKÏ Top 10 club">
+                <div id="timeBox">
+                    <div class="eventT">
+                        <div class="cTitle">Start time:</div><input type="date" id="sDate" class="eventDT"><input
+                            type="time" id="sTime" class="eventDT">
+                    </div>
+                    <div class="eventT">
+                        <div class="cTitle">End time:</div><input type="date" id="eDate" class="eventDT"
+                            style="margin-left: 19px"><input type="time" id="eTime" class="eventDT">
+                    </div>
+                </div>
+
+                <div class="cTitle">Event Link:</div><input type="text" id="virtual" class="eventinput"
+                    placeholder="http://">
+                <button id="nextBtn">Next</button>
+            </div>
+
+            <div id="eInfo2" class="eInfo" style="display: none">
+                <div id="photoTogether">
+                    <label for="eventImg" class="custom-file-upload">
+                        <i class="fa fa-cloud-upload"></i> Upload
+                    </label>
+                    <input type="file" name="photo" id="eventImg" onchange="showImg(this)">
+                    <img id="showimg" src="" style="display:none;" />
+                </div>
+
+                <div class="cTitle">Event Description:</div>
+                <div contenteditable="true" id="eventDes" data-placeholder="Event description"></div>
+                <div id="launchSec">
+                    <button id="previousBtn" style="display: none">Previous</button>
+                    <button id="launchBtn" onclick="launchEvent(event)" style="display: none">Send</button>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div id="sBox" style="display: none">
+            <i class="fas fa-user-cog"></i><br>
+            <p style=>Sign in with your BooKÏ Account to create an event</p>
+            <button id="cancelBtn">cancel</button><button id="gosigninBtn" onclick="goSignin()">Sign in</button>
+        </div>
+    </div>
+
+
+    <script src="https://kit.fontawesome.com/cbebce4b6d.js" crossorigin="anonymous"></script>
+    <script src="{{url_for('static',filename='js/base.js')}}"></script>
+
+    <script>
+        //MAIN SCRIPT
+
+        showEvents()
+
+        let createBtn = document.getElementById("createBtn")
+        let bg = document.getElementById("bg")
+        let bgBtn = document.getElementById("bgBtn")
+        let nextBtn = document.getElementById("nextBtn")
+        let eInfo1 = document.getElementById("eInfo1")
+        let eInfo2 = document.getElementById("eInfo2")
+        let previousBtn = document.getElementById("previousBtn")
+        let launchBtn = document.getElementById("launchBtn")
+        let eventName = document.getElementById("eventName")
+        let sDate = document.getElementById("sDate")
+        let sTime = document.getElementById("sTime")
+        let eDate = document.getElementById("eDate")
+        let eTime = document.getElementById("eTime")
+
+        // document.getElementById("changecolour").addEventListener("click", function () {
+        //     document.getElementsByTagName("body")[0].style.background = "#f9f8f4"
+        //     document.getElementsByTagName("body")[0].style.color = "#030305"
+        //     document.getElementById("pageCover").style.background = "#324856"
+        //     document.getElementsByClassName("indiTime")[0].style.color = "#f05537"
+        // })
+
+
+        bgBtn.addEventListener("click", function () {
+            bg.style.display = "none";
+            document.getElementById("createpopup").style.display = "none"
+            document.getElementById("cBox").style.display = "none"
+            eInfo1.style.display = "block"
+            eInfo2.style.display = "none"
+            previousBtn.style.display = "none"
+            nextBtn.style.display = "block"
+            launchBtn.style.display = "none"
+            return false;
+        })
+
+        createBtn.addEventListener("click", function () {
+            document.getElementById("createpopup").style.display = "block"
+            document.getElementById("cBox").style.display = "block"
+            bg.style.display = "block"
+        })
+
+        nextBtn.addEventListener("click", function () {
+            eInfo1.style.display = "none"
+            eInfo2.style.display = "block"
+            previousBtn.style.display = "block"
+            nextBtn.style.display = "none"
+            launchBtn.style.display = "block"
+        })
+
+        previousBtn.addEventListener("click", function () {
+            eInfo1.style.display = "block"
+            eInfo2.style.display = "none"
+            previousBtn.style.display = "none"
+            nextBtn.style.display = "block"
+            launchBtn.style.display = "none"
+        })
+
+        function showImg(thisimg) {
+            var file = thisimg.files[0];
+            if (window.FileReader) {
+                var fr = new FileReader();
+
+                var showimg = document.getElementById('showimg');
+                fr.onloadend = function (e) {
+                    showimg.src = e.target.result;
+                };
+                fr.readAsDataURL(file);
+                showimg.style.display = 'block';
+            }
+        }
+
+        function goSignin() {
+            window.location.replace("/accounts")
+        }
+
+        async function launchEvent() {
+
+            let selectedFile = document.getElementById('eventImg').files[0];
+            let s;
+            let e;
+
+            if (selectedFile == null) {
+                console.log("no pic")
+            } else {
+
+                let date1 = new Date(sDate.value)
+                let sday = date1.getDay()
+                if (sday === 0) {
+                    sday = "Sun"
+                } else if (sday === 1) {
+                    sday = "Mon"
+                } else if (sday === 2) {
+                    sday = "Tue"
+                } else if (sday === 3) {
+                    sday = "Wed"
+                } else if (sday === 4) {
+                    sday = "Thur"
+                } else if (sday === 5) {
+                    sday = "Fri"
+                } else {
+                    sday = "Sat"
+                }
+
+                console.log(sday)
+
+                let smonth;
+                date1.getMonth() + 1 < 10 ? smonth = date1.getMonth() + 1 : smonth = date1.getMonth()
+
+                if (smonth === 1) {
+                    smonth = "Jan"
+                } else if (smonth === 2) {
+                    smonth = "Feb"
+                } else if (smonth === 3) {
+                    smonth = "Mar"
+                } else if (smonth === 4) {
+                    smonth = "Apr"
+                } else if (smonth === 5) {
+                    smonth = "May"
+                } else if (smonth === 6) {
+                    smonth = "Jun"
+                } else if (smonth === 7) {
+                    smonth = "Jul"
+                } else if (smonth === 8) {
+                    smonth = "Aug"
+                } else if (smonth === 9) {
+                    smonth = "Sep"
+                } else if (smonth === 10) {
+                    smonth = "Oct"
+                } else if (smonth === 11) {
+                    smonth = "Nov"
+                } else {
+                    smonth = "Dec"
+                }
+
+                let sdate = date1.getDate()
+                let syear = date1.getFullYear()
+
+
+                let date2 = new Date(eDate.value)
+                let eday = date2.getDay()
+                if (eday === 0) {
+                    eday = "Sun"
+                } else if (eday === 1) {
+                    eday = "Mon"
+                } else if (eday === 2) {
+                    eday = "Tue"
+                } else if (eday === 3) {
+                    eday = "Wed"
+                } else if (eday === 4) {
+                    eday = "Thur"
+                } else if (eday === 5) {
+                    eday = "Fri"
+                } else {
+                    eday = "Sat"
+                }
+
+                console.log(eday)
+
+                let emonth;
+                date2.getMonth() + 1 < 10 ? emonth = date2.getMonth() + 1 : emonth = date2.getMonth()
+
+                if (emonth === 1) {
+                    emonth = "Jan"
+                } else if (emonth === 2) {
+                    emonth = "Feb"
+                } else if (emonth === 3) {
+                    emonth = "Mar"
+                } else if (emonth === 4) {
+                    emonth = "Apr"
+                } else if (emonth === 5) {
+                    emonth = "May"
+                } else if (emonth === 6) {
+                    emonth = "Jun"
+                } else if (emonth === 7) {
+                    emonth = "Jul"
+                } else if (emonth === 8) {
+                    emonth = "Aug"
+                } else if (emonth === 9) {
+                    emonth = "Sep"
+                } else if (emonth === 10) {
+                    emonth = "Oct"
+                } else if (emonth === 11) {
+                    emonth = "Nov"
+                } else {
+                    emonth = "Dec"
+                }
+
+                let edate = date2.getDate()
+                let eyear = date2.getFullYear()
+
+
+                s = [sday, sdate, smonth, syear]
+                e = [eday, edate, emonth, eyear]
+            }
+
+            let formData = new FormData()
+            formData.append('eTitle', eventName.value)
+            formData.append('sDate', s)
+            formData.append('sTime', sTime.value)
+            formData.append('eDate', e)
+            formData.append('eTime', eTime.value)
+            formData.append('online', virtual.value)
+            formData.append('selectFile', selectedFile);
+            formData.append('description', eventDes.innerHTML)
+
+
+            await fetch("/api/bookievents", {
+                method: "POST",
+                body: formData,
+            }).then(response => {
+                return response.json()
+            }).then(re => {
+                console.log(re)
+                let ownEvents = document.getElementById("ownEvents")
+                let indiEvent = document.createElement("div")
+                let img_tag = document.createElement("img")
+                let indiTime = document.createElement("div")
+                // let indiDes = document.createElement("div")
+
+                indiEvent.classList.add("indiEvent")
+                img_tag.classList.add("indiCover")
+                indiTime.classList.add("indiTime")
+                // indiDes.classList.add("indiDes")
+
+                img_tag.src = re.nCover
+                indiTime.innerHTML = re.nsDay + ", " + re.nsDate + ", " + re.nsMonth + ", " + re.nsYear + ", " + re.nsTime
+                // indiDes.innerHTML = re.nDes
+
+                indiEvent.appendChild(img_tag)
+                indiEvent.appendChild(indiTime)
+                // indiEvent.appendChild(indiDes)
+                ownEvents.appendChild(indiEvent)
+
+                document.getElementById("createpopup").style.display = "none"
+                document.getElementById("cBox").style.display = "none"
+                bg.style.display = "none";
+
+                // location.reload()
+            })
+        }
+
+        async function showEvents() {
+            await fetch("/api/bookievents", { method: "GET" })
+                .then(response => {
+                    return response.json()
+                }).then(data => {
+                    eventsAll = data.allEvents
+
+                    for (let i = 0; i < eventsAll.length; i++) {
+                        let ownEvents = document.getElementById("ownEvents")
+                        let indiEvent = document.createElement("div")
+                        let img_tag = document.createElement("img")
+                        let indiInfo = document.createElement("div")
+                        let indiTitle = document.createElement("div")
+                        let indiTime = document.createElement("div")
+                        let a_tag = document.createElement("a")
+                        // let indiDes = document.createElement("div")
+
+                        
+                        indiEvent.classList.add("indiEvent")
+                        img_tag.classList.add("indiCover")
+                        indiInfo.classList.add("indiInfo")
+                        indiTitle.classList.add("indiTitle")
+                        indiTime.classList.add("indiTime")
+                        a_tag.classList.add("indiLink")
+                        // indiDes.classList.add("indiDes")
+
+                        indiTitle.innerHTML = eventsAll[i].aTitle
+                        img_tag.src = eventsAll[i].aCover
+                        indiTime.innerHTML = eventsAll[i].asDay + ", " + eventsAll[i].asDate + ", " + eventsAll[i].asMonth + ", " + eventsAll[i].asYear + ", " + eventsAll[i].asTime
+                        // indiDes.innerHTML = eventsAll[i].aDes
+                        a_tag.href = `/e/${eventsAll[i].aTitle}`
+
+                        indiInfo.appendChild(indiTitle)
+                        indiInfo.appendChild(indiTime)
+                        // indiInfo.appendChild(indiDes)
+                        indiEvent.appendChild(img_tag)
+                        indiEvent.appendChild(indiInfo)
+                        a_tag.appendChild(indiEvent)
+                        ownEvents.appendChild(a_tag)
+
+                    }
+                })
+        }
+
+
+
+    </script>
+</body>
+
+</html>

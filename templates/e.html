@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
+    <meta name="google-signin-client_id"
+        content="807588094774-v7tcl63kqsj96r64gaqhtu8gsn81ffnt.apps.googleusercontent.com">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/base.css')}}">
+    <title>the Event</title>
+</head>
+
+<body>
+    <style>
+        #wrap {
+            display: flex;
+            flex-direction: column;
+            margin: auto;
+            width: 1200px;
+        }
+
+        #pageCover {
+            display: flex;
+            flex-direction: row;
+            height: 400px;
+            border: 1px solid gray;
+        }
+
+        #attendEvents {
+            width: 300px;
+            height: 300px;
+            border: 1px solid gray;
+            margin: 20px;
+        }
+
+        #eventBody {
+            display: flex;
+            flex-direction: row;
+            border: 1px solid gray;
+
+        }
+
+        #eventDes {
+            border: 1px solid red;
+        }
+
+        #eventTime {
+            border: 1px solid yellow;
+        }
+
+        #bg {
+            background-color: white;
+            width: 100%;
+            height: 100%;
+            top: 0px;
+            position: fixed;
+            opacity: 0.3;
+            -webkit-opacity: 0.3;
+            display: none;
+            z-index: 100;
+        }
+
+        #registerpopup {
+            position: fixed;
+            width: 500px;
+            height: 300px;
+            left: 50%;
+            top: 80px;
+            transform: translateX(-50%);
+            box-shadow: 0px 4px 60px #AAAAAA;
+            z-index: 999;
+            background-color: #f9f8f4;
+            border-radius: 20px;
+            font-size: 28px;
+        }
+
+        #reBox {
+            display: flex;
+            flex-direction: column;
+            width: 450px;
+            height: 250px;
+            margin: 35px auto;
+
+        }
+
+        .eventinput {
+            height: 50px;
+            margin: 20px 0px;
+            width: 300px;
+            border-radius: 8px;
+            border: 1px solid gray;
+            padding-left: 15px;
+            font-size: 20px;
+        }
+
+        .cTitle {
+            color: #030305;
+        }
+    </style>
+    <div class="searchEngine">
+        <div class="Header">
+            <h1><a href="/">BooKÏ</a></h1>
+        </div>
+
+        <div class="nav">
+            <div class="menu mybookIcon" id="mybookIcon"><a id="mybookProcess" class="mybookProcess" href="#"><i
+                        class="fas fa-book"></i></a></div>
+            <div class="menu signinIcon" id="signinIcon" style="display: none"><a id="signinProcess"
+                    class="signinProcess" href="/accounts">Sign in</a></div>
+            <div class="menu signoutIcon" id="signoutIcon" style="display: none"><a id="signoutProcess"
+                    class="signoutProcess" href="#"><i class="fas fa-user-astronaut"></i></a></div>
+        </div>
+    </div>
+
+    <div id="wrap">
+
+        <div id="pageCover">
+            <div id="attendEvents">
+                dsfdsafdsa
+                <button id="attendBtn">Register</button>
+            </div>
+        </div>
+
+        <div id="eventBody">
+            <div id="eventDes">
+
+            </div>
+            <div id="eventTime">
+
+            </div>
+        </div>
+    </div>
+
+    <label><a id="bgBtn" href="javascript:void(0)">
+            <div id="bg"></div>
+        </a></label>
+
+    <div id="registerpopup" style="display: none;">
+        <div id="reBox" style="display: none;">
+            <div class="cTitle">Contact Name:</div><input type="text" id="contactName" class="eventinput">
+            <div class="cTitle">Email:</div><input type="text" id="contactEmail" class="eventinput">
+            <button id="confirmBtn">Register</button>
+        </div>
+
+
+        <script src="https://kit.fontawesome.com/cbebce4b6d.js" crossorigin="anonymous"></script>
+        <script src="{{url_for('static',filename='js/base.js')}}"></script>
+        <script>
+
+            let src = window.location.href;
+            let eventId = src.split("/")[4];
+            console.log(eventId)
+            theEvent(eventId)
+
+            let attendBtn = document.getElementById("attendBtn")
+            let bg = document.getElementById("bg")
+            let bgBtn = document.getElementById("bgBtn")
+            let registerpopup = document.getElementById("registerpopup")
+            let reBox = document.getElementById("reBox")
+            let confirmBtn = document.getElementById("confirmBtn")
+
+
+            attendBtn.addEventListener("click", function () {
+                registerpopup.style.display = "block"
+                reBox.style.display = "block"
+                bg.style.display = "block"
+                
+            })
+
+            confirmBtn.addEventListener("click", function () {
+                registered()
+            })
+
+            bgBtn.addEventListener("click", function () {
+                bg.style.display = "none";
+                registerpopup.style.display = "none"
+                reBox.style.display = "none"
+                return false;
+            })
+
+            async function theEvent(eId) {
+                await fetch(`/api/theevent?e=${eId}`, { method: "GET" })
+                    .then(response => {
+                        return response.json()
+                    }).then(re => {
+                        let wrap = document.getElementById("wrap")
+                        let pageCover = document.getElementById("pageCover")
+                        let attendEvents = document.getElementById("attendEvents")
+                        let eventBody = document.getElementById("eventBody")
+                        let eventDes = document.getElementById("eventDes")
+                        let eventTime = document.getElementById("eventTime")
+
+                        let img_tag = document.createElement("img")
+                        let title_tag = document.createElement("div")
+                        let organiser_tag = document.createElement("div")
+                        let eventDes_tag = document.createElement("div")
+                        let date_tag = document.createElement("div")
+                        let time_tag = document.createElement("div")
+                        let loca_tag = document.createElement("div")
+
+                        img_tag.src = re.theCover
+                        title_tag.innerHTML = re.theTitle
+                        organiser_tag.innerHTML = re.theUser
+
+                        eventDes_tag.innerHTML = re.theDes
+
+                        date_tag.innerHTML = re.thesDay + ", " + re.thesDate + " " + re.thesMonth + " " + re.thesYear
+                        time_tag.innerHTML = re.thesTime
+                        loca_tag.innerHTML = "Location: Online event"
+
+                        attendEvents.appendChild(title_tag)
+                        attendEvents.appendChild(organiser_tag)
+                        pageCover.appendChild(attendEvents)
+                        pageCover.appendChild(img_tag)
+
+                        eventDes.appendChild(eventDes_tag)
+                        eventTime.appendChild(date_tag)
+                        eventTime.appendChild(time_tag)
+                        eventTime.appendChild(loca_tag)
+                        eventBody.appendChild(eventDes)
+                        eventBody.appendChild(eventTime)
+
+                    })
+            }
+
+            async function registered() {
+                let attendee = document.getElementById("contactName").value
+                let attendeeEmail = document.getElementById("contactEmail").value
+
+                db = {
+                    registerName: attendee,
+                    registerEmail: attendeeEmail
+                }
+                await fetch("/api/theevent", {
+                    method: "POST",
+                    headers: {
+                        "content-type": "application/json"
+                    },
+                    body: JSON.stringify(db)
+                })
+                .then(response => {
+                    return response.json()
+                }).then (data => {
+                    console.log(data)
+                })
+            }
+
+
+        </script>
+</body>
+
+</html>

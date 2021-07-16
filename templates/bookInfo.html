@@ -369,14 +369,12 @@
         #writeSec {
             display: flex;
             flex-direction: column;
-            width: 600px;
             padding: 0px 10px;
         }
 
         #relatedSec {
             display: flex;
             flex-direction: column;
-            width: 600px;
             padding: 0px 10px;
         }
 
@@ -484,6 +482,7 @@
             font-size: 30px;
             position: absolute;
             top: 50%;
+            transform: translateY(50%);
             left: 5px;
             z-index: 5;
             opacity: 0.7;
@@ -503,6 +502,7 @@
             font-size: 30px;
             position: absolute;
             top: 50%;
+            transform: translateY(50%);
             right: 5px;
             z-index: 5;
             opacity: 0.7;
@@ -568,8 +568,8 @@
         </div>
     </div>
 
-    <div class="theBook">
-        <div id="writeSec">
+    <div class="theBook" style="flex-direction: column">
+        <div id="relatedSec">
             <div id="thumbW">
                 <div>
                     <i id="googleRate" class="fab fa-google"></i>
@@ -581,20 +581,11 @@
                 </div>
                 <div id="write">write a review</div>
             </div>
-            <div class="secBar">
-                <div class="orangeBarS"></div>
-                <div class="secBarTitle">Rate and Review</div>
-                <div class="orangeBarL"></div>
-            </div>
-            <div id="reviews">
-                <div id="reviewSec"></div>
-            </div>
-        </div>
-        <div id="relatedSec">
+            
             <div id="recommendBox">
                 <div class="secBar">
                     <div class="orangeBarS"></div>
-                    <div class="secBarTitle">Readers also enjoyed...</div>
+                    <div class="secBarTitle">Popular search in BooKÏ</div>
                     <div class="orangeBarL"></div>
                 </div>
                 <div class="arrowL"></div>
@@ -604,7 +595,26 @@
                 <div id="recBox"></div>
             </div>
 
+            <div id="events">
+                <div class="secBar">
+                    <div class="orangeBarS"></div>
+                    <div class="secBarTitle">Events</div>
+                    <div class="orangeBarL"></div>
+                </div>
+            </div>
+
         </div>
+        <div id="writeSec">
+            <div class="secBar">
+                <div class="orangeBarS"></div>
+                <div class="secBarTitle">Rate and Review</div>
+                <div class="orangeBarL"></div>
+            </div>
+            <div id="reviews">
+                <div id="reviewSec"></div>
+            </div>
+        </div>
+        
     </div>
 
     <!-- <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> -->
