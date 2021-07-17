@@ -104,18 +104,6 @@
             margin-top: -18px;
         }
 
-        #bg {
-            background-color: white;
-            width: 100%;
-            height: 100%;
-            top: 0px;
-            position: fixed;
-            opacity: 0.3;
-            -webkit-opacity: 0.3;
-            display: none;
-            z-index: 100;
-        }
-
         #reviewBox {
             position: fixed;
             width: 800px;
@@ -138,15 +126,6 @@
             height: 550px;
             overflow: auto;
             padding-left: 50px;
-        }
-
-        #sBox {
-            width: 750px;
-            height: 550px;
-            text-align: center;
-            margin: 120px auto;
-            font-size: 50px;
-            color: #161B22;
         }
 
         #infoStar {
@@ -218,30 +197,6 @@
             display: none;
         }
 
-        .custom-file-upload {
-            width: 100px;
-            height: 100px;
-            margin: 10px;
-            border: 3px solid #DCDCDC;
-            display: inline-block;
-            padding: 6px 12px;
-            cursor: pointer;
-            text-align: center;
-            color: #161B22;
-            background-color: #f8f8f8
-        }
-
-        .custom-file-upload:hover {
-            background-color: #c5b8a5;
-            color: white;
-        }
-
-        i.fa.fa-cloud-upload {
-            color: #161B22;
-            font-size: 40px;
-            margin-top: 20px;
-        }
-
         #commentBtn {
             position: absolute;
             width: 100px;
@@ -260,42 +215,6 @@
         #commentBtn:hover {
             background-color: white;
             color: black;
-        }
-
-        #cancelBtn {
-            position: absolute;
-            width: 100px;
-            height: 48px;
-            right: 200px;
-            font-size: 20px;
-            margin-top: 10px;
-            cursor: pointer;
-            border: none;
-            background-color: #D3D3D3;
-        }
-
-        #cancelBtn:hover {
-            border: 1px solid gray;
-            border-radius: 8px;
-        }
-
-        #gosigninBtn {
-            position: absolute;
-            width: 100px;
-            height: 50px;
-            right: 85px;
-            margin-top: 10px;
-            color: #656565;
-            background-color: white;
-            border: 1px solid white;
-            border-radius: 8px;
-            font-family: Helvetica;
-            font-size: 20px;
-            cursor: pointer;
-        }
-
-        #gosigninBtn:hover {
-            color: black
         }
 
         #writeSec {
@@ -562,7 +481,7 @@
     <!-- <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> -->
 
     <label><a id="bgBtn" href="javascript:void(0)">
-            <div id="bg"></div>
+            <div id="bg" class="bg"></div>
         </a></label>
 
     <div id="reviewBox" style="display: none">
@@ -590,10 +509,10 @@
         </div>
 
 
-        <div id="sBox" style="display: none">
+        <div id="sBox" class="sBox" style="display: none">
             <i class="fas fa-user-cog"></i><br>
             <p style=>Sign in with your BooKÏ Account to write a review</p>
-            <button id="cancelBtn">cancel</button><button id="gosigninBtn" onclick="goSignin()">Sign in</button>
+            <button id="cancelBtn" class="cancelBtn">cancel</button><button id="gosigninBtn" class="gosigninBtn" onclick="goSignin()">Sign in</button>
         </div>
     </div>
 
@@ -1013,7 +932,6 @@
         let reviewSec = document.getElementById("reviewSec")
         let bg = document.getElementById("bg");
         let bgBtn = document.getElementById("bgBtn")
-        let writeBtn = document.getElementById("write")
         let stars = document.getElementById("stars")
         let oStar = document.getElementsByClassName("fas fa-star")
         let starRates;
