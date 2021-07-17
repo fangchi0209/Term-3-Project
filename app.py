@@ -166,7 +166,7 @@ def recommend():
             countAdd = count_Result[2]+ 1
             db.engine.execute(f"UPDATE counts SET visitSite = '{countAdd}' WHERE (bookId = '{bookIdforRec}')")
 
-            ctsRank = db.engine.execute("SELECT * FROM counts ORDER BY visitSite DESC LIMIT 13")
+            ctsRank = db.engine.execute("SELECT * FROM counts ORDER BY visitSite DESC LIMIT 17")
 
             def recBookInfo(recURL):
                 recBookHTML = requests.get(recURL)

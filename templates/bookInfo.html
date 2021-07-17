@@ -14,81 +14,6 @@
 
 <body>
     <style>
-        .searchEngine {
-            position: fixed;
-            z-index: 10;
-            width: 100%;
-            height: 100px;
-            top: 0px;
-            padding-top: 30px;
-            background-color: #161B22;
-        }
-
-        #searchSection {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: absolute;
-            top: 55px;
-            left: 280px;
-        }
-
-        #bundle {
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            position: relative;
-            width: auto;
-            max-width: 800px;
-            height: 46px;
-            margin: auto;
-            outline: none;
-            box-shadow: none;
-            border-radius: 24px;
-            border: 1px solid #dfe1e5
-        }
-
-        #toggle {
-            display: flex;
-            flex-direction: column;
-            background: gray;
-            width: 769px;
-            min-height: 35px;
-            border: 1px solid #dfe1e5;
-            padding: 1px;
-            border-bottom-left-radius: 24px;
-            border-bottom-right-radius: 24px;
-        }
-
-        #toggle a {
-            text-decoration: none;
-            color: white;
-            font-size: 21px;
-            margin: 10px 20px;
-            line-height: 2;
-        }
-
-        #searchBar {
-            width: 700px;
-            border: 0px;
-            background: none;
-            outline: none;
-            color: white;
-            font-size: 20px;
-            padding-left: 10px;
-            font-family: Helvetica;
-        }
-
-        #searchBtn {
-            width: 60px;
-            height: 46px;
-            background: none;
-            border: 0px;
-            cursor: pointer;
-            font-size: 20px;
-            color: white;
-        }
-
         .theBook {
             display: flex;
             width: 1200px;
@@ -98,9 +23,9 @@
         }
 
         #theBookCover {
-            width: 150px;
-            height: 200px;
-            box-shadow: 10px 1px;
+            width: 180px;
+            height: 250px;
+            box-shadow: 10px 10px 20px;
         }
 
         #imgSec {
@@ -117,6 +42,7 @@
             font-size: 35px;
             margin: 10px 0;
             font-weight: bold;
+            color: black
         }
 
         #theBookDes {
@@ -144,21 +70,17 @@
             font-size: 28px;
         }
 
-
-
         .subRates {
-            margin-left: 20px;
             color: gray;
             font-style: italic
         }
 
         .extraLink a {
-            text-decoration: none;
-            color: white;
+            color: #a6a6a8
         }
 
         .extraLink a:hover {
-            color: orange
+            color: #8696a7
         }
 
         #more {
@@ -167,7 +89,7 @@
         }
 
         #more a {
-            color: orange;
+            color: gray;
             font-size: 40px;
         }
 
@@ -235,14 +157,15 @@
         #reviewTitle {
             font-weight: bold;
             font-size: 35px;
-            color: orange;
+            color: #656565;
             text-align: center;
             margin-left: -30px;
         }
 
         #memberTitle {
             font-size: 28px;
-            color: #161B22;
+            color: black;
+            font-weight: 600;
             margin: 10px;
         }
 
@@ -269,7 +192,7 @@
         #commentBox {
             margin: 10px;
             width: 650px;
-            border-bottom: 1px solid orange;
+            border-bottom: 1px solid gray;
             background-color: #f8f8f8;
             min-height: 150px;
             color: #161B22;
@@ -309,7 +232,7 @@
         }
 
         .custom-file-upload:hover {
-            background-color: orange;
+            background-color: #c5b8a5;
             color: white;
         }
 
@@ -325,13 +248,18 @@
             height: 50px;
             right: 85px;
             margin-top: 10px;
-            color: #161B22;
-            background-color: orange;
-            border: 1px solid orange;
+            color: white;
+            background-color: #c5b8a5;
+            border: 1px solid #c5b8a5;
             border-radius: 8px;
             font-family: Helvetica;
             font-size: 20px;
             cursor: pointer;
+        }
+
+        #commentBtn:hover {
+            background-color: white;
+            color: black;
         }
 
         #cancelBtn {
@@ -357,13 +285,17 @@
             height: 50px;
             right: 85px;
             margin-top: 10px;
-            color: #161B22;
-            background-color: orange;
-            border: 1px solid orange;
+            color: #656565;
+            background-color: white;
+            border: 1px solid white;
             border-radius: 8px;
             font-family: Helvetica;
             font-size: 20px;
             cursor: pointer;
+        }
+
+        #gosigninBtn:hover {
+            color: black
         }
 
         #writeSec {
@@ -383,45 +315,51 @@
             flex-direction: row;
             align-items: center;
             justify-content: space-around;
-            background-color: black;
+            background-color: #f0ebe5;
             height: 150px;
             margin-bottom: 10px;
-            padding: 0px 10px
+            padding: 0px 50px
         }
 
         .fa-thumbs-up,
         .fa-google {
             font-size: 50px;
-            color: orange;
+            color: white;
             margin-bottom: 10px;
+            color: #6b5152;
         }
 
         #write {
-            border: 1px solid orange;
-            color: #161B22;
+            border: 1px solid white;
+            color: #656565;
             font-size: 30px;
-            background-color: orange;
+            background-color: white;
             border-radius: 8px;
             text-align: center;
             cursor: pointer;
             padding: 0px 5px;
+            box-shadow: 10px 10px 10px;
+        }
+
+        #write:hover {
+            color: black
         }
 
         .secBar {
             display: flex;
             flex-direction: row;
             align-items: center;
-            margin-bottom: 35px;
+            margin: 40px 0px 35px 0px;
         }
 
-        .orangeBarS {
-            background-color: orange;
+        .secBarS {
+            background-color: #c5b8a5;
             height: 20px;
             width: 20px;
         }
 
-        .orangeBarL {
-            background-color: orange;
+        .secBarL {
+            background-color: #c5b8a5;
             height: 10px;
             flex-grow: 2;
         }
@@ -430,6 +368,7 @@
             font-size: 28px;
             font-weight: bold;
             margin: 0px 10px;
+            color: black;
         }
 
         #reviewSec {
@@ -441,7 +380,9 @@
             display: flex;
             flex-direction: column;
             border: 1px solid gray;
-            padding: 20px
+            border-radius: 8px;
+            padding: 20px;
+            background: #f0ebe5;
         }
 
         .together {
@@ -465,7 +406,7 @@
 
         #recBox {
             position: relative;
-            width: 2000px;
+            width: 2500px;
             height: 220px;
         }
 
@@ -474,7 +415,7 @@
             width: 40px;
             height: 200px;
             position: absolute;
-            cursor:pointer;
+            cursor: pointer;
         }
 
 
@@ -494,7 +435,7 @@
             height: 200px;
             position: absolute;
             right: 0px;
-            cursor:pointer;
+            cursor: pointer;
         }
 
 
@@ -511,10 +452,10 @@
 
         .recUrl {
             margin: 0px 5px;
-            box-shadow: 0px 4px 10px #AAAAAA;
+            box-shadow: 0px 4px 10px black;
         }
 
-        .recUrl img{
+        .recUrl img {
             height: 190px;
         }
     </style>
@@ -522,16 +463,17 @@
 
     <div class="searchEngine">
         <div class="Header">
-            <h1><a href="/">BooKÏ</a></h1>
+            <a href="/">BooKÏ</a>
         </div>
 
-        <form id="searchSection">
+        <form class="searchSection">
 
-            <div id="bundle">
-                <input type="text" id="searchBar" placeholder="Title or Author">
-                <button id="searchBtn" onclick="searchGo(event)"><i class="fas fa-search"></i></button>
+            <div id="bundle" class="bundle">
+                <input type="text" id="searchBar" class="searchBar" placeholder="Title or Author">
+                <button class="searchBtn" onclick="searchGo(event)"><i
+                        class="fas fa-search"></i></button>
             </div>
-            <div id="toggle" style="display: none"></div>
+            <div id="toggle" class="toggle" style="display: none"></div>
         </form>
 
         <div class="nav">
@@ -552,18 +494,18 @@
     <div class="theBook">
         <div id="bookSpec">
             <div class="secBar">
-                <div class="orangeBarS"></div>
+                <div class="secBarS"></div>
                 <div class="secBarTitle">Book Details</div>
-                <div class="orangeBarL"></div>
+                <div class="secBarL"></div>
             </div>
         </div>
 
 
         <div id="authorSec">
             <div class="secBar">
-                <div class="orangeBarS"></div>
+                <div class="secBarS"></div>
                 <div class="secBarTitle">About Author</div>
-                <div class="orangeBarL"></div>
+                <div class="secBarL"></div>
             </div>
         </div>
     </div>
@@ -573,20 +515,20 @@
             <div id="thumbW">
                 <div>
                     <i id="googleRate" class="fab fa-google"></i>
-                    <div class="subRates">Googler Score</div>
+                    <div class="subRates">Average Googler Score</div>
                 </div>
                 <div>
                     <i id="thumbRate" class="far fa-thumbs-up"></i>
-                    <div class="subRates">BooKÏer Score</div>
+                    <div class="subRates">Average BooKÏer Score</div>
                 </div>
                 <div id="write">write a review</div>
             </div>
-            
+
             <div id="recommendBox">
                 <div class="secBar">
-                    <div class="orangeBarS"></div>
+                    <div class="secBarS"></div>
                     <div class="secBarTitle">Popular search in BooKÏ</div>
-                    <div class="orangeBarL"></div>
+                    <div class="secBarL"></div>
                 </div>
                 <div class="arrowL"></div>
                 <i id="arrowLicon" class="fas fa-arrow-alt-circle-left"></i>
@@ -597,24 +539,24 @@
 
             <div id="events">
                 <div class="secBar">
-                    <div class="orangeBarS"></div>
+                    <div class="secBarS"></div>
                     <div class="secBarTitle">Events</div>
-                    <div class="orangeBarL"></div>
+                    <div class="secBarL"></div>
                 </div>
             </div>
 
         </div>
         <div id="writeSec">
             <div class="secBar">
-                <div class="orangeBarS"></div>
+                <div class="secBarS"></div>
                 <div class="secBarTitle">Rate and Review</div>
-                <div class="orangeBarL"></div>
+                <div class="secBarL"></div>
             </div>
             <div id="reviews">
                 <div id="reviewSec"></div>
             </div>
         </div>
-        
+
     </div>
 
     <!-- <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> -->
@@ -836,7 +778,7 @@
         let arrowLicon = document.getElementById("arrowLicon")
         let arrowRicon = document.getElementById("arrowRicon")
 
-        recBox.addEventListener("mouseover", function(){
+        recBox.addEventListener("mouseover", function () {
             arrowL.style.opacity = "0.2"
             arrowL.style.backgroundColor = "white"
             arrowL.style.zIndex = "2"
@@ -845,12 +787,12 @@
             arrowR.style.zIndex = "2"
         })
 
-        recBox.addEventListener("mouseout", function(){
+        recBox.addEventListener("mouseout", function () {
             arrowL.style.opacity = "0"
             arrowR.style.opacity = "0"
         })
 
-        arrowL.addEventListener("mouseover", function(){
+        arrowL.addEventListener("mouseover", function () {
             arrowL.style.opacity = "0.5"
             arrowL.style.backgroundColor = "white"
             arrowL.style.zIndex = "2"
@@ -859,7 +801,7 @@
             arrowR.style.zIndex = "2"
         })
 
-        arrowR.addEventListener("mouseover", function(){
+        arrowR.addEventListener("mouseover", function () {
             arrowL.style.opacity = "0.2"
             arrowL.style.backgroundColor = "white"
             arrowL.style.zIndex = "2"
@@ -872,13 +814,13 @@
         let arrL = false
         let arrR = true
         console.log(recBox.style.left)
-        arrowR.addEventListener("click", function(){
-            if (LR > -959 & arrL == false){
+        arrowR.addEventListener("click", function () {
+            if (LR > -959 & arrL == false) {
                 LR -= 480
-                recBox.style.left= LR + "px"
+                recBox.style.left = LR + "px"
                 arrL = false
                 arrR = false
-            }else{
+            } else {
                 LR = -1200
                 recBox.style.left = "-1200px"
                 arrL = true
@@ -886,13 +828,13 @@
             }
         })
 
-        arrowRicon.addEventListener("click", function(){
-            if (LR > -959 & arrL == false){
+        arrowRicon.addEventListener("click", function () {
+            if (LR > -959 & arrL == false) {
                 LR -= 480
-                recBox.style.left= LR + "px"
+                recBox.style.left = LR + "px"
                 arrL = false
                 arrR = false
-            }else{
+            } else {
                 LR = -1200
                 recBox.style.left = "-1200px"
                 arrL = true
@@ -900,18 +842,18 @@
             }
         })
 
-        arrowL.addEventListener("click", function(){
-            if (LR < -241 & arrR == false){
-                LR += 480
-                recBox.style.left= LR + "px"
-                arrL = false
-                arrR = false
-            }else if(LR == -1200){
+        arrowL.addEventListener("click", function () {
+            if (LR < -241 & arrR == false) {
                 LR += 480
                 recBox.style.left = LR + "px"
                 arrL = false
                 arrR = false
-            }else{
+            } else if (LR == -1200) {
+                LR += 480
+                recBox.style.left = LR + "px"
+                arrL = false
+                arrR = false
+            } else {
                 LR = 0
                 recBox.style.left = "0px"
                 arrL = false
@@ -919,18 +861,18 @@
             }
         })
 
-        arrowLicon.addEventListener("click", function(){
-            if (LR < -241 & arrR == false){
-                LR += 480
-                recBox.style.left= LR + "px"
-                arrL = false
-                arrR = false
-            }else if(LR == -1200){
+        arrowLicon.addEventListener("click", function () {
+            if (LR < -241 & arrR == false) {
                 LR += 480
                 recBox.style.left = LR + "px"
                 arrL = false
                 arrR = false
-            }else{
+            } else if (LR == -1200) {
+                LR += 480
+                recBox.style.left = LR + "px"
+                arrL = false
+                arrR = false
+            } else {
                 LR = 0
                 recBox.style.left = "0px"
                 arrL = false
@@ -1093,6 +1035,7 @@
             rBox.style.display = "none"
         })
 
+    
         stars.addEventListener("click", function (e) {
             let targetS = e.target.innerHTML
             if (targetS.indexOf("class") == -1) {
@@ -1188,69 +1131,69 @@
                 }).then(response => {
                     return response.json()
                 }).then(re => {
-                    console.log(re)
-                    let indiReview_tag = document.createElement("div")
-                    let reviewer_tag = document.createElement("div")
-                    let review_tag = document.createElement("div")
-                    let reviewTime_tag = document.createElement("div");
-                    let together_tag = document.createElement("div")
-                    let ratings_tag = document.createElement("div")
-                    let emptyStar_tag = document.createElement("div")
-                    let fullStar_tag = document.createElement("div")
+                    // console.log(re)
+                    // let indiReview_tag = document.createElement("div")
+                    // let reviewer_tag = document.createElement("div")
+                    // let review_tag = document.createElement("div")
+                    // let reviewTime_tag = document.createElement("div");
+                    // let together_tag = document.createElement("div")
+                    // let ratings_tag = document.createElement("div")
+                    // let emptyStar_tag = document.createElement("div")
+                    // let fullStar_tag = document.createElement("div")
 
-                    let emptyS = document.createTextNode("★★★★★")
-                    let fullS = document.createTextNode("★★★★★")
+                    // let emptyS = document.createTextNode("★★★★★")
+                    // let fullS = document.createTextNode("★★★★★")
 
-                    indiReview_tag.className = "indiReview"
-                    reviewer_tag.className = "reviewer"
-                    review_tag.className = "review"
-                    reviewTime_tag.className = "reviewtTime";
-                    together_tag.className = "together"
-                    ratings_tag.classList.add("ratings")
-                    emptyStar_tag.classList.add("empty_star")
-                    fullStar_tag.classList.add("full_star")
+                    // indiReview_tag.className = "indiReview"
+                    // reviewer_tag.className = "reviewer"
+                    // review_tag.className = "review"
+                    // reviewTime_tag.className = "reviewtTime";
+                    // together_tag.className = "together"
+                    // ratings_tag.classList.add("ratings")
+                    // emptyStar_tag.classList.add("empty_star")
+                    // fullStar_tag.classList.add("full_star")
 
-                    let mRates = re.rates
-                    if (mRates == 1) {
-                        fullStar_tag.setAttribute("style", "width: 20%")
-                    } else if (mRates == 2) {
-                        fullStar_tag.setAttribute("style", "width: 40%")
-                    } else if (mRates == 3) {
-                        fullStar_tag.setAttribute("style", "width: 60%")
-                    } else if (mRates == 4) {
-                        fullStar_tag.setAttribute("style", "width: 80%")
-                    } else {
-                        fullStar_tag.setAttribute("style", "width: 100%")
-                    }
+                    // let mRates = re.rates
+                    // if (mRates == 1) {
+                    //     fullStar_tag.setAttribute("style", "width: 20%")
+                    // } else if (mRates == 2) {
+                    //     fullStar_tag.setAttribute("style", "width: 40%")
+                    // } else if (mRates == 3) {
+                    //     fullStar_tag.setAttribute("style", "width: 60%")
+                    // } else if (mRates == 4) {
+                    //     fullStar_tag.setAttribute("style", "width: 80%")
+                    // } else {
+                    //     fullStar_tag.setAttribute("style", "width: 100%")
+                    // }
 
-                    reviewer_tag.innerHTML = re.user
-                    review_tag.innerHTML = re.content
-                    reviewTime_tag.innerHTML = re.date
-                    emptyStar_tag.appendChild(emptyS)
-                    fullStar_tag.appendChild(fullS)
-                    ratings_tag.appendChild(emptyStar_tag)
-                    ratings_tag.appendChild(fullStar_tag)
+                    // reviewer_tag.innerHTML = re.user
+                    // review_tag.innerHTML = re.content
+                    // reviewTime_tag.innerHTML = re.date
+                    // emptyStar_tag.appendChild(emptyS)
+                    // fullStar_tag.appendChild(fullS)
+                    // ratings_tag.appendChild(emptyStar_tag)
+                    // ratings_tag.appendChild(fullStar_tag)
 
-                    together_tag.appendChild(reviewer_tag)
-                    together_tag.appendChild(reviewTime_tag)
-                    indiReview_tag.appendChild(together_tag)
-                    indiReview_tag.appendChild(ratings_tag)
-                    indiReview_tag.appendChild(review_tag)
-                    reviewSec.appendChild(indiReview_tag)
-                    commentBox.innerHTML = ""
+                    // together_tag.appendChild(reviewer_tag)
+                    // together_tag.appendChild(reviewTime_tag)
+                    // indiReview_tag.appendChild(together_tag)
+                    // indiReview_tag.appendChild(ratings_tag)
+                    // indiReview_tag.appendChild(review_tag)
+                    // reviewSec.appendChild(indiReview_tag)
+                    // commentBox.innerHTML = ""
 
-                    reviewSec.insertBefore(indiReview_tag, reviewSec.childNodes[0])
+                    // reviewSec.insertBefore(indiReview_tag, reviewSec.childNodes[0])
 
-                    bg.style.display = "none";
-                    reviewBox.style.display = "none"
-                    rBox.style.display = "none"
-                    document.getElementById("showimg").style.display = "none"
-                    document.getElementById("commentBox").innerHTML = ""
-                    oStar[0].style.color = "gainsboro"
-                    oStar[1].style.color = "gainsboro"
-                    oStar[2].style.color = "gainsboro"
-                    oStar[3].style.color = "gainsboro"
-                    oStar[4].style.color = "gainsboro"
+                    // bg.style.display = "none";
+                    // reviewBox.style.display = "none"
+                    // rBox.style.display = "none"
+                    // document.getElementById("showimg").style.display = "none"
+                    // document.getElementById("commentBox").innerHTML = ""
+                    // oStar[0].style.color = "gainsboro"
+                    // oStar[1].style.color = "gainsboro"
+                    // oStar[2].style.color = "gainsboro"
+                    // oStar[3].style.color = "gainsboro"
+                    // oStar[4].style.color = "gainsboro"
                     location.reload()
                 })
             } else {

@@ -11,80 +11,6 @@
 
 <body>
     <style>
-        .searchEngine {
-            position: fixed;
-            z-index: 5;
-            width: 100%;
-            height: 100px;
-            top: 0px;
-            padding-top: 30px;
-            background-color: #161B22;
-        }
-
-        #searchSection {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: absolute;
-            top: 55px;
-            left: 280px;
-        }
-
-        #bundle {
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            position: relative;
-            width: auto;
-            max-width: 800px;
-            height: 46px;
-            margin: auto;
-            outline: none;
-            box-shadow: none;
-            border-radius: 24px;
-            border: 1px solid #dfe1e5
-        }
-
-        #toggle {
-            display: flex;
-            flex-direction: column;
-            background: gray;
-            width: 769px;
-            min-height: 35px;
-            border: 1px solid #dfe1e5;
-            padding: 1px;
-            border-bottom-left-radius: 24px;
-            border-bottom-right-radius: 24px;
-        }
-
-        #toggle a {
-            text-decoration: none;
-            color: white;
-            font-size: 21px;
-            margin: 10px 20px;
-            line-height: 2;
-        }
-
-        #searchBar {
-            width: 700px;
-            border: 0px;
-            background: none;
-            outline: none;
-            color: white;
-            font-size: 20px;
-            padding-left: 10px;
-            font-family: Helvetica;
-        }
-
-        #searchBtn {
-            width: 60px;
-            height: 46px;
-            background: none;
-            border: 0px;
-            cursor: pointer;
-            font-size: 20px;
-            color: white;
-        }
 
         #bookSection {
             width: auto;
@@ -103,11 +29,6 @@
             margin: 10px 20px;
         }
 
-        #book_url {
-            text-decoration: none;
-            color: white;
-        }
-
         #bookCover {
             width: 150px;
             height: 200px;
@@ -117,12 +38,15 @@
         #coverSize {
             width: 150px;
             height: 200px;
+            box-shadow: 10px 10px 5px grey;
         }
 
         #bookTitle {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            color: #656565;
+            font-weight: 400;
         }
 
         #authors {
@@ -138,26 +62,28 @@
         }
 
         #pageCount a {
-            text-decoration: none;
-            color: orange;
+            color: #656565;
             font-size: 28px;
             margin: 10px;
+        }
 
+        #pageCount a:hover {
+            color: black
         }
     </style>
 
     <div class="searchEngine">
         <div class="Header">
-            <h1><a href="/">BooKÏ</a></h1>
+            <a href="/">BooKÏ</a>
         </div>
 
-        <form id="searchSection">
+        <form class="searchSection">
 
-            <div id="bundle">
-                <input type="text" id="searchBar" placeholder="Title or Author">
-                <button id="searchBtn" onclick="searchGo(event)"><i class="fas fa-search"></i></button>
+            <div id="bundle" class="bundle">
+                <input type="text" id="searchBar" class="searchBar" placeholder="Title or Author">
+                <button class="searchBtn" onclick="searchGo(event)"><i class="fas fa-search"></i></button>
             </div>
-            <div id="toggle" style="display: none"></div>
+            <div id="toggle" class="toggle" style="display: none"></div>
         </form>
 
         <div class="nav">
@@ -195,7 +121,7 @@
         let totalBooks;
 
         allBooks(0)
-        
+
 
         targetPage.addEventListener("click", function (e) {
             let buttonPage = e.target.innerText
@@ -297,7 +223,7 @@
                 bookSection.appendChild(book_tag)
             }
         }
-  
+
     </script>
 
     <script>

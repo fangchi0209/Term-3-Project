@@ -14,16 +14,22 @@
 
 <body>
     <style>
+
+        body{
+            background-color: #c5b8a5;
+        }
+
         #index {
             text-align: center;
-            font-size: 50px;
-            color: orange;
+            font-size: 120px;
+            color: white;
         }
 
         #searchSection {
             display: flex;
             flex-direction: column;
             align-items: center;
+            margin-top: 60px;
         }
 
         #bundle {
@@ -31,30 +37,29 @@
             flex-direction: row;
             justify-content: center;
             position: relative;
-            width: auto;
+            width: 100%;
             max-width: 800px;
             height: 46px;
             margin: auto;
             outline: none;
-            box-shadow: none;
             border-radius: 24px;
-            border: 1px solid #dfe1e5
+            border: 1px solid #dfe1e5;
+            background-color: white;
         }
 
         #toggle {
             display: flex;
             flex-direction: column;
             background: gray;
-            width: 769px;
+            width: 100%;
+            max-width: 800px;
             min-height: 35px;
             border: 1px solid #dfe1e5;
-            padding: 1px;
             border-bottom-left-radius: 24px;
             border-bottom-right-radius: 24px;
         }
 
         #toggle a {
-            text-decoration: none;
             color: white;
             font-size: 21px;
             margin: 10px 20px;
@@ -66,21 +71,12 @@
             border: 0px;
             background: none;
             outline: none;
-            color: white;
+            color: black;
             font-size: 20px;
             padding-left: 10px;
             font-family: Helvetica;
         }
 
-        #searchBtn {
-            width: 60px;
-            height: 46px;
-            background: none;
-            border: 0px;
-            cursor: pointer;
-            font-size: 20px;
-            color: white;
-        }
     </style>
 
     <div class="nav">
@@ -92,14 +88,12 @@
                 class="signoutProcess" href="#"><i class="fas fa-user-astronaut"></i></a></div>
     </div>
 
-    <div id="index">
-        <h1>BooKÏ</h1>
-    </div>
+    <div id="index">BooKÏ</div>
 
     <form id="searchSection">
         <div id="bundle">
             <input type="text" id="searchBar" placeholder="Title or Author">
-            <button id="searchBtn" onclick="searchGo(event)"><i class="fas fa-search"></i></button>
+            <button class="searchBtn" onclick="searchGo(event)"><i class="fas fa-search"></i></button>
         </div>
         <div id="toggle" style="display: none"></div>
     </form>

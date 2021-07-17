@@ -15,6 +15,10 @@
 
 <body>
     <style>
+        body {
+            background-color: #fffaf4;
+        }
+
         .Header {
             margin-left: 0px;
             height: 100px;
@@ -30,6 +34,7 @@
             margin-top: 100px;
             left: 50%;
             transform: translateX(-50%);
+            background-color: #c5b8a5;
         }
 
         .memberLittleBox {
@@ -38,10 +43,6 @@
             justify-content: center;
             align-items: center;
             margin-top: 50px;
-        }
-
-        #reBox {
-            margin-top: 0px;
         }
 
         .memberProcess {
@@ -65,7 +66,7 @@
             margin: 1px auto;
             font-size: 20px;
             text-align: center;
-            color: orange;
+            color: #656565;
         }
 
         .memberAction {
@@ -73,16 +74,18 @@
             flex-direction: row;
             justify-content: space-between;
             align-items: center;
-        }
-
-        .memberLink {
-            font-size: 20px;
+            margin-top: 15px;
         }
 
         .memberLink a {
-            text-decoration: none;
             color: white;
+            font-size: 20px;
         }
+
+        .memberLink a:hover {
+            color: black;
+        }
+
 
         .memberBtn {
             width: 80px;
@@ -90,15 +93,25 @@
             font-size: 20px;
             border: none;
             border-radius: 10px;
-            background-color: orange;
+            background-color: white;
             font-family: Helvetica;
             cursor: pointer;
+            color: #656565;
+        }
+
+        .memberBtn:hover {
+            color: black;
         }
 
         .notice {
-            color: orange;
+            color: #965454;
             text-align: center;
             font-size: 25px;
+        }
+
+        #googleBtn {
+            width: 500px;
+            height: 500px;
         }
     </style>
     <div id="signinBox" class="memberBox">
@@ -111,7 +124,7 @@
                 <input type="text" id="signinAcc" class="enterBar" placeholder="Enter your email"><br>
                 <input type="password" id="signinPwd" class="enterBar" placeholder="Enter your password"><br>
                 <p id="orAccount">or</p><br>
-                <div class="g-signin2" data-onsuccess="onSignIn"></div>
+                <div id="my-signin2"></div>
                 <div class="memberAction">
                     <p class="memberLink"><a id="changeCreate" href="#">Create account</a></p>
                     <button id="signinBtn" class="memberBtn" onclick="signinProcess(event)">Sign in</button>
@@ -144,18 +157,20 @@
     </div>
 
 
+    <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
+    
     <script>
         async function onSignIn(googleUser) {
             var profile = googleUser.getBasicProfile();
-            // console.log('Name: ' + profile.getName());
-            // console.log('Image URL: ' + profile.getImageUrl());
+            console.log('Name: ' + profile.getName());
+            console.log('Image URL: ' + profile.getImageUrl());
 
             db = {
                 gName: profile.getName(),
                 gEmail: profile.getEmail()
             }
-            
-            await fetch ("/api/google", {
+
+            await fetch("/api/google", {
                 method: "POST",
                 headers: {
                     "content-type": "application/json"
@@ -169,6 +184,17 @@
             })
         }
 
+
+        function renderButton() {
+            gapi.signin2.render('my-signin2', {
+                'scope': 'profile email',
+                'width': 360,
+                'height': 56,
+                'longtitle': true,
+                'theme': 'white',
+                'onsuccess': onSignIn
+            });
+        }
     </script>
 
     <script>

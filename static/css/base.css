@@ -1,13 +1,97 @@
 body {
-    background-color: #161B22;
-    color: white;
+    /* background-color: #161B22;
+    color: white; */
+    background-color: #fffaf4;
+    color: #656565;
+    font-weight: lighter;
     font-family: Helvetica;
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    list-style: none;
+}
+
+.searchSection {
+    align-items: center;
+    position: absolute;
+    left: 280px;
+}
+
+.searchBar {
+    width: 700px;
+    border: 0px;
+    background: none;
+    outline: none;
+    color: black;
+    font-size: 20px;
+    padding-left: 10px;
+    font-family: Helvetica;
+}
+
+input::placeholder {
+    color: #656565;
+  }
+
+.searchBtn {
+    width: 60px;
+    height: 46px;
+    background: none;
+    border: 0px;
+    cursor: pointer;
+    font-size: 20px;
+    color: #656565;
+}
+
+.searchBtn:hover {
+    color: black
 }
 
 .searchEngine {
     display: flex;
     flex-direction: row;
     align-items: center;
+    background: #c5b8a5;
+    position: fixed;
+    z-index: 5;
+    width: 100%;
+    top: 0px;
+}
+
+.bundle {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    height: 46px;
+    margin: auto;
+    outline: none;
+    border-radius: 24px;
+    border: 1px solid #dfe1e5;
+    background-color: white;
+}
+
+
+.toggle {
+    background: gray;
+    width: 769px;
+    min-height: 35px;
+    border: 1px solid #dfe1e5;
+    padding: 1.8px;
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+    position:absolute
+}
+
+.toggle a {
+    color: white;
+    font-size: 21px;
+    margin: 10px 20px;
+    line-height: 2;
 }
 
 .nav {
@@ -32,22 +116,24 @@ body {
 }
 
 .mybookProcess {
-    text-decoration: none;
     color: white;
 }
 
 .mybookProcess:hover {
-    color: orange;
+    color: #656565;
 }
 
 .signinProcess {
-    font-size: 28px;
-    text-decoration: none;
-    color: #161B22;
+    font-size: 24px;
+    color: #656565;
     padding: 5px;
-    border: 1px solid orange;
+    border: 1px solid white;
     border-radius: 12px;
-    background-color: orange;
+    background-color: white;
+}
+
+.signinProcess:hover {
+    color: black;
 }
 
 .signoutIcon {
@@ -56,23 +142,21 @@ body {
 
 
 .signoutProcess {
-    text-decoration: none;
     color: white;
 }
 
 .signoutProcess:hover {
-    color: orange;
+    color: #656565;
 }
 
 
 .Header {
-    font-size: 30px;
-    margin-left: 30px
+    font-size: 40px;
+    margin-left: 30px;
 }
 
-h1 a {
-    text-decoration: none;
-    color: orange;
+.Header a{
+    color: white
 }
 
 .ratings {
