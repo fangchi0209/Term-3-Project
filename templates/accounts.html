@@ -24,6 +24,10 @@
             height: 100px;
         }
 
+        .Header a{
+            font-size: 80px;
+        }
+
         .memberBox {
             position: absolute;
             width: 500px;
@@ -117,7 +121,7 @@
     <div id="signinBox" class="memberBox">
         <div class="memberLittleBox">
             <div class="Header">
-                <h1><a href="/">BooKÏ</a></h1>
+                <a href="/">BooKÏ</a>
             </div>
             <form id="signinForm">
                 <p class="memberProcess">Sign in</p>
@@ -162,8 +166,6 @@
     <script>
         async function onSignIn(googleUser) {
             var profile = googleUser.getBasicProfile();
-            console.log('Name: ' + profile.getName());
-            console.log('Image URL: ' + profile.getImageUrl());
 
             db = {
                 gName: profile.getName(),

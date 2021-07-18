@@ -123,6 +123,14 @@ input::placeholder {
     color: #656565;
 }
 
+#eventPage {
+    font-size: 24px;
+    color: white;
+}
+
+#eventPage:hover{
+    color:black
+}
 .signinProcess {
     font-size: 24px;
     color: #656565;
@@ -156,7 +164,7 @@ input::placeholder {
 }
 
 .Header a{
-    color: white
+    color: white;
 }
 
 .ratings {

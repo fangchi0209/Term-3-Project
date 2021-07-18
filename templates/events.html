@@ -140,8 +140,8 @@
 
         #createpopup {
             position: fixed;
-            width: 900px;
-            height: 600px;
+            width: 700px;
+            height: 400px;
             left: 50%;
             top: 80px;
             transform: translateX(-50%);
@@ -153,14 +153,9 @@
         }
 
         #cBox {
-            position: absolute;
-            display: flex;
-            flex-direction: column;
-            top: 50px;
-            width: 850px;
-            height: 550px;
             overflow: auto;
-            padding-left: 75px;
+            margin: 20px;
+            height: 350px;
         }
 
         #eInfo {
@@ -170,29 +165,24 @@
 
         .eventinput {
             height: 70px;
-            margin-top: 20px;
-            width: 700px;
+            margin-left: 20px;
+            width: 500px;
             border-radius: 8px;
             border: 1px solid gray;
             padding-left: 15px;
             font-size: 24px;
         }
 
-        #timeBox {
-            display: flex;
-            flex-direction: column;
-            margin: 20px 0px 0px 0px;
-        }
-
-        .eventT {
+        .createInfoBox {
             display: flex;
             flex-direction: row;
-            margin: 10px 0px;
+            margin: 20px 0px 0px 0px;
+            align-items: center;
         }
 
         .eventDT {
             font-size: 24px;
-            width: 240px;
+            width: 210px;
             height: 70px;
             margin-left: 30px;
             border-radius: 8px;
@@ -205,25 +195,12 @@
             font-size: 24px;
         }
 
-        /* #description {
-            margin: 10px;
-            width: 650px;
-            border-bottom: 1px solid;
-            background-color: white;
-            border: 1px solid gray;
-            min-height: 200px;
-            color: #030305;
-            outline: none;
-            font-size: 20px
-        } */
 
         #eventDes {
-            margin: 10px;
-            width: 700px;
             border: 1px solid gray;
             border-radius: 8px;
             background-color: white;
-            min-height: 250px;
+            min-height: 90px;
             color: #030305;
             outline: none;
             font-size: 20px;
@@ -233,7 +210,7 @@
         #photoTogether {
             display: flex;
             flex-direction: row;
-            margin-bottom: 30px;
+            margin-bottom: 10px;
         }
 
         #showimg {
@@ -249,7 +226,7 @@
             width: 100px;
             height: 50px;
             bottom: 25px;
-            right: 85px;
+            right: 40px;
             color: white;
             background-color: #c5b8a5;
             border: 1px solid #c5b8a5;
@@ -267,8 +244,7 @@
         #launchSec {
             display: flex;
             flex-direction: row;
-            width: 750px;
-            margin: 20px 0px;
+            margin-top: 10px;
             justify-content: flex-end;
         }
 
@@ -304,6 +280,14 @@
             border-radius: 8px;
         }
 
+        .fa-user-cog {
+            margin-left: -30px;
+        }
+
+        .sBox {
+            width: 650px;
+            margin-top: 80px;
+        }
     </style>
     <div class="searchEngine">
         <div class="Header">
@@ -311,8 +295,9 @@
         </div>
 
         <div class="nav">
-            <div class="menu mybookIcon" id="mybookIcon"><a id="mybookProcess" class="mybookProcess" href="#"><i
-                        class="fas fa-book"></i></a></div>
+            <div class="menu"><a id="eventPage" href="/events">Events</a></div>
+            <!-- <div class="menu mybookIcon" id="mybookIcon"><a id="mybookProcess" class="mybookProcess" href="#"><i
+                        class="fas fa-book"></i></a></div> -->
             <div class="menu signinIcon" id="signinIcon" style="display: none"><a id="signinProcess"
                     class="signinProcess" href="/accounts">Sign in</a></div>
             <div class="menu signoutIcon" id="signoutIcon" style="display: none"><a id="signoutProcess"
@@ -347,21 +332,22 @@
     <div id="createpopup" style="display: none;">
         <div id="cBox" style="display: none;">
             <div id="eInfo1" class="eInfo">
-                <div class="cTitle">Event Title:</div><input type="text" id="eventName" class="eventinput"
-                    placeholder="BooKÏ Top 10 club">
-                <div id="timeBox">
-                    <div class="eventT">
-                        <div class="cTitle">Start time:</div><input type="date" id="sDate" class="eventDT"><input
-                            type="time" id="sTime" class="eventDT">
-                    </div>
-                    <div class="eventT">
+                <div class="createInfoBox">
+                    <div class="cTitle">Event Title:</div>
+                    <input type="text" id="eventName" class="eventinput" placeholder="BooKÏ Top 10 club">
+                </div>
+                <div class="createInfoBox">
+                    <div class="cTitle">Start time:</div>
+                    <input type="date" id="sDate" class="eventDT"><input type="time" id="sTime" class="eventDT">
+                    <!-- <div class="eventT">
                         <div class="cTitle">End time:</div><input type="date" id="eDate" class="eventDT"
                             style="margin-left: 35px"><input type="time" id="eTime" class="eventDT">
-                    </div>
+                    </div> -->
                 </div>
-
-                <div class="cTitle">Event Link:</div><input type="text" id="virtual" class="eventinput"
-                    placeholder="http://">
+                <div class="createInfoBox">
+                    <div class="cTitle">Event Link:</div>
+                    <input type="text" id="virtual" class="eventinput" placeholder="http://">
+                </div>
                 <button id="nextBtn">Next</button>
             </div>
 
@@ -387,8 +373,9 @@
 
         <div id="sBox" class="sBox" style="display: none">
             <i class="fas fa-user-cog"></i><br>
-            <p style=>Sign in with your BooKÏ Account to create an event</p>
-            <button id="cancelBtn" class="cancelBtn">cancel</button><button id="gosigninBtn" class="gosigninBtn" onclick="goSignin()">Sign in</button>
+            <div style=>Sign in with your BooKÏ Account to create an event</div>
+            <button id="cancelBtn" class="cancelBtn">cancel</button><button id="gosigninBtn" class="gosigninBtn"
+                onclick="goSignin()">Sign in</button>
         </div>
     </div>
 
@@ -412,16 +399,21 @@
         let eventName = document.getElementById("eventName")
         let sDate = document.getElementById("sDate")
         let sTime = document.getElementById("sTime")
-        let eDate = document.getElementById("eDate")
-        let eTime = document.getElementById("eTime")
+        let virtual = document.getElementById("virtual")
         let createpopup = document.getElementById("createpopup")
         let cBox = document.getElementById("cBox")
         let sBox = document.getElementById("sBox")
+        let cancelBtn = document.getElementById("cancelBtn")
+
+        var today = new Date().toISOString().split('T')[0];
+        sDate.setAttribute('min', today);
 
         bgBtn.addEventListener("click", function () {
             bg.style.display = "none";
             document.getElementById("createpopup").style.display = "none"
             cBox.style.display = "none"
+            eInfo1.style.display = "block"
+            eInfo2.style.display = "none"
             previousBtn.style.display = "none"
             nextBtn.style.display = "block"
             launchBtn.style.display = "none"
@@ -462,6 +454,12 @@
             launchBtn.style.display = "none"
         })
 
+        cancelBtn.addEventListener("click", function () {
+            bg.style.display = "none";
+            createpopup.style.display = "none";
+            sBox.style.display = "none"
+        })
+
         function showImg(thisimg) {
             var file = thisimg.files[0];
             if (window.FileReader) {
@@ -484,10 +482,10 @@
 
             let selectedFile = document.getElementById('eventImg').files[0];
             let s;
-            let e;
 
-            if (selectedFile == null) {
-                console.log("no pic")
+            if (selectedFile == null || sDate.value == null || sTime.value == null || eventName.value == null || virtual.value == null) {
+                alert("Please fill the blanks")
+                return
             } else {
 
                 let date1 = new Date(sDate.value)
@@ -507,8 +505,6 @@
                 } else {
                     sday = "Sat"
                 }
-
-                console.log(sday)
 
                 let smonth;
                 date1.getMonth() + 1 < 10 ? smonth = date1.getMonth() + 1 : smonth = date1.getMonth()
@@ -542,74 +538,16 @@
                 let sdate = date1.getDate()
                 let syear = date1.getFullYear()
 
-
-                let date2 = new Date(eDate.value)
-                let eday = date2.getDay()
-                if (eday === 0) {
-                    eday = "Sun"
-                } else if (eday === 1) {
-                    eday = "Mon"
-                } else if (eday === 2) {
-                    eday = "Tue"
-                } else if (eday === 3) {
-                    eday = "Wed"
-                } else if (eday === 4) {
-                    eday = "Thur"
-                } else if (eday === 5) {
-                    eday = "Fri"
-                } else {
-                    eday = "Sat"
-                }
-
-                console.log(eday)
-
-                let emonth;
-                date2.getMonth() + 1 < 10 ? emonth = date2.getMonth() + 1 : emonth = date2.getMonth()
-
-                if (emonth === 1) {
-                    emonth = "Jan"
-                } else if (emonth === 2) {
-                    emonth = "Feb"
-                } else if (emonth === 3) {
-                    emonth = "Mar"
-                } else if (emonth === 4) {
-                    emonth = "Apr"
-                } else if (emonth === 5) {
-                    emonth = "May"
-                } else if (emonth === 6) {
-                    emonth = "Jun"
-                } else if (emonth === 7) {
-                    emonth = "Jul"
-                } else if (emonth === 8) {
-                    emonth = "Aug"
-                } else if (emonth === 9) {
-                    emonth = "Sep"
-                } else if (emonth === 10) {
-                    emonth = "Oct"
-                } else if (emonth === 11) {
-                    emonth = "Nov"
-                } else {
-                    emonth = "Dec"
-                }
-
-                let edate = date2.getDate()
-                let eyear = date2.getFullYear()
-
-
                 s = [sday, sdate, smonth, syear]
-                e = [eday, edate, emonth, eyear]
             }
 
             let formData = new FormData()
             formData.append('eTitle', eventName.value)
             formData.append('sDate', s)
             formData.append('sTime', sTime.value)
-            formData.append('eDate', e)
-            formData.append('eTime', eTime.value)
             formData.append('online', virtual.value)
             formData.append('selectFile', selectedFile);
             formData.append('description', eventDes.innerHTML)
-
 
             await fetch("/api/bookievents", {
                 method: "POST",
@@ -617,31 +555,6 @@
             }).then(response => {
                 return response.json()
             }).then(re => {
-                console.log(re)
-                // let ownEvents = document.getElementById("ownEvents")
-                // let indiEvent = document.createElement("div")
-                // let img_tag = document.createElement("img")
-                // let indiTime = document.createElement("div")
-                // // let indiDes = document.createElement("div")
-
-                // indiEvent.classList.add("indiEvent")
-                // img_tag.classList.add("indiCover")
-                // indiTime.classList.add("indiTime")
-                // // indiDes.classList.add("indiDes")
-
-                // img_tag.src = re.nCover
-                // indiTime.innerHTML = re.nsDay + ", " + re.nsDate + ", " + re.nsMonth + ", " + re.nsYear + ", " + re.nsTime
-                // // indiDes.innerHTML = re.nDes
-
-                // indiEvent.appendChild(img_tag)
-                // indiEvent.appendChild(indiTime)
-                // // indiEvent.appendChild(indiDes)
-                // ownEvents.appendChild(indiEvent)
-
-                // document.getElementById("createpopup").style.display = "none"
-                // document.getElementById("cBox").style.display = "none"
-                // bg.style.display = "none";
-
                 location.reload()
             })
         }
