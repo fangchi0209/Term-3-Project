@@ -338,9 +338,6 @@ def bookievents():
                 nsDateData = request.form.get('sDate')
                 nsDate = nsDateData.split(",")
                 nsTime = request.form.get('sTime')
-                neDateData = request.form.get('eDate')
-                neDate = nsDateData.split(",")
-                neTime = request.form.get('eTime')
                 nURL = request.form.get('online')
                 eventCover = request.files['selectFile']
                 nImage = request.files['selectFile'].filename
@@ -349,7 +346,7 @@ def bookievents():
                 s3.Bucket('t3-upload-bucket').put_object(ACL= 'public-read', Key=eventCover.filename, Body=eventCover)
 
                 db.engine.execute(
-                    f"INSERT INTO events (organiser, eventName, sDay, sDate, sMonth, sYear, sTime, eDay, eDate, eMonth, eYear, eTime, location, cover, eventDes) VALUES ('{nUser}', '{nTitle}', '{nsDate[0]}', '{nsDate[1]}', '{nsDate[2]}', '{nsDate[3]}', '{nsTime}', '{neDate[0]}', '{neDate[1]}', '{neDate[2]}', '{neDate[3]}', '{neTime}', '{nURL}', '{nImage}', '{nDes}')")
+                    f"INSERT INTO events (organiser, eventName, sDay, sDate, sMonth, sYear, sTime, location, cover, eventDes) VALUES ('{nUser}', '{nTitle}', '{nsDate[0]}', '{nsDate[1]}', '{nsDate[2]}', '{nsDate[3]}', '{nsTime}', '{nURL}', '{nImage}', '{nDes}')")
 
                 return jsonify({
                     "nTitle": nTitle,
@@ -359,11 +356,6 @@ def bookievents():
                     "nsMonth": nsDate[2],
                     "nsYear": nsDate[3],
                     "nsTime": nsTime,
-                    "neDay": neDate[0],
-                    "neDate": neDate[1],
-                    "neMonth": neDate[2],
-                    "neYear": neDate[3],
-                    "neTime": neTime,
                     "nURL": nURL,
                     "nCover": 'http://dqgc5yp61yvd.cloudfront.net/' + nImage,
                     "nDes": nDes
@@ -389,14 +381,9 @@ def bookievents():
                     "asMonth": allEvents[5],
                     "asYear": allEvents[6],
                     "asTime": allEvents[7],
-                    "aeDay": allEvents[8],
-                    "aeDate": allEvents[9],
-                    "aeMonth": allEvents[10],
-                    "aeYear": allEvents[11],
-                    "aeTime": allEvents[12],
-                    "aURL": allEvents[13],
-                    "aCover": 'http://dqgc5yp61yvd.cloudfront.net/' + allEvents[14],
-                    "aDes": allEvents[15],
+                    "aURL": allEvents[8],
+                    "aCover": 'http://dqgc5yp61yvd.cloudfront.net/' + allEvents[9],
+                    "aDes": allEvents[10],
                 }
 
                 eventsData = eventsDict.copy()
@@ -429,14 +416,9 @@ def theevent():
                 "thesMonth": theEvent[5],
                 "thesYear": theEvent[6],
                 "thesTime": theEvent[7],
-                "theeDay": theEvent[8],
-                "theeDate": theEvent[9],
-                "theeMonth": theEvent[10],
-                "theeYear": theEvent[11],
-                "theeTime": theEvent[12],
-                "theURL": theEvent[13],
-                "theCover": 'http://dqgc5yp61yvd.cloudfront.net/' + theEvent[14],
-                "theDes": theEvent[15]
+                "theURL": theEvent[8],
+                "theCover": 'http://dqgc5yp61yvd.cloudfront.net/' + theEvent[9],
+                "theDes": theEvent[10]
             })
         except Exception as e:
             print(e)
