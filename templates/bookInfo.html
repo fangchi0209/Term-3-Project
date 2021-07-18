@@ -377,6 +377,66 @@
         .recUrl img {
             height: 190px;
         }
+
+        #events {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        #event3 {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .eventSB {
+            border: 1px solid gray;
+            border-radius: 8px;
+            height: 100px;
+            width: 400px;
+            background-color: white;
+            margin-right: 30px;
+        }
+
+        .coverS {
+            background-size: cover;
+            width: 150px;
+            height: 100px;
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+        }
+
+        .linkS {
+            display: flex;
+            flex-direction: row;
+            color: #656565;
+        }
+
+        .linkS:hover {
+            box-shadow: 0px 1px 6px;
+        }
+
+        .infoS {
+            padding: 10px;
+        }
+
+        .titleS {
+            line-height: 3;
+        }
+
+        #allEventsPage {
+            position: absolute;
+            bottom: -30px;
+            right: 0px;
+        }
+
+        #allEventsPage a{
+            color: #656565;
+        }
+
+        #allEventsPage a:hover{
+            color: black;
+        }
     </style>
 
 
@@ -389,8 +449,7 @@
 
             <div id="bundle" class="bundle">
                 <input type="text" id="searchBar" class="searchBar" placeholder="Title or Author">
-                <button class="searchBtn" onclick="searchGo(event)"><i
-                        class="fas fa-search"></i></button>
+                <button class="searchBtn" onclick="searchGo(event)"><i class="fas fa-search"></i></button>
             </div>
             <div id="toggle" class="toggle" style="display: none"></div>
         </form>
@@ -459,9 +518,13 @@
             <div id="events">
                 <div class="secBar">
                     <div class="secBarS"></div>
-                    <div class="secBarTitle">Events</div>
+                    <div class="secBarTitle">Events you might like...</div>
                     <div class="secBarL"></div>
                 </div>
+
+                <div id="allEventsPage"><a href="/events">See All Events</a></div>
+
+                <div id="event3"></div>
             </div>
 
         </div>
@@ -512,7 +575,8 @@
         <div id="sBox" class="sBox" style="display: none">
             <i class="fas fa-user-cog"></i><br>
             <p style=>Sign in with your BooKÏ Account to write a review</p>
-            <button id="cancelBtn" class="cancelBtn">cancel</button><button id="gosigninBtn" class="gosigninBtn" onclick="goSignin()">Sign in</button>
+            <button id="cancelBtn" class="cancelBtn">cancel</button><button id="gosigninBtn" class="gosigninBtn"
+                onclick="goSignin()">Sign in</button>
         </div>
     </div>
 
@@ -687,9 +751,11 @@
     <script>
         //GET AUTHOR
         //RECOMMEND BOOKS
+        //GET EVENTS
 
         getAuthor(srcId)
         recCounts(srcId)
+        getEvents()
 
         let recBox = document.getElementById("recBox")
         let arrowL = document.getElementsByClassName("arrowL")[0]
@@ -732,7 +798,7 @@
         let LR = 0
         let arrL = false
         let arrR = true
-        console.log(recBox.style.left)
+
         arrowR.addEventListener("click", function () {
             if (LR > -959 & arrL == false) {
                 LR -= 480
@@ -817,7 +883,6 @@
                 })
         }
 
-
         async function recCounts(recId) {
             console.log(recId)
 
@@ -840,7 +905,42 @@
                 })
         }
 
+        async function getEvents() {
+            await fetch("/api/bookievents", { method: "GET" })
+                .then(response => {
+                    return response.json()
+                }).then(data => {
+                    eventsAll = data.allEvents
+                    for (let i = 0; i < 3; i++) {
+                        let event3 = document.getElementById("event3")
+                        let eventSB = document.createElement("div")
+                        let img_tag = document.createElement("div")
+                        let infoS = document.createElement("div")
+                        let titleS = document.createElement("div")
+                        let timeS = document.createElement("div")
+                        let a_tag = document.createElement("a")
 
+                        eventSB.classList.add("eventSB")
+                        img_tag.classList.add("coverS")
+                        infoS.classList.add("infoS")
+                        titleS.classList.add("titleS")
+                        timeS.classList.add("timeS")
+                        a_tag.classList.add("linkS")
+
+                        titleS.innerHTML = eventsAll[i].aTitle.toUpperCase()
+                        img_tag.style.backgroundImage = `url(${eventsAll[i].aCover})`
+                        timeS.innerHTML = eventsAll[i].asDay + ", " + eventsAll[i].asDate + ", " + eventsAll[i].asMonth + ", " + eventsAll[i].asYear + ", " + eventsAll[i].asTime
+                        a_tag.href = `/e/${eventsAll[i].aTitle}`
+
+                        infoS.appendChild(titleS)
+                        infoS.appendChild(timeS)
+                        a_tag.appendChild(img_tag)
+                        a_tag.appendChild(infoS)
+                        eventSB.appendChild(a_tag)
+                        event3.appendChild(eventSB)
+                    }
+                })
+        }
 
     </script>
 
@@ -953,7 +1053,7 @@
             rBox.style.display = "none"
         })
 
-    
+
         stars.addEventListener("click", function (e) {
             let targetS = e.target.innerHTML
             if (targetS.indexOf("class") == -1) {

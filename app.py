@@ -336,10 +336,10 @@ def bookievents():
                 nTitle = request.form.get('eTitle')
                 nUser = session['memberName']
                 nsDateData = request.form.get('sDate')
-                nsDate = bsDateData.split(",")
+                nsDate = nsDateData.split(",")
                 nsTime = request.form.get('sTime')
                 neDateData = request.form.get('eDate')
-                neDate = beDateData.split(",")
+                neDate = nsDateData.split(",")
                 neTime = request.form.get('eTime')
                 nURL = request.form.get('online')
                 eventCover = request.files['selectFile']
