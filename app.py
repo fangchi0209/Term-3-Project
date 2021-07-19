@@ -453,14 +453,14 @@ def theevent():
                 print(os.getenv('gmail'), os.getenv('gmailP'))
 
                 msg = email.message.EmailMessage()
-                msg["From"]= os.getenv('gmail')
+                msg["From"]= "x25836901@gmail.com"
                 msg["To"]= f"{attendeeEmail}"
                 msg["Subject"]=f"Hello, {attendee}, Online Event from BooKÏ"
 
                 msg.add_alternative(f"<h3>Online Event from BooKÏ</h3> <h3>Event:</h3> {eventReplace},<br> <h3>Date:</h3> {eventEmail[4]}, {eventEmail[5]}<br> <h3>Link:<h3> {eventEmail[8]}", subtype="html")
 
                 server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
-                server.login(os.getenv('gmail'), os.getenv('gmailP'))
+                server.login("x25836901@gmail.com", "mydog82290709!")
                 server.send_message(msg)
                 server.close()
 
