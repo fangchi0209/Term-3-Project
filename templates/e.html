@@ -466,7 +466,58 @@
                 })
         }
 
+    </script>
 
+    <script>
+        //MEMBER SYSTEM
+
+        checkProcess()
+
+        async function checkProcess() {
+            await fetch("/api/user", { method: "GET" })
+                .then(response => {
+                    return response.json()
+                }).then(res => {
+                    if (res.data == true) {
+                        signinIcon.style.display = "none"
+                        signoutIcon.style.display = "block"
+                    } else {
+                        signinIcon.style.display = "block"
+                        signoutIcon.style.display = "none"
+                    }
+                })
+        }
+
+        document.getElementById("signoutProcess").addEventListener("click", function () {
+            logoutProcess()
+            signOut()
+        })
+
+
+        function onLoad() {
+            gapi.load('auth2', function () {
+                gapi.auth2.init();
+            });
+        }
+
+        async function logoutProcess() {
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
+                console.log('User signed out.');
+            });
+            await fetch("/api/user", {
+                method: "DELETE",
+                headers: {
+                    "content-type": "application/json"
+                },
+            }).then(response => {
+                return response.json()
+            }).then(result => {
+                if (result.ok == true) {
+                    location.reload()
+                }
+            })
+        }
     </script>
 </body>
 

@@ -450,13 +450,14 @@ def theevent():
                 eventData = db.engine.execute(f'''SELECT * FROM events WHERE eventName = "{eventReplace}"''')
                 eventEmail = eventData.fetchone()
                 print(eventEmail)
+                print(os.getenv('gmail'), os.getenv)
 
                 msg = email.message.EmailMessage()
                 msg["From"]= os.getenv('gmail')
                 msg["To"]= f"{attendeeEmail}"
                 msg["Subject"]=f"Hello, {attendee}, Online Event from BooKÏ"
 
-                msg.add_alternative(f"<h3>Online Event from BooKÏ</h1> <3>Event:</h3> {eventReplace},<br> <h3>Date:</h3> {eventEmail[4]}, {eventEmail[5]}<br> <h3>Link:<h3> {eventEmail[8]}", subtype="html")
+                msg.add_alternative(f"<h3>Online Event from BooKÏ</h3> <h3>Event:</h3> {eventReplace},<br> <h3>Date:</h3> {eventEmail[4]}, {eventEmail[5]}<br> <h3>Link:<h3> {eventEmail[8]}", subtype="html")
 
                 server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
                 server.login(os.getenv('gmail'), os.getenv('gmailP'))
