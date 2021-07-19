@@ -19,21 +19,24 @@
             flex-direction: column;
             margin: 150px auto;
             width: 1200px;
+            background: white;
         }
 
         #pageCover {
             display: flex;
             flex-direction: row;
             height: 400px;
-            border-bottom: 1px solid gray;
+            border: 0.5px solid #656565;
             border-top-left-radius: 8px;
-            border-top-right-radius: 8px;;
+            border-top-right-radius: 8px;
+            ;
         }
 
         #theEventCover {
             background-repeat: no-repeat;
             background-size: cover;
-            flex-grow:2;
+            flex-grow: 2;
+            border-top-left-radius: 8px;
         }
 
         #attendEvents {
@@ -41,10 +44,16 @@
             padding: 20px
         }
 
+        #uppderDate {
+            display: flex;
+            flex-direction: column;
+        }
+
         #theEventTitle {
             color: #656565;
             font-size: 28px;
-            font-weight: 300;
+            font-weight: 400;
+            margin: 40px 0px;
         }
 
         #organiser {
@@ -55,30 +64,69 @@
         #shareSec {
             display: flex;
             flex-direction: row;
+            border: 0.5px solid #656565;
+            border-top: none;
         }
 
         #share {
-            flex-grow:2
+            flex-grow: 2
         }
 
         #attendBtn {
-            width: 300px;
+            width: 320px;
             height: 50px;
+            margin: 10px 10px;
+            background-color: #0D8547;
+            color: white;
+            font-size: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+        }
+
+        #attendBtn:hover {
+            background-color: #179C55
         }
 
         #eventBody {
             display: flex;
             flex-direction: row;
-            border: 1px solid gray;
+            border: 0.5px solid #656565;
+            border-top: none;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
 
+        }
+
+        .bodyTitle {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 20px;
         }
 
         #eventDes {
-            border: 1px solid red;
+            padding: 20px;
+            flex-grow: 2;
+        }
+
+        #bodyDes {
+            margin-top: 10px;
+        }
+
+        #rightSec {
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+            padding: 20px
         }
 
         #eventTime {
-            border: 1px solid yellow;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #eventLoca {
+            margin-top: 20px;
         }
 
         #bg {
@@ -95,7 +143,7 @@
 
         #registerpopup {
             position: fixed;
-            width: 500px;
+            width: 400px;
             height: 300px;
             left: 50%;
             top: 80px;
@@ -108,12 +156,13 @@
         }
 
         #reBox {
-            display: flex;
-            flex-direction: column;
-            width: 450px;
-            height: 250px;
-            margin: 35px auto;
-
+            position: absolute;
+            width: 350px;
+            transform: translateY(-50%);
+            top: 50%;
+            left: 50%;
+            text-align: center;
+            transform: translateX(-50%);
         }
 
         .eventinput {
@@ -128,6 +177,50 @@
 
         .cTitle {
             color: #030305;
+        }
+
+        .sBox {
+            width: 350px;
+            height: 280px;
+            font-size: 28px;
+            margin-top: 80px;
+        }
+
+        .gosigninBtnforE {
+            position: absolute;
+            width: 100px;
+            height: 50px;
+            right: 85px;
+            margin-top: 20px;
+            color: white;
+            background-color: #c5b8a5;
+            border: 1px solid #c5b8a5;
+            border-radius: 8px;
+            font-family: Helvetica;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .gosigninBtnforE:hover {
+            color: black;
+            background-color: white;
+        }
+
+        .cancelBtnforE {
+            position: absolute;
+            width: 100px;
+            height: 48px;
+            right: 200px;
+            font-size: 20px;
+            margin-top: 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background-color: white;
+        }
+
+        .cancelBtn:hover {
+            border: 1px solid gray;
         }
     </style>
     <div class="searchEngine">
@@ -150,22 +243,35 @@
 
         <div id="pageCover">
             <div id="attendEvents">
-                
+
             </div>
         </div>
 
         <div id="shareSec">
-            <div id="share">345</div>
+            <div id="share"></div>
             <button id="attendBtn">Register</button>
         </div>
 
         <div id="eventBody">
             <div id="eventDes">
+                <div class="bodyTitle">About this event</div>
 
             </div>
-            <div id="eventTime">
 
+            <div id="rightSec">
+                <div id="eventTime">
+                    <div class="bodyTitle">Date and Time</div>
+                    <div id=downTime></div>
+                </div>
+
+                <div id="eventLoca">
+                    <div class="bodyTitle">Location</div>
+                    <div id="loca"></div>
+                </div>
             </div>
+
+
+
         </div>
     </div>
 
@@ -175,120 +281,192 @@
 
     <div id="registerpopup" style="display: none;">
         <div id="reBox" style="display: none;">
-            <div class="cTitle">Contact Name:</div><input type="text" id="contactName" class="eventinput">
-            <div class="cTitle">Email:</div><input type="text" id="contactEmail" class="eventinput">
-            <button id="confirmBtn">Register</button>
+            <div class="cTitle">Processing, please wait...</div>
         </div>
 
+        <div id="sBox" class="sBox" style="display: none">
+            <i class="fas fa-user-cog"></i><br>
+            <div>Sign in with your BooKÏ Account to create an event</div>
+            <button id="cancelBtn" class="cancelBtn">cancel</button><button id="gosigninBtn" class="gosigninBtn"
+                onclick="goSignin()">Sign in</button>
+        </div>
 
-        <script src="https://kit.fontawesome.com/cbebce4b6d.js" crossorigin="anonymous"></script>
-        <script src="{{url_for('static',filename='js/base.js')}}"></script>
-        <script>
-
-            let src = window.location.href;
-            let eventId = src.split("/")[4];
-            console.log(eventId)
-            theEvent(eventId)
-
-            let attendBtn = document.getElementById("attendBtn")
-            let bg = document.getElementById("bg")
-            let bgBtn = document.getElementById("bgBtn")
-            let registerpopup = document.getElementById("registerpopup")
-            let reBox = document.getElementById("reBox")
-            let confirmBtn = document.getElementById("confirmBtn")
+        <div id="goEventBox" class="sBox" style="display: none">
+            <i class="far fa-calendar-check"></i>
+            <div>Already registered!</div>
+            <button id="cancelBtnforE" class="cancelBtnforE">cancel</button><button id="gomyeventBtn"
+                class="gosigninBtnforE" onclick="goMyevent()">My Event</button>
+        </div>
+    </div>
 
 
-            attendBtn.addEventListener("click", function () {
-                registerpopup.style.display = "block"
-                reBox.style.display = "block"
+
+
+    <script src="https://kit.fontawesome.com/cbebce4b6d.js" crossorigin="anonymous"></script>
+    <script src="{{url_for('static',filename='js/base.js')}}"></script>
+    <script>
+
+        let src = window.location.href;
+        let eventId = src.split("/")[4];
+        theEvent(eventId)
+
+        let attendBtn = document.getElementById("attendBtn")
+        let bg = document.getElementById("bg")
+        let bgBtn = document.getElementById("bgBtn")
+        let registerpopup = document.getElementById("registerpopup")
+        let reBox = document.getElementById("reBox")
+        let sBox = document.getElementById("sBox")
+        let cancelBtn = document.getElementById("cancelBtn")
+        let goEventBox = document.getElementById("goEventBox")
+
+        bgBtn.addEventListener("click", function () {
+            bg.style.display = "none"
+            registerpopup.style.display = "none"
+            sBox.style.display = "none"
+            goEventBox.style.display = "none"
+        })
+
+        cancelBtn.addEventListener("click", function () {
+            bg.style.display = "none";
+            registerpopup.style.display = "none";
+            sBox.style.display = "none"
+        })
+
+        cancelBtnforE.addEventListener("click", function () {
+            bg.style.display = "none";
+            registerpopup.style.display = "none";
+            goEventBox.style.display = "none"
+        })
+
+
+        attendBtn.addEventListener("click", function () {
+            if (document.getElementById("signinIcon").style.display == "block") {
                 bg.style.display = "block"
-                
-            })
-
-            confirmBtn.addEventListener("click", function () {
-                registered()
-            })
-
-            bgBtn.addEventListener("click", function () {
-                bg.style.display = "none";
-                registerpopup.style.display = "none"
+                registerpopup.style.display = "block"
+                registerpopup.style.backgroundColor = "#D3D3D3"
+                sBox.style.display = "block"
                 reBox.style.display = "none"
-                return false;
-            })
+                goEventBox.style.display = "none"
 
-            async function theEvent(eId) {
-                await fetch(`/api/theevent?e=${eId}`, { method: "GET" })
-                    .then(response => {
-                        return response.json()
-                    }).then(re => {
-                        let wrap = document.getElementById("wrap")
-                        let pageCover = document.getElementById("pageCover")
-                        let attendEvents = document.getElementById("attendEvents")
-                        let eventBody = document.getElementById("eventBody")
-                        let eventDes = document.getElementById("eventDes")
-                        let eventTime = document.getElementById("eventTime")
-
-                        let img_tag = document.createElement("div")
-                        let title_tag = document.createElement("div")
-                        let organiser_tag = document.createElement("div")
-                        let eventDes_tag = document.createElement("div")
-                        let date_tag = document.createElement("div")
-                        let time_tag = document.createElement("div")
-                        let loca_tag = document.createElement("div")
-
-                        img_tag.setAttribute("id", "theEventCover")
-                        title_tag.setAttribute("id", "theEventTitle")
-                        organiser_tag.setAttribute("id", "organiser")
-
-                        img_tag.style.backgroundImage = `url(${re.theCover})`
-                        title_tag.innerHTML = re.theTitle
-                        organiser_tag.innerHTML = re.theUser
-
-                        eventDes_tag.innerHTML = re.theDes
-
-                        date_tag.innerHTML = re.thesDay + ", " + re.thesDate + " " + re.thesMonth + " " + re.thesYear
-                        time_tag.innerHTML = re.thesTime
-                        loca_tag.innerHTML = "Location: Online event"
-
-                        attendEvents.appendChild(title_tag)
-                        attendEvents.appendChild(organiser_tag)
-                        pageCover.appendChild(img_tag)
-                        pageCover.appendChild(attendEvents)
-
-                        eventDes.appendChild(eventDes_tag)
-                        eventTime.appendChild(date_tag)
-                        eventTime.appendChild(time_tag)
-                        eventTime.appendChild(loca_tag)
-                        eventBody.appendChild(eventDes)
-                        eventBody.appendChild(eventTime)
-
-                    })
+            } else {
+                registered()
             }
+        })
 
-            async function registered() {
-                let attendee = document.getElementById("contactName").value
-                let attendeeEmail = document.getElementById("contactEmail").value
+        function goSignin() {
+            window.location.replace("/accounts")
+        }
 
-                db = {
-                    registerName: attendee,
-                    registerEmail: attendeeEmail
-                }
-                await fetch("/api/theevent", {
-                    method: "POST",
-                    headers: {
-                        "content-type": "application/json"
-                    },
-                    body: JSON.stringify(db)
-                })
+        function goMyevent(e) {
+            e.preventDefault()
+        }
+
+        // bgBtn.addEventListener("click", function () {
+        //     bg.style.display = "none";
+        //     registerpopup.style.display = "none"
+        //     reBox.style.display = "none"
+        //     return false;
+        // })
+
+        async function theEvent(eId) {
+            await fetch(`/api/theevent?e=${eId}`, { method: "GET" })
                 .then(response => {
                     return response.json()
-                }).then (data => {
-                    console.log(data)
+                }).then(re => {
+                    let wrap = document.getElementById("wrap")
+                    let pageCover = document.getElementById("pageCover")
+                    let attendEvents = document.getElementById("attendEvents")
+                    let eventBody = document.getElementById("eventBody")
+                    let eventDes = document.getElementById("eventDes")
+                    let eventTime = document.getElementById("eventTime")
+                    let downTime = document.getElementById("downTime")
+                    let loca = document.getElementById("loca")
+
+
+                    let img_tag = document.createElement("div")
+                    let title_tag = document.createElement("div")
+                    let organiser_tag = document.createElement("div")
+                    let eventDes_tag = document.createElement("div")
+                    let date_tag = document.createElement("div")
+                    let upDate_tag = document.createElement("div")
+                    let uDate = document.createElement("div")
+                    let uMonth = document.createElement("div")
+                    let time_tag = document.createElement("div")
+                    let loca_tag = document.createElement("div")
+
+
+                    img_tag.setAttribute("id", "theEventCover")
+                    upDate_tag.setAttribute("id", "upperDate")
+                    title_tag.setAttribute("id", "theEventTitle")
+                    organiser_tag.setAttribute("id", "organiser")
+                    eventDes_tag.setAttribute("id", "bodyDes")
+
+
+                    img_tag.style.backgroundImage = `url(${re.theCover})`
+                    uDate.innerHTML = re.thesDate
+                    uMonth.innerHTML = re.thesMonth
+                    title_tag.innerHTML = re.theTitle
+                    organiser_tag.innerHTML = "by " + re.theUser
+
+
+                    eventDes_tag.innerHTML = re.theDes
+                    date_tag.innerHTML = re.thesDay + ", " + re.thesDate + " " + re.thesMonth + " " + re.thesYear
+                    time_tag.innerHTML = re.thesTime
+                    loca_tag.innerHTML = "Online event"
+
+                    upDate_tag.appendChild(uDate)
+                    upDate_tag.appendChild(uMonth)
+                    attendEvents.appendChild(upDate_tag)
+                    attendEvents.appendChild(title_tag)
+                    attendEvents.appendChild(organiser_tag)
+                    pageCover.appendChild(img_tag)
+                    pageCover.appendChild(attendEvents)
+
+                    eventDes.appendChild(eventDes_tag)
+                    downTime.appendChild(date_tag)
+                    downTime.appendChild(time_tag)
+                    eventLoca.appendChild(loca_tag)
                 })
-            }
+        }
+
+        async function registered() {
+
+            registerpopup.style.display = "block"
+            registerpopup.style.backgroundColor = "white"
+            reBox.style.display = "block"
+            bg.style.display = "block"
+
+            await fetch("/api/theevent", {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json"
+                },
+                body: JSON.stringify({
+                    reEventId: eventId,
+                })
+            })
+                .then(response => {
+                    return response.json()
+                }).then(data => {
+                    if (data.ok == true) {
+                        registerpopup.style.display = "none"
+                        reBox.style.display = "none"
+                        bg.style.display = "none"
+                        alert("Successfully registered! Please go check your email for event link.")
+                    } else {
+                        registerpopup.style.display = "block"
+                        registerpopup.style.backgroundColor = "white"
+                        reBox.style.display = "none"
+                        sBox.style.display = "none"
+                        goEventBox.style.display = "block"
+                        bg.style.display = "block"
+                    }
+
+                })
+        }
 
 
-        </script>
+    </script>
 </body>
 
 </html>

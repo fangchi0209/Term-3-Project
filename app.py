@@ -64,7 +64,7 @@ def searchEngine():
     try:
         data = request.get_json()
         words = data["key"]
-        sEngine = f"SELECT DISTINCT title FROM books WHERE splitW = '{words}' LIMIT 8;"
+        sEngine = f'''SELECT DISTINCT title FROM books WHERE splitW = "{words}" LIMIT 8'''
         engine_data = db.engine.execute(sEngine)
 
         books = []
@@ -158,13 +158,13 @@ def authors():
 @app.route("/api/recommend")
 def recommend():
     bookIdforRec = request.args.get("rec")
-    count_data = db.engine.execute(f"SELECT * from counts WHERE bookId = '{bookIdforRec}'")
+    count_data = db.engine.execute(f'''SELECT * from counts WHERE bookId = "{bookIdforRec}"''')
     count_Result = count_data.fetchone()
 
     try:
         if count_Result != None:
             countAdd = count_Result[2]+ 1
-            db.engine.execute(f"UPDATE counts SET visitSite = '{countAdd}' WHERE (bookId = '{bookIdforRec}')")
+            db.engine.execute(f'''UPDATE counts SET visitSite = "{countAdd}" WHERE (bookId = "{bookIdforRec}")''')
 
             ctsRank = db.engine.execute("SELECT * FROM counts ORDER BY visitSite DESC LIMIT 17")
 
@@ -191,7 +191,7 @@ def recommend():
             })
 
         else:
-            db.engine.execute(f"INSERT INTO counts (bookId, visitSite) VALUES ('{bookIdforRec}', '1')")
+            db.engine.execute(f'''INSERT INTO counts (bookId, visitSite) VALUES ("{bookIdforRec}", "1")''')
 
             ctsRank = db.engine.execute("SELECT * FROM counts ORDER BY visitSite DESC LIMIT 13")
 
@@ -236,7 +236,7 @@ def reviews():
                     cTime = request.form.get('date')
                     cStar = request.form.get('stars')
                     cContent = request.form.get('content')
-                    pReview = f"INSERT INTO reviews (book, user, time, rates, content) VALUES ('{cTitle}', '{cUser}', '{cTime}', '{cStar}', '{cContent}')"
+                    pReview = f'''INSERT INTO reviews (book, user, time, rates, content) VALUES ("{cTitle}", "{cUser}", "{cTime}", "{cStar}", "{cContent}")'''
                     db.engine.execute(pReview)
 
                     return jsonify({
@@ -257,7 +257,7 @@ def reviews():
 
                     s3.Bucket('t3-upload-bucket').put_object(ACL= 'public-read', Key=uploadFile.filename, Body=uploadFile)
 
-                    pReviewI = f"INSERT INTO reviews (book, user, time, rates, content, image) VALUES ('{cTitle}', '{cUser}', '{cTime}', '{cStar}', '{cContent}', '{cImage}')"
+                    pReviewI = f'''INSERT INTO reviews (book, user, time, rates, content, image) VALUES ("{cTitle}", "{cUser}", "{cTime}", "{cStar}", "{cContent}", "{cImage}")'''
                     db.engine.execute(pReviewI)
 
                     return jsonify({
@@ -282,7 +282,7 @@ def reviews():
     elif request.method == "GET":
         try:
             bookId = request.args.get("r")
-            gReview = f"SELECT * FROM reviews WHERE book = '{bookId}'"
+            gReview = f'''SELECT * FROM reviews WHERE book = "{bookId}"'''
             gReview_data = db.engine.execute(gReview)
 
             reviewArr = []
@@ -346,7 +346,7 @@ def bookievents():
                 s3.Bucket('t3-upload-bucket').put_object(ACL= 'public-read', Key=eventCover.filename, Body=eventCover)
 
                 db.engine.execute(
-                    f"INSERT INTO events (organiser, eventName, sDay, sDate, sMonth, sYear, sTime, location, cover, eventDes) VALUES ('{nUser}', '{nTitle}', '{nsDate[0]}', '{nsDate[1]}', '{nsDate[2]}', '{nsDate[3]}', '{nsTime}', '{nURL}', '{nImage}', '{nDes}')")
+                    f'''INSERT INTO events (organiser, eventName, sDay, sDate, sMonth, sYear, sTime, location, cover, eventDes) VALUES ("{nUser}", "{nTitle}", "{nsDate[0]}", "{nsDate[1]}", "{nsDate[2]}", "{nsDate[3]}", "{nsTime}", "{nURL}", "{nImage}", "{nDes}")''')
 
                 return jsonify({
                     "nTitle": nTitle,
@@ -373,6 +373,9 @@ def bookievents():
 
             eventsArr = []
             for allEvents in allEventsData:
+                totalData = db.engine.execute(f'''SELECT COUNT(memberEmail) FROM activity WHERE eventId = "{allEvents[2]}"''')
+                totalP = totalData.fetchone()
+                
                 eventsDict = {
                     "aTitle": allEvents[2],
                     "aUser": allEvents[1],
@@ -384,6 +387,7 @@ def bookievents():
                     "aURL": allEvents[8],
                     "aCover": 'http://dqgc5yp61yvd.cloudfront.net/' + allEvents[9],
                     "aDes": allEvents[10],
+                    "aPeople": totalP[0]
                 }
 
                 eventsData = eventsDict.copy()
@@ -405,7 +409,7 @@ def theevent():
     if request.method == "GET":
         try:
             eventId = request.args.get("e")
-            theEventData = db.engine.execute(f"SELECT * FROM events WHERE eventName = '{eventId}'")
+            theEventData = db.engine.execute(f'''SELECT * FROM events WHERE eventName = "{eventId}"''')
             theEvent = theEventData.fetchone()
 
             return jsonify({
@@ -427,25 +431,45 @@ def theevent():
                 "message": "Invalid Server"
             })
     if request.method == "POST":
+
+        attendeeData = request.get_json()
+        attendEvent = attendeeData["reEventId"]
+        attendee = session["memberName"]
+        attendeeEmail = session["memberEmail"]
+
+        eventReplace = attendEvent.replace("%20", " ")
+
+        checkEmail = db.engine.execute(f'''SELECT eventName, memberEmail FROM events JOIN  activity ON events.eventName = activity.eventId WHERE memberEmail = "{attendeeEmail}" and eventName = "{eventReplace}"''')
+        checked = checkEmail.fetchone()
+        print(checked)
         try:
-            attendeeData = request.get_json()
-            attendeeEmail = attendeeData["registerEmail"]
+            if checked == None:
 
-            msg = email.message.EmailMessage()
-            msg["From"]= os.getenv('gmail')
-            msg["To"]= f"{attendeeEmail}"
-            msg["Subject"]="你好, 彭彭"
+                db.engine.execute(f'''INSERT INTO activity (eventId, memberEmail) VALUES ("{eventReplace}", "{attendeeEmail}")''')
 
-            msg.add_alternative("<h3>Online Event from BooKÏ</h3>滿五百送一百喔", subtype="html")
+                eventData = db.engine.execute(f'''SELECT * FROM events WHERE eventName = "{eventReplace}"''')
+                eventEmail = eventData.fetchone()
 
-            server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
-            server.login(os.getenv('gmail'), os.getenv('gmailP'))
-            server.send_message(msg)
-            server.close()
+                msg = email.message.EmailMessage()
+                msg["From"]= os.getenv('gmail')
+                msg["To"]= f"{attendeeEmail}"
+                msg["Subject"]=f"Hello, {attendee}, Online Event from BooKÏ"
 
-            return jsonify({
-                "ok": "ok"
-            })
+                msg.add_alternative(f"<h3>Online Event from BooKÏ</h3> Event: {eventReplace}, Date: {eventEmail[4]}, {eventEmail[5]}<br> Link: {eventEmail[8]}", subtype="html")
+
+                server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
+                server.login(os.getenv('gmail'), os.getenv('gmailP'))
+                server.send_message(msg)
+                server.close()
+
+                return jsonify({
+                    "ok": True
+                })
+            else:
+                return jsonify({
+                    "error": True,
+                    "message": "Already registered"
+                })
 
         except Exception as e:
             print(e)
@@ -464,7 +488,7 @@ def google():
     session["memberName"] = gn
     session["memberEmail"] = ge
 
-    gmail = db.engine.execute(f"SELECT * FROM member WHERE email = '{ge}'")
+    gmail = db.engine.execute(f'''SELECT * FROM member WHERE email = "{ge}"''')
     result = gmail.fetchone()
 
     try:
@@ -474,7 +498,7 @@ def google():
                 "gmail": ge
             })
         else:
-            demo = db.engine.execute(f"INSERT INTO member (name, email) VALUES ('{gn}', '{ge}')")
+            demo = db.engine.execute(f'''INSERT INTO member (name, email) VALUES ("{gn}", "{ge}")''')
             return jsonify({
                 "gname": gn,
                 "gmail": ge
@@ -495,7 +519,7 @@ def loginPage():
             sqlEmail = data.get('email')
             sqlPassword = data['password']
 
-            login = f"SELECT * FROM member WHERE email = '{sqlEmail}'"
+            login = f'''SELECT * FROM member WHERE email = "{sqlEmail}"'''
             login_data = db.engine.execute(login)
             loginResult = login_data.fetchone()
 
@@ -536,7 +560,7 @@ def loginPage():
             sqlEmail = data['email']
             sqlPassword = data['password']
 
-            register = f"SELECT * FROM member WHERE email = '{sqlEmail}'"
+            register = f'''SELECT * FROM member WHERE email = "{sqlEmail}"'''
             register_data = db.engine.execute(register)
             registerResult = register_data.fetchone()
 
@@ -549,7 +573,7 @@ def loginPage():
                             "message": "Please fill in the blanks"
                         }), 400
                     else:
-                        signin = f"INSERT INTO member (name, email, password) VALUES ({sqlName}, {sqlEmail}, {sqlPassword})"
+                        signin = f'''INSERT INTO member (name, email, password) VALUES ("{sqlName}", "{sqlEmail}", "{sqlPassword}")'''
                         signin_data = db.engine.execute(signin)
 
                         return jsonify({

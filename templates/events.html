@@ -91,6 +91,7 @@
 
 
         .indiEvent {
+            position: relative;
             display: flex;
             flex-direction: column;
             width: 370px;
@@ -131,6 +132,14 @@
         .indiTime {
             color: #965454;
             font-size: 15px;
+        }
+
+        .indiPeo {
+            color: #8696a7;
+            font-size: 15px;
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
         }
 
         .indiDes {
@@ -555,6 +564,7 @@
             }).then(response => {
                 return response.json()
             }).then(re => {
+                console.log("success")
                 location.reload()
             })
         }
@@ -564,6 +574,7 @@
                 .then(response => {
                     return response.json()
                 }).then(data => {
+                    console.log(data)
                     eventsAll = data.allEvents
 
                     for (let i = 0; i < eventsAll.length; i++) {
@@ -575,6 +586,7 @@
                         let indiTime = document.createElement("div")
                         let a_tag = document.createElement("a")
                         let indiOrg = document.createElement("div")
+                        let indiPeo_tag = document.createElement("div")
 
 
                         indiEvent.classList.add("indiEvent")
@@ -584,16 +596,19 @@
                         indiTime.classList.add("indiTime")
                         a_tag.classList.add("indiLink")
                         indiOrg.classList.add("indiOrg")
+                        indiPeo_tag.classList.add("indiPeo")
 
                         indiTitle.innerHTML = eventsAll[i].aTitle
                         indiOrg.innerHTML = "by " + eventsAll[i].aUser.toUpperCase()
                         img_tag.style.backgroundImage = `url(${eventsAll[i].aCover})`
                         indiTime.innerHTML = eventsAll[i].asDay + ", " + eventsAll[i].asDate + ", " + eventsAll[i].asMonth + ", " + eventsAll[i].asYear + ", " + eventsAll[i].asTime
+                        indiPeo_tag.innerHTML = eventsAll[i].aPeople + " participants"
                         a_tag.href = `/e/${eventsAll[i].aTitle}`
 
                         indiInfo.appendChild(indiTitle)
                         indiInfo.appendChild(indiOrg)
                         indiInfo.appendChild(indiTime)
+                        indiInfo.appendChild(indiPeo_tag)
                         a_tag.appendChild(img_tag)
                         a_tag.appendChild(indiInfo)
                         indiEvent.appendChild(a_tag)

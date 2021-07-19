@@ -93,15 +93,36 @@
             font-size: 40px;
         }
 
-        #bookSpec,
-        #authorSec {
+        #bookSpec {
             margin: 20px;
             line-height: 30px;
+        }
+
+        #authorSec {
+            position: relative;
+            margin: 20px;
+            line-height: 30px;
+        }
+
+        #aboutAuthor {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 7;
+            -webkit-box-orient: vertical;
         }
 
         #authorSec p {
             font-size: 28px;
             margin-top: -18px;
+        }
+
+        #authorTri {
+            position: absolute;
+            font-size: 28px;
+            bottom: 0px;
+            right: 0px;
+            cursor: pointer;
         }
 
         #reviewBox {
@@ -430,11 +451,11 @@
             right: 0px;
         }
 
-        #allEventsPage a{
+        #allEventsPage a {
             color: #656565;
         }
 
-        #allEventsPage a:hover{
+        #allEventsPage a:hover {
             color: black;
         }
     </style>
@@ -592,6 +613,7 @@
         let srcId = src.split("/")[4];
         let bookId;
         let moreIcon = false
+        let moreAIcon = false
 
         getTheBook(srcId)
 
@@ -876,12 +898,28 @@
                     let author = re.aboutAuthor
                     let authorSec = document.getElementById("authorSec")
                     let aboutAuthor_tag = document.createElement("div")
+                    let i_tag = document.createElement("i")
 
                     aboutAuthor_tag.setAttribute("id", "aboutAuthor")
+                    i_tag.classList.add("fas")
+                    i_tag.classList.add("fa-caret-down")
+                    i_tag.setAttribute("id", "authorTri")
 
                     aboutAuthor_tag.innerHTML = author
                     authorSec.appendChild(aboutAuthor_tag)
+                    authorSec.appendChild(i_tag)
                 })
+
+            document.getElementById("authorTri").addEventListener("click", function () {
+                if (moreAIcon == false) {
+                    console.log("open")
+                    document.getElementById("aboutAuthor").style.display = "block"
+                } else {
+                    console.log("close")
+                    document.getElementById("aboutAuthor").style.display = "-webkit-box"
+                }
+                moreAIcon = !moreAIcon
+            })
         }
 
         async function recCounts(recId) {
