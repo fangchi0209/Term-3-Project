@@ -450,7 +450,7 @@ def theevent():
                 eventData = db.engine.execute(f'''SELECT * FROM events WHERE eventName = "{eventReplace}"''')
                 eventEmail = eventData.fetchone()
                 print(eventEmail)
-                print(os.getenv('gmail'), os.getenv)
+                print(os.getenv('gmail'), os.getenv('gmailP'))
 
                 msg = email.message.EmailMessage()
                 msg["From"]= os.getenv('gmail')
