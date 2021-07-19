@@ -473,6 +473,7 @@ def theevent():
                 })
 
         except Exception as e:
+            print("from here")
             print(e)
             return jsonify({
                 "error": True,
