@@ -8,7 +8,7 @@
     <script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
     <meta name="google-signin-client_id"
         content="807588094774-v7tcl63kqsj96r64gaqhtu8gsn81ffnt.apps.googleusercontent.com">
-    <title>Events</title>
+    <title>BooKÏ</title>
     <link rel="stylesheet" href="{{url_for('static',filename='css/base.css')}}">
 </head>
 
@@ -110,6 +110,18 @@
             height: 165px;
             background-size: cover;
             background-repeat: no-repeat;
+            border: 0.5px solid gray;
+        }
+
+        .eventCollect {
+            position: absolute;
+            bottom: 90px;
+            right: 20px;
+            font-size: 40px;
+            background: white;
+            color: gray;
+            border-radius: 40px;
+            cursor: pointer;
         }
 
         .indiInfo {
@@ -309,8 +321,16 @@
                         class="fas fa-book"></i></a></div> -->
             <div class="menu signinIcon" id="signinIcon" style="display: none"><a id="signinProcess"
                     class="signinProcess" href="/accounts">Sign in</a></div>
-            <div class="menu signoutIcon" id="signoutIcon" style="display: none"><a id="signoutProcess"
-                    class="signoutProcess" href="#"><i class="fas fa-user-astronaut"></i></a></div>
+            <div class="menu memIcon" id="memIcon" style="display: none">
+                <i class="fas fa-user-astronaut"></i>
+            </div>
+        </div>
+
+        <div id="memToggle" class="memToggle" style="display: none">
+            <a href="/myevent">
+                <div class="myEvent">My Event</div>
+            </a>
+            <div id="signoutProcess" class="signoutProcess">Sign Out</div>
         </div>
     </div>
 
@@ -320,8 +340,6 @@
         <div id="eArrow"><i class="fas fa-arrow-right"></i></div>
         <button id="createBtn">Create Now</button>
     </div>
-
-    <!-- <button id="changecolour">change</button> -->
 
     <div id="events">
         <div id="ownEvents" class="eventBox">
@@ -348,10 +366,6 @@
                 <div class="createInfoBox">
                     <div class="cTitle">Start time:</div>
                     <input type="date" id="sDate" class="eventDT"><input type="time" id="sTime" class="eventDT">
-                    <!-- <div class="eventT">
-                        <div class="cTitle">End time:</div><input type="date" id="eDate" class="eventDT"
-                            style="margin-left: 35px"><input type="time" id="eTime" class="eventDT">
-                    </div> -->
                 </div>
                 <div class="createInfoBox">
                     <div class="cTitle">Event Link:</div>
@@ -382,7 +396,8 @@
 
         <div id="sBox" class="sBox" style="display: none">
             <i class="fas fa-user-cog"></i><br>
-            <div style=>Sign in with your BooKÏ Account to create an event</div>
+            <div id="createAnEvent" style="display: none">Sign in with your BooKÏ Account to create an event</div>
+            <div id="collectAnEvent" style="display: none">Sign in with your BooKÏ Account to collect an event</div>
             <button id="cancelBtn" class="cancelBtn">cancel</button><button id="gosigninBtn" class="gosigninBtn"
                 onclick="goSignin()">Sign in</button>
         </div>
@@ -396,6 +411,7 @@
         //MAIN SCRIPT
 
         showEvents()
+
 
         let createBtn = document.getElementById("createBtn")
         let bg = document.getElementById("bg")
@@ -413,6 +429,9 @@
         let cBox = document.getElementById("cBox")
         let sBox = document.getElementById("sBox")
         let cancelBtn = document.getElementById("cancelBtn")
+        let createAnEvent = document.getElementById("createAnEvent")
+        let collectAnEvent = document.getElementById("collectAnEvent")
+        let collectEventId;
 
         var today = new Date().toISOString().split('T')[0];
         sDate.setAttribute('min', today);
@@ -436,6 +455,8 @@
                 createpopup.style.backgroundColor = "#D3D3D3"
                 cBox.style.display = "none"
                 sBox.style.display = "block"
+                createAnEvent.style.display = "block"
+                collectAnEvent.style.display = "none"
                 bg.style.display = "block"
             } else {
                 bg.style.display = "block";
@@ -443,6 +464,8 @@
                 createpopup.style.backgroundColor = "white"
                 cBox.style.display = "block"
                 sBox.style.display = "none"
+                createAnEvent.style.display = "none"
+                collectAnEvent.style.display = "none"
             }
 
         })
@@ -574,10 +597,10 @@
                 .then(response => {
                     return response.json()
                 }).then(data => {
-                    console.log(data)
                     eventsAll = data.allEvents
 
                     for (let i = 0; i < eventsAll.length; i++) {
+                        // console.log(eventsAll[i])
                         let ownEvents = document.getElementById("ownEvents")
                         let indiEvent = document.createElement("div")
                         let img_tag = document.createElement("div")
@@ -587,6 +610,7 @@
                         let a_tag = document.createElement("a")
                         let indiOrg = document.createElement("div")
                         let indiPeo_tag = document.createElement("div")
+                        let eventCollect_tag = document.createElement("i")
 
 
                         indiEvent.classList.add("indiEvent")
@@ -597,6 +621,10 @@
                         a_tag.classList.add("indiLink")
                         indiOrg.classList.add("indiOrg")
                         indiPeo_tag.classList.add("indiPeo")
+                        eventCollect_tag.setAttribute("data-id", eventsAll[i].aId)
+                        eventCollect_tag.classList.add("eventCollect")
+                        eventCollect_tag.classList.add("fab")
+                        eventCollect_tag.classList.add("fa-gratipay")
 
                         indiTitle.innerHTML = eventsAll[i].aTitle
                         indiOrg.innerHTML = "by " + eventsAll[i].aUser.toUpperCase()
@@ -612,11 +640,93 @@
                         a_tag.appendChild(img_tag)
                         a_tag.appendChild(indiInfo)
                         indiEvent.appendChild(a_tag)
+                        indiEvent.appendChild(eventCollect_tag)
                         ownEvents.appendChild(indiEvent)
-
                     }
+
+                    ownEvents.addEventListener("click", function (e) {
+                        let targetID = e.target
+                        if (targetID.getAttribute('data-id')) {
+                            if (document.getElementById("signinIcon").style.display == "block") {
+                                createpopup.style.display = "block"
+                                createpopup.style.backgroundColor = "#D3D3D3"
+                                cBox.style.display = "none"
+                                sBox.style.display = "block"
+                                createAnEvent.style.display = "none"
+                                collectAnEvent.style.display = "block"
+                                bg.style.display = "block"
+                            } else {
+                                createpopup.style.display = "none"
+                                createpopup.style.backgroundColor = "white"
+                                cBox.style.display = "none"
+                                sBox.style.display = "none"
+                                createAnEvent.style.display = "none"
+                                collectAnEvent.style.display = "none"
+                                bg.style.display = "none"
+
+                                collectEventId = targetID.getAttribute('data-id')
+                                targetID.style.color = "red"
+                                collectEvent()
+                            }
+                        } else {
+                            console.log("no ID")
+                        }
+                    })
+
+                    async function getCollectionE() {
+                        if (document.getElementById("signinIcon").style.display == "block") {
+                            return
+                        } else {
+                            await fetch("/api/eventfav", { method: "GET" })
+                                .then(response => {
+                                    return response.json()
+                                }).then(data => {
+                                    let getCol = data.getCollect
+                                    let turnRed = document.querySelectorAll("[data-id]")
+                                    turnRed.forEach((e) => {
+                                        for (let i = 0; i < getCol.length; i++)
+                                            if (e.getAttribute('data-id') == getCol[i]) {
+                                                e.style.color = "red"
+                                            }
+                                    })
+
+                                })
+                        }
+                    }
+                    getCollectionE()
                 })
         }
+
+        async function collectEvent() {
+            await fetch("/api/eventfav", {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json"
+                },
+                body: JSON.stringify({
+                    eventId: collectEventId
+                })
+            }).then(response => {
+                return response.json()
+            }).then(re => {
+                if (re.ok == true) {
+                    let turnGray = document.querySelectorAll("[data-id]")
+                    console.log(turnGray)
+                    turnGray.forEach((e) => {
+                        if (e.getAttribute('data-id') == collectEventId) {
+                            e.style.color = "gray"
+                        }
+                    })
+                } else if (re.error == true) {
+                    alert(re.message)
+                } else {
+                    console.log("record")
+                }
+            })
+        }
+
+
+
 
 
 
@@ -627,6 +737,9 @@
 
         checkProcess()
 
+        let memIcon = document.getElementById("memIcon")
+        let memToggle = document.getElementById("memToggle")
+
         async function checkProcess() {
             await fetch("/api/user", { method: "GET" })
                 .then(response => {
@@ -634,13 +747,30 @@
                 }).then(res => {
                     if (res.data == true) {
                         signinIcon.style.display = "none"
-                        signoutIcon.style.display = "block"
+                        memIcon.style.display = "block"
                     } else {
                         signinIcon.style.display = "block"
-                        signoutIcon.style.display = "none"
+                        memIcon.style.display = "none"
                     }
                 })
         }
+
+        memIcon.addEventListener("mousemove", () => {
+            memToggle.style.display = "block"
+        })
+
+        // memIcon.addEventListener("mouseout", () => {
+        //     memToggle.style.display = "none"
+        // })
+
+        memToggle.addEventListener("mouseout", () => {
+            memToggle.style.display = "none"
+        })
+
+        memToggle.addEventListener("mouseover", () => {
+            memToggle.style.display = "block"
+        })
+
 
         document.getElementById("signoutProcess").addEventListener("click", function () {
             logoutProcess()

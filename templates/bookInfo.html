@@ -282,7 +282,7 @@
         }
 
         #write:hover {
-            color: black
+            color: black;
         }
 
         .secBar {
@@ -923,7 +923,6 @@
         }
 
         async function recCounts(recId) {
-            console.log(recId)
 
             await fetch(`/api/recommend?rec=${recId}`, { method: "GET" })
                 .then(response => {
@@ -1188,69 +1187,6 @@
                 }).then(response => {
                     return response.json()
                 }).then(re => {
-                    // console.log(re)
-                    // let indiReview_tag = document.createElement("div")
-                    // let reviewer_tag = document.createElement("div")
-                    // let review_tag = document.createElement("div")
-                    // let reviewTime_tag = document.createElement("div");
-                    // let together_tag = document.createElement("div")
-                    // let ratings_tag = document.createElement("div")
-                    // let emptyStar_tag = document.createElement("div")
-                    // let fullStar_tag = document.createElement("div")
-
-                    // let emptyS = document.createTextNode("★★★★★")
-                    // let fullS = document.createTextNode("★★★★★")
-
-                    // indiReview_tag.className = "indiReview"
-                    // reviewer_tag.className = "reviewer"
-                    // review_tag.className = "review"
-                    // reviewTime_tag.className = "reviewtTime";
-                    // together_tag.className = "together"
-                    // ratings_tag.classList.add("ratings")
-                    // emptyStar_tag.classList.add("empty_star")
-                    // fullStar_tag.classList.add("full_star")
-
-                    // let mRates = re.rates
-                    // if (mRates == 1) {
-                    //     fullStar_tag.setAttribute("style", "width: 20%")
-                    // } else if (mRates == 2) {
-                    //     fullStar_tag.setAttribute("style", "width: 40%")
-                    // } else if (mRates == 3) {
-                    //     fullStar_tag.setAttribute("style", "width: 60%")
-                    // } else if (mRates == 4) {
-                    //     fullStar_tag.setAttribute("style", "width: 80%")
-                    // } else {
-                    //     fullStar_tag.setAttribute("style", "width: 100%")
-                    // }
-
-                    // reviewer_tag.innerHTML = re.user
-                    // review_tag.innerHTML = re.content
-                    // reviewTime_tag.innerHTML = re.date
-                    // emptyStar_tag.appendChild(emptyS)
-                    // fullStar_tag.appendChild(fullS)
-                    // ratings_tag.appendChild(emptyStar_tag)
-                    // ratings_tag.appendChild(fullStar_tag)
-
-                    // together_tag.appendChild(reviewer_tag)
-                    // together_tag.appendChild(reviewTime_tag)
-                    // indiReview_tag.appendChild(together_tag)
-                    // indiReview_tag.appendChild(ratings_tag)
-                    // indiReview_tag.appendChild(review_tag)
-                    // reviewSec.appendChild(indiReview_tag)
-                    // commentBox.innerHTML = ""
-
-                    // reviewSec.insertBefore(indiReview_tag, reviewSec.childNodes[0])
-
-                    // bg.style.display = "none";
-                    // reviewBox.style.display = "none"
-                    // rBox.style.display = "none"
-                    // document.getElementById("showimg").style.display = "none"
-                    // document.getElementById("commentBox").innerHTML = ""
-                    // oStar[0].style.color = "gainsboro"
-                    // oStar[1].style.color = "gainsboro"
-                    // oStar[2].style.color = "gainsboro"
-                    // oStar[3].style.color = "gainsboro"
-                    // oStar[4].style.color = "gainsboro"
                     location.reload()
                 })
             } else {

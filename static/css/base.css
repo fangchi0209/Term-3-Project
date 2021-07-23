@@ -50,6 +50,7 @@ input::placeholder {
 }
 
 .searchEngine {
+    position: relative;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -129,7 +130,7 @@ input::placeholder {
 }
 
 #eventPage:hover{
-    color:black
+    color:#656565
 }
 .signinProcess {
     font-size: 24px;
@@ -144,19 +145,37 @@ input::placeholder {
     color: black;
 }
 
-.signoutIcon {
+.memIcon {
     padding-top: 5px;
-}
-
-
-.signoutProcess {
     color: white;
+    cursor: pointer;
 }
 
-.signoutProcess:hover {
+.memIcon:hover {
     color: #656565;
 }
 
+.memToggle {
+    position: absolute;
+    top: 105px;
+    right: 0px;
+    width: 150px;
+    background: white;
+}
+
+.myEvent, .signoutProcess {
+    padding: 20px;
+    cursor: pointer;
+    color: #656565
+}
+
+.myEvent:hover {
+    background: #ececea;
+}
+
+.signoutProcess:hover {
+    background: #ececea;
+}
 
 .Header {
     font-size: 40px;
