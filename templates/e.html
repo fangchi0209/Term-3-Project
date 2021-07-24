@@ -9,7 +9,7 @@
     <meta name="google-signin-client_id"
         content="807588094774-v7tcl63kqsj96r64gaqhtu8gsn81ffnt.apps.googleusercontent.com">
     <link rel="stylesheet" href="{{url_for('static',filename='css/base.css')}}">
-    <title>the Event</title>
+    <title>BooKÏ</title>
 </head>
 
 <body>
@@ -125,8 +125,13 @@
             flex-direction: column;
         }
 
-        #eventLoca {
+        #eventLoca,
+        #manageAtt {
             margin-top: 20px;
+        }
+
+        .peopleN {
+            margin-bottom: 10px
         }
 
         #bg {
@@ -230,12 +235,18 @@
 
         <div class="nav">
             <div class="menu"><a id="eventPage" href="/events">Events</a></div>
-            <!-- <div class="menu mybookIcon" id="mybookIcon"><a id="mybookProcess" class="mybookProcess" href="#"><i
-                        class="fas fa-book"></i></a></div> -->
             <div class="menu signinIcon" id="signinIcon" style="display: none"><a id="signinProcess"
                     class="signinProcess" href="/accounts">Sign in</a></div>
-            <div class="menu signoutIcon" id="signoutIcon" style="display: none"><a id="signoutProcess"
-                    class="signoutProcess" href="#"><i class="fas fa-user-astronaut"></i></a></div>
+            <div class="menu memIcon" id="memIcon" style="display: none">
+                <i class="fas fa-user-astronaut"></i>
+            </div>
+        </div>
+
+        <div id="memToggle" class="memToggle" style="display: none">
+            <a href="/myevent">
+                <div class="myEvent">My Collection</div>
+            </a>
+            <div id="signoutProcess" class="signoutProcess">Sign Out</div>
         </div>
     </div>
 
@@ -268,6 +279,11 @@
                     <div class="bodyTitle">Location</div>
                     <div id="loca"></div>
                 </div>
+
+                <div id="manageAtt" style="display: none">
+                    <div class="bodyTitle">Attendees</div>
+                    <div id="attendee"></div>
+                </div>
             </div>
 
 
@@ -295,7 +311,7 @@
             <i class="far fa-calendar-check"></i>
             <div>Already registered!</div>
             <button id="cancelBtnforE" class="cancelBtnforE">cancel</button><button id="gomyeventBtn"
-                class="gosigninBtnforE" onclick="goMyevent()">My Event</button>
+                class="gosigninBtnforE" onclick="goMycollection()">My Collection</button>
         </div>
     </div>
 
@@ -338,7 +354,6 @@
             goEventBox.style.display = "none"
         })
 
-
         attendBtn.addEventListener("click", function () {
             if (document.getElementById("signinIcon").style.display == "block") {
                 bg.style.display = "block"
@@ -357,9 +372,10 @@
             window.location.replace("/accounts")
         }
 
-        function goMyevent(e) {
-            e.preventDefault()
+        function goMycollection() {
+            window.location.replace("/myevent")
         }
+
 
         // bgBtn.addEventListener("click", function () {
         //     bg.style.display = "none";
@@ -367,6 +383,7 @@
         //     reBox.style.display = "none"
         //     return false;
         // })
+
 
         async function theEvent(eId) {
             await fetch(`/api/theevent?e=${eId}`, { method: "GET" })
@@ -382,7 +399,6 @@
                     let downTime = document.getElementById("downTime")
                     let loca = document.getElementById("loca")
 
-
                     let img_tag = document.createElement("div")
                     let title_tag = document.createElement("div")
                     let organiser_tag = document.createElement("div")
@@ -394,20 +410,17 @@
                     let time_tag = document.createElement("div")
                     let loca_tag = document.createElement("div")
 
-
                     img_tag.setAttribute("id", "theEventCover")
                     upDate_tag.setAttribute("id", "upperDate")
                     title_tag.setAttribute("id", "theEventTitle")
                     organiser_tag.setAttribute("id", "organiser")
                     eventDes_tag.setAttribute("id", "bodyDes")
 
-
                     img_tag.style.backgroundImage = `url(${re.theCover})`
                     uDate.innerHTML = re.thesDate
                     uMonth.innerHTML = re.thesMonth
                     title_tag.innerHTML = re.theTitle
                     organiser_tag.innerHTML = "by " + re.theUser
-
 
                     eventDes_tag.innerHTML = re.theDes
                     date_tag.innerHTML = re.thesDay + ", " + re.thesDate + " " + re.thesMonth + " " + re.thesYear
@@ -426,6 +439,20 @@
                     downTime.appendChild(date_tag)
                     downTime.appendChild(time_tag)
                     eventLoca.appendChild(loca_tag)
+
+                    if (re.thePeople != null) {
+                        document.getElementById("manageAtt").style.display = "block"
+                        let list = re.thePeople
+                        for (let i = 0; i < list.length; i++) {
+                            let attendee = document.getElementById("attendee")
+                            let peopleN_tag = document.createElement("div")
+                            peopleN_tag.classList.add("peopleN")
+                            peopleN_tag.innerHTML = list[i]
+                            attendee.appendChild(peopleN_tag)
+                        }
+                    }else{
+                        return
+                    }
                 })
         }
 
@@ -473,6 +500,9 @@
 
         checkProcess()
 
+        let memIcon = document.getElementById("memIcon")
+        let memToggle = document.getElementById("memToggle")
+
         async function checkProcess() {
             await fetch("/api/user", { method: "GET" })
                 .then(response => {
@@ -480,13 +510,30 @@
                 }).then(res => {
                     if (res.data == true) {
                         signinIcon.style.display = "none"
-                        signoutIcon.style.display = "block"
+                        memIcon.style.display = "block"
                     } else {
                         signinIcon.style.display = "block"
-                        signoutIcon.style.display = "none"
+                        memIcon.style.display = "none"
                     }
                 })
         }
+
+        memIcon.addEventListener("mousemove", () => {
+            memToggle.style.display = "block"
+        })
+
+        // memIcon.addEventListener("mouseout", () => {
+        //     memToggle.style.display = "none"
+        // })
+
+        memToggle.addEventListener("mouseout", () => {
+            memToggle.style.display = "none"
+        })
+
+        memToggle.addEventListener("mouseover", () => {
+            memToggle.style.display = "block"
+        })
+
 
         document.getElementById("signoutProcess").addEventListener("click", function () {
             logoutProcess()
@@ -514,6 +561,7 @@
                 return response.json()
             }).then(result => {
                 if (result.ok == true) {
+                    document.getElementById("manageAtt").style.display = "none"
                     location.reload()
                 }
             })

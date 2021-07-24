@@ -89,76 +89,6 @@
             margin: 20px auto;
         }
 
-
-        .indiEvent {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            width: 370px;
-            margin: 20px 30px;
-            height: 275px;
-            background-color: white;
-            border-bottom: 1px solid #c5b8a5;
-        }
-
-        .indiEvent:hover {
-            box-shadow: 1px 1px 10px;
-        }
-
-        .indiCover {
-            width: 100%;
-            height: 165px;
-            background-size: cover;
-            background-repeat: no-repeat;
-            border: 0.5px solid gray;
-        }
-
-        .eventCollect {
-            position: absolute;
-            bottom: 90px;
-            right: 20px;
-            font-size: 40px;
-            background: white;
-            color: gray;
-            border-radius: 40px;
-            cursor: pointer;
-        }
-
-        .indiInfo {
-            display: flex;
-            flex-direction: column;
-            padding: 10px 20px 0px 20px;
-        }
-
-        .indiTitle {
-            font-size: 20px;
-            color: #656565;
-        }
-
-        .indiOrg {
-            color: #8696a7;
-            line-height: 2;
-            font-size: 15px;
-        }
-
-        .indiTime {
-            color: #965454;
-            font-size: 15px;
-        }
-
-        .indiPeo {
-            color: #8696a7;
-            font-size: 15px;
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-        }
-
-        .indiDes {
-            font-weight: 600;
-            margin: 10px 0px;
-        }
-
         #createpopup {
             position: fixed;
             width: 700px;
@@ -317,8 +247,6 @@
 
         <div class="nav">
             <div class="menu"><a id="eventPage" href="/events">Events</a></div>
-            <!-- <div class="menu mybookIcon" id="mybookIcon"><a id="mybookProcess" class="mybookProcess" href="#"><i
-                        class="fas fa-book"></i></a></div> -->
             <div class="menu signinIcon" id="signinIcon" style="display: none"><a id="signinProcess"
                     class="signinProcess" href="/accounts">Sign in</a></div>
             <div class="menu memIcon" id="memIcon" style="display: none">
@@ -328,7 +256,7 @@
 
         <div id="memToggle" class="memToggle" style="display: none">
             <a href="/myevent">
-                <div class="myEvent">My Event</div>
+                <div class="myEvent">My Collection</div>
             </a>
             <div id="signoutProcess" class="signoutProcess">Sign Out</div>
         </div>
@@ -600,7 +528,6 @@
                     eventsAll = data.allEvents
 
                     for (let i = 0; i < eventsAll.length; i++) {
-                        // console.log(eventsAll[i])
                         let ownEvents = document.getElementById("ownEvents")
                         let indiEvent = document.createElement("div")
                         let img_tag = document.createElement("div")
@@ -665,7 +592,6 @@
                                 bg.style.display = "none"
 
                                 collectEventId = targetID.getAttribute('data-id')
-                                targetID.style.color = "red"
                                 collectEvent()
                             }
                         } else {
@@ -681,11 +607,11 @@
                                 .then(response => {
                                     return response.json()
                                 }).then(data => {
-                                    let getCol = data.getCollect
+                                    let getFav = data.favCollection
                                     let turnRed = document.querySelectorAll("[data-id]")
                                     turnRed.forEach((e) => {
-                                        for (let i = 0; i < getCol.length; i++)
-                                            if (e.getAttribute('data-id') == getCol[i]) {
+                                        for (let i = 0; i < getFav.length; i++)
+                                            if (e.getAttribute('data-id') == getFav[i].getCollect) {
                                                 e.style.color = "red"
                                             }
                                     })
@@ -711,7 +637,6 @@
             }).then(re => {
                 if (re.ok == true) {
                     let turnGray = document.querySelectorAll("[data-id]")
-                    console.log(turnGray)
                     turnGray.forEach((e) => {
                         if (e.getAttribute('data-id') == collectEventId) {
                             e.style.color = "gray"
@@ -720,7 +645,12 @@
                 } else if (re.error == true) {
                     alert(re.message)
                 } else {
-                    console.log("record")
+                    let turn = document.querySelectorAll("[data-id]")
+                    turn.forEach((e) => {
+                        if (e.getAttribute('data-id') == collectEventId) {
+                            e.style.color = "red"
+                        }
+                    })
                 }
             })
         }

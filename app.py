@@ -1,26 +1,26 @@
+import smtplib
+import email.message
+from concurrent.futures import ThreadPoolExecutor
+from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, jsonify, render_template, request, session, redirect
+from dotenv import load_dotenv
+import os
+import boto3
+import requests
+from bs4 import BeautifulSoup
+import bs4
 import json
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
-import bs4
-from bs4 import BeautifulSoup
-import requests
-import boto3
-import os
-from dotenv import load_dotenv
-from flask import Flask, jsonify, render_template, request, session, redirect
-from flask_sqlalchemy import SQLAlchemy
-from concurrent.futures import ThreadPoolExecutor
-import email.message
-import smtplib
 
 
 load_dotenv()
 
 s3 = boto3.resource(
-    service_name = 's3',
-    aws_access_key_id = os.getenv('awsKeyId'),
-    aws_secret_access_key = os.getenv('awsKey'),
-    )
+    service_name='s3',
+    aws_access_key_id=os.getenv('awsKeyId'),
+    aws_secret_access_key=os.getenv('awsKey'),
+)
 
 app = Flask(__name__, static_folder="static", static_url_path="/")
 app.secret_key = os.getenv("secretKey")
@@ -33,12 +33,14 @@ db = SQLAlchemy(app)
 def index():
     return render_template("index.html")
 
+
 @app.route("/accounts")
 def accounts():
     if "memberEmail" in session:
         return redirect("/")
     else:
         return render_template("accounts.html")
+
 
 @app.route("/search")
 def searchPage():
@@ -54,9 +56,11 @@ def bookPage(id):
 def events():
     return render_template("events.html")
 
+
 @app.route("/e/<eventId>")
 def e(eventId):
     return render_template("e.html")
+
 
 @app.route("/myevent")
 def myevent():
@@ -64,6 +68,7 @@ def myevent():
         return render_template("myevent.html")
     else:
         return redirect("/events")
+
 
 @app.route("/api/searchEngine", methods=["POST"])
 def searchEngine():
@@ -89,7 +94,8 @@ def searchEngine():
             "error": True,
             "message": "Invalid Server"
         })
-            
+
+
 @app.route("/api/eachPage")
 def eachPage():
 
@@ -136,17 +142,17 @@ def eachPage():
 
     return jsonify(resultsArr)
 
+
 @app.route("/api/authors")
 def authors():
-
-    bookIdforA = request.args.get("a")
-    authorUrl = f"https://books.google.com.tw/books?id={bookIdforA}"
-
-    authorHtml = requests.get(authorUrl)
-    authorData = BeautifulSoup(authorHtml.text, 'html.parser')
-    aboutAuthor = authorData.find("div", class_="textmodulecontent")
-
     try:
+        bookIdforA = request.args.get("a")
+        authorUrl = f"https://books.google.com.tw/books?id={bookIdforA}"
+
+        authorHtml = requests.get(authorUrl)
+        authorData = BeautifulSoup(authorHtml.text, 'html.parser')
+        aboutAuthor = authorData.find("div", class_="textmodulecontent")
+
         if aboutAuthor != None:
             return jsonify({
                 "aboutAuthor": aboutAuthor.text
@@ -162,18 +168,22 @@ def authors():
             "message": "Invalid Server"
         })
 
+
 @app.route("/api/recommend")
 def recommend():
     bookIdforRec = request.args.get("rec")
-    count_data = db.engine.execute(f'''SELECT * from counts WHERE bookId = "{bookIdforRec}"''')
+    count_data = db.engine.execute(
+        f'''SELECT * from counts WHERE bookId = "{bookIdforRec}"''')
     count_Result = count_data.fetchone()
 
     try:
         if count_Result != None:
-            countAdd = count_Result[2]+ 1
-            db.engine.execute(f'''UPDATE counts SET visitSite = "{countAdd}" WHERE (bookId = "{bookIdforRec}")''')
+            countAdd = count_Result[2] + 1
+            db.engine.execute(
+                f'''UPDATE counts SET visitSite = "{countAdd}" WHERE (bookId = "{bookIdforRec}")''')
 
-            ctsRank = db.engine.execute("SELECT * FROM counts ORDER BY visitSite DESC LIMIT 17")
+            ctsRank = db.engine.execute(
+                "SELECT * FROM counts ORDER BY visitSite DESC LIMIT 17")
 
             def recBookInfo(recURL):
                 recBookHTML = requests.get(recURL)
@@ -198,9 +208,11 @@ def recommend():
             })
 
         else:
-            db.engine.execute(f'''INSERT INTO counts (bookId, visitSite) VALUES ("{bookIdforRec}", "1")''')
+            db.engine.execute(
+                f'''INSERT INTO counts (bookId, visitSite) VALUES ("{bookIdforRec}", "1")''')
 
-            ctsRank = db.engine.execute("SELECT * FROM counts ORDER BY visitSite DESC LIMIT 13")
+            ctsRank = db.engine.execute(
+                "SELECT * FROM counts ORDER BY visitSite DESC LIMIT 13")
 
             def recBookInfo(recURL):
                 recBookHTML = requests.get(recURL)
@@ -231,25 +243,25 @@ def recommend():
             "message": "Invalid Server"
         })
 
+
 @app.route("/api/reviews", methods=["GET", "POST"])
 def reviews():
-    
+
     if request.method == "POST":
         try:
             if "memberName" in session:
                 if len(request.files) == 0:
                     cTitle = request.form.get('title')
-                    cUser = session['memberName']
                     cTime = request.form.get('date')
                     cStar = request.form.get('stars')
                     cContent = request.form.get('content')
-                    pReview = f'''INSERT INTO reviews (book, user, time, rates, content) VALUES ("{cTitle}", "{cUser}", "{cTime}", "{cStar}", "{cContent}")'''
+                    pReview = f'''INSERT INTO reviews (book, user, time, rates, content) VALUES ("{cTitle}", "{session['memberName']}", "{cTime}", "{cStar}", "{cContent}")'''
                     db.engine.execute(pReview)
 
                     return jsonify({
                         "user": session["memberName"],
                         "date": cTime,
-                        "rates":cStar,
+                        "rates": cStar,
                         "content": cContent,
                     })
                 else:
@@ -257,22 +269,22 @@ def reviews():
                     uploadFile = request.files['selectFile']
                     cImage = request.files['selectFile'].filename
                     cTitle = request.form.get('title')
-                    cUser = session['memberName']
                     cTime = request.form.get('date')
                     cStar = request.form.get('stars')
                     cContent = request.form.get('content')
 
-                    s3.Bucket('t3-upload-bucket').put_object(ACL= 'public-read', Key=uploadFile.filename, Body=uploadFile)
+                    s3.Bucket('t3-upload-bucket').put_object(ACL='public-read',
+                                                             Key=uploadFile.filename, Body=uploadFile)
 
-                    pReviewI = f'''INSERT INTO reviews (book, user, time, rates, content, image) VALUES ("{cTitle}", "{cUser}", "{cTime}", "{cStar}", "{cContent}", "{cImage}")'''
+                    pReviewI = f'''INSERT INTO reviews (book, user, time, rates, content, image) VALUES ("{cTitle}", "{session['memberName']}", "{cTime}", "{cStar}", "{cContent}", "{cImage}")'''
                     db.engine.execute(pReviewI)
 
                     return jsonify({
                         "user": session["memberName"],
                         "date": cTime,
-                        "rates":cStar,
+                        "rates": cStar,
                         "content": cContent,
-                        "imageName": 'http://dqgc5yp61yvd.cloudfront.net/'+ cImage,
+                        "imageName": 'http://dqgc5yp61yvd.cloudfront.net/' + cImage,
                     })
             else:
                 return jsonify({
@@ -315,7 +327,7 @@ def reviews():
                     }
                     reviewData = reviewDic.copy()
                     reviewArr.append(reviewData)
-            
+
             avgStar = sum(starsArr) // len(starsArr)
 
             return jsonify({
@@ -329,6 +341,7 @@ def reviews():
                 "message": "Invalid Server"
             })
 
+
 @app.route("/api/bookievents", methods=["GET", "POST"])
 def bookievents():
 
@@ -341,7 +354,6 @@ def bookievents():
                 })
             else:
                 nTitle = request.form.get('eTitle')
-                nUser = session['memberName']
                 nsDateData = request.form.get('sDate')
                 nsDate = nsDateData.split(",")
                 nsTime = request.form.get('sTime')
@@ -352,22 +364,14 @@ def bookievents():
 
                 imageRep = nImage.replace(" ", "_")
 
-                s3.Bucket('t3-upload-bucket').put_object(ACL= 'public-read', Key=imageRep, Body=eventCover)
+                s3.Bucket('t3-upload-bucket').put_object(ACL='public-read',
+                                                         Key=imageRep, Body=eventCover)
 
                 db.engine.execute(
-                    f'''INSERT INTO events (organiser, eventName, sDay, sDate, sMonth, sYear, sTime, location, cover, eventDes) VALUES ("{nUser}", "{nTitle}", "{nsDate[0]}", "{nsDate[1]}", "{nsDate[2]}", "{nsDate[3]}", "{nsTime}", "{nURL}", "{imageRep}", "{nDes}")''')
+                    f'''INSERT INTO events (organiser, organiser_email, eventName, sDay, sDate, sMonth, sYear, sTime, location, cover, eventDes) VALUES ("{session['memberName']}", "{session['memberEmail']}", "{nTitle}", "{nsDate[0]}", "{nsDate[1]}", "{nsDate[2]}", "{nsDate[3]}", "{nsTime}", "{nURL}", "{imageRep}", "{nDes}")''')
 
                 return jsonify({
-                    "nTitle": nTitle,
-                    "nUser": nUser,
-                    "nsDay": nsDate[0],
-                    "nsDate": nsDate[1],
-                    "nsMonth": nsDate[2],
-                    "nsYear": nsDate[3],
-                    "nsTime": nsTime,
-                    "nURL": nURL,
-                    "nCover": 'http://dqgc5yp61yvd.cloudfront.net/' + nImage,
-                    "nDes": nDes
+                    "ok": True,
                 })
         except Exception as e:
             print(e)
@@ -378,31 +382,34 @@ def bookievents():
 
     if request.method == "GET":
         try:
-            allEventsData = db.engine.execute("SELECT * FROM events ORDER BY id DESC")
+            allEventsData = db.engine.execute(
+                "SELECT * FROM events ORDER BY id DESC")
 
             eventsArr = []
             for allEvents in allEventsData:
-                totalData = db.engine.execute(f'''SELECT COUNT(memberEmail) FROM activity WHERE eventId = "{allEvents[2]}"''')
+                totalData = db.engine.execute(
+                    f'''SELECT COUNT(memberEmail) FROM activity WHERE eventId = "{allEvents[3]}"''')
                 totalP = totalData.fetchone()
-                
+
                 eventsDict = {
                     "aId": allEvents[0],
-                    "aTitle": allEvents[2],
+                    "aTitle": allEvents[3],
                     "aUser": allEvents[1],
-                    "asDay": allEvents[3],
-                    "asDate": allEvents[4],
-                    "asMonth": allEvents[5],
-                    "asYear": allEvents[6],
-                    "asTime": allEvents[7],
-                    "aURL": allEvents[8],
-                    "aCover": 'http://dqgc5yp61yvd.cloudfront.net/' + allEvents[9],
-                    "aDes": allEvents[10],
+                    "aUserE": allEvents[2],
+                    "asDay": allEvents[4],
+                    "asDate": allEvents[5],
+                    "asMonth": allEvents[6],
+                    "asYear": allEvents[7],
+                    "asTime": allEvents[8],
+                    "aURL": allEvents[9],
+                    "aCover": 'http://dqgc5yp61yvd.cloudfront.net/' + allEvents[10],
+                    "aDes": allEvents[11],
                     "aPeople": totalP[0]
                 }
 
                 eventsData = eventsDict.copy()
                 eventsArr.append(eventsData)
-            
+
             return jsonify({
                 "allEvents": eventsArr
             })
@@ -413,27 +420,60 @@ def bookievents():
                 "message": "Invalid Server"
             })
 
+
 @app.route("/api/theevent", methods=["GET", "POST"])
 def theevent():
 
     if request.method == "GET":
         try:
             eventId = request.args.get("e")
-            theEventData = db.engine.execute(f'''SELECT * FROM events WHERE eventName = "{eventId}"''')
+            theEventData = db.engine.execute(
+                f'''SELECT * FROM events WHERE eventName = "{eventId}"''')
             theEvent = theEventData.fetchone()
 
-            return jsonify({
-                "theTitle": theEvent[2],
-                "theUser": theEvent[1],
-                "thesDay": theEvent[3],
-                "thesDate": theEvent[4],
-                "thesMonth": theEvent[5],
-                "thesYear": theEvent[6],
-                "thesTime": theEvent[7],
-                "theURL": theEvent[8],
-                "theCover": 'http://dqgc5yp61yvd.cloudfront.net/' + theEvent[9],
-                "theDes": theEvent[10]
-            })
+            if theEvent[2] == session["memberEmail"]:
+                peopleArr = []
+                totalPeopleData = db.engine.execute(
+                    f'''SELECT memberEmail, name FROM activity JOIN member ON activity.memberEmail = member.email WHERE eventId = "{theEvent[3]}"''')
+                for people in totalPeopleData:
+                    peopleArr.append(people[1])
+
+                ttP = len(peopleArr)
+
+                return jsonify({
+                    "theTitle": theEvent[3],
+                    "theUser": theEvent[1],
+                    "theUserE": theEvent[2],
+                    "thesDay": theEvent[4],
+                    "thesDate": theEvent[5],
+                    "thesMonth": theEvent[6],
+                    "thesYear": theEvent[7],
+                    "thesTime": theEvent[8],
+                    "theURL": theEvent[9],
+                    "theCover": 'http://dqgc5yp61yvd.cloudfront.net/' + theEvent[10],
+                    "theDes": theEvent[11],
+                    "thePeopleAcount": ttP,
+                    "thePeople": peopleArr 
+                })
+            else:
+
+                peopleAccountData = db.engine.execute(f'''Select COUNT(memberEmail) FROM activity WHERE eventId = "{theEvent[3]}"''')
+                peopleAccount = peopleAccountData.fetchone()
+
+                return jsonify({
+                    "theTitle": theEvent[3],
+                    "theUser": theEvent[1],
+                    "theUserE": theEvent[2],
+                    "thesDay": theEvent[4],
+                    "thesDate": theEvent[5],
+                    "thesMonth": theEvent[6],
+                    "thesYear": theEvent[7],
+                    "thesTime": theEvent[8],
+                    "theURL": theEvent[9],
+                    "theCover": 'http://dqgc5yp61yvd.cloudfront.net/' + theEvent[10],
+                    "theDes": theEvent[11],
+                    "thePeopleAcount": peopleAccount[0]
+                })
         except Exception as e:
             print(e)
             return jsonify({
@@ -441,52 +481,59 @@ def theevent():
                 "message": "Invalid Server"
             })
     if request.method == "POST":
+        if "memberEmail" in session:
+            attendeeData = request.get_json()
+            attendEvent = attendeeData["reEventId"]
+            eventReplace = attendEvent.replace("%20", " ")
 
-        attendeeData = request.get_json()
-        attendEvent = attendeeData["reEventId"]
-        attendee = session["memberName"]
-        attendeeEmail = session["memberEmail"]
+            try:
+                checkEmail = db.engine.execute(
+                    f'''SELECT * FROM activity WHERE memberEmail = "{session['memberEmail']}" and eventId = "{eventReplace}"''')
+                    # f'''SELECT eventName, memberEmail FROM events JOIN  activity ON events.eventName = activity.eventId WHERE memberEmail = "{session['memberEmail']}" and eventName = "{eventReplace}"''')
+                checked = checkEmail.fetchone()
+            
+                if checked == None:
+                    db.engine.execute(
+                        f'''INSERT INTO activity (eventId, memberEmail) VALUES ("{eventReplace}", "{session['memberEmail']}")''')
 
-        eventReplace = attendEvent.replace("%20", " ")
+                    eventData = db.engine.execute(
+                        f'''SELECT * FROM events WHERE eventName = "{eventReplace}"''')
+                    eventEmail = eventData.fetchone()
 
-        checkEmail = db.engine.execute(f'''SELECT eventName, memberEmail FROM events JOIN  activity ON events.eventName = activity.eventId WHERE memberEmail = "{attendeeEmail}" and eventName = "{eventReplace}"''')
-        checked = checkEmail.fetchone()
-        print(checked)
-        try:
-            if checked == None:
+                    msg = email.message.EmailMessage()
+                    msg["From"] = os.getenv('gmail')
+                    msg["To"] = f"{session['memberEmail']}"
+                    msg["Subject"] = f"Hello, {session['memberName']}, Online Event from BooKÏ"
 
-                db.engine.execute(f'''INSERT INTO activity (eventId, memberEmail) VALUES ("{eventReplace}", "{attendeeEmail}")''')
+                    msg.add_alternative(
+                        f"<h3>Online Event from BooKÏ</h3> <h3>Event:</h3> {eventReplace},<br> <h3>Date:</h3> {eventEmail[5]}, {eventEmail[6]}<br> <h3>Link:<h3> {eventEmail[9]}", subtype="html")
 
-                eventData = db.engine.execute(f'''SELECT * FROM events WHERE eventName = "{eventReplace}"''')
-                eventEmail = eventData.fetchone()
-  
-                msg = email.message.EmailMessage()
-                msg["From"]= os.getenv('gmail')
-                msg["To"]= f"{attendeeEmail}"
-                msg["Subject"]=f"Hello, {attendee}, Online Event from BooKÏ"
+                    server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
+                    server.login(os.getenv('gmail'), os.getenv('gmailP'))
+                    server.send_message(msg)
+                    server.close()
 
-                msg.add_alternative(f"<h3>Online Event from BooKÏ</h3> <h3>Event:</h3> {eventReplace},<br> <h3>Date:</h3> {eventEmail[4]}, {eventEmail[5]}<br> <h3>Link:<h3> {eventEmail[8]}", subtype="html")
+                    return jsonify({
+                        "ok": True
+                    })
+                else:
+                    return jsonify({
+                        "error": True,
+                        "message": "Already registered"
+                    })
 
-                server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
-                server.login(os.getenv('gmail'), os.getenv('gmailP'))
-                server.send_message(msg)
-                server.close()
-
-                return jsonify({
-                    "ok": True
-                })
-            else:
+            except Exception as e:
+                print(e)
                 return jsonify({
                     "error": True,
-                    "message": "Already registered"
+                    "message": "Invalid Server"
                 })
-
-        except Exception as e:
-            print(e)
+        else:
             return jsonify({
                 "error": True,
-                "message": "Invalid Server"
+                "message": "Please sign in"
             })
+
 
 @app.route("/api/eventfav", methods=["GET", "POST"])
 def collectevent():
@@ -496,19 +543,20 @@ def collectevent():
             if session["memberEmail"]:
                 eventFavData = request.get_json()
                 favEventId = eventFavData["eventId"]
-                favEMember = session["memberEmail"]
 
-                collectCheckData = db.engine.execute(f'''SELECT * FROM eventFav WHERE event_num = "{favEventId}" AND collector = "{favEMember}"''')
+                collectCheckData = db.engine.execute(
+                    f'''SELECT * FROM eventFav WHERE event_num = "{favEventId}" AND collector = "{session['memberEmail']}"''')
                 collectCheck = collectCheckData.fetchone()
-                print(collectCheck)
 
                 if collectCheck != None:
-                    db.engine.execute(f'''DELETE FROM eventFav WHERE event_num = "{favEventId}" AND collector = "{favEMember}"''')
+                    db.engine.execute(
+                        f'''DELETE FROM eventFav WHERE event_num = "{favEventId}" AND collector = "{session['memberEmail']}"''')
                     return jsonify({
                         "ok": True
                     })
                 else:
-                    db.engine.execute(f'''INSERT INTO eventFav (event_num, collector) VALUES ("{favEventId}", "{favEMember}")''')
+                    db.engine.execute(
+                        f'''INSERT INTO eventFav (event_num, collector) VALUES ("{favEventId}", "{session['memberEmail']}")''')
 
                     return jsonify({
                         "ok": False
@@ -527,13 +575,32 @@ def collectevent():
     if request.method == "GET":
         try:
             if session["memberEmail"]:
-                getCollectData = db.engine.execute(f'''SELECT * FROM eventFav WHERE collector = "{session["memberEmail"]}"''')
+                getCollectFullInfoData = db.engine.execute(
+                    f'''SELECT * FROM events JOIN eventFav ON events.id = eventFav.event_num WHERE collector = "{session["memberEmail"]}"''')
+
                 collection = []
-                for getCollect in getCollectData:
-                    collection.append(getCollect[1])
+                for getCollect in getCollectFullInfoData:
+                    totalPeoData = db.engine.execute(
+                        f'''SELECT COUNT(memberEmail) FROM activity WHERE eventId = "{getCollect[3]}"''')
+                    totalPeople = totalPeoData.fetchone()
+                    favDict = {
+                        "getCollect": getCollect[0],
+                        "favOrganiser": getCollect[1],
+                        "favOrganiserE": getCollect[2],
+                        "favTitle": getCollect[3],
+                        "favDay": getCollect[4],
+                        "favDate": getCollect[5],
+                        "favMonth": getCollect[6],
+                        "favYear": getCollect[7],
+                        "favTime": getCollect[8],
+                        "favCover": 'http://dqgc5yp61yvd.cloudfront.net/' + getCollect[10],
+                        "totalPeople": totalPeople[0]
+                    }
+                    favData = favDict.copy()
+                    collection.append(favData)
 
                 return jsonify({
-                    "getCollect": collection
+                    "favCollection": collection
                 })
             else:
                 return jsonify({
@@ -547,6 +614,56 @@ def collectevent():
                 "error": True,
                 "message": "Invalid Server"
             })
+
+@app.route("/api/myevent", methods=["GET"])
+def myeventAPI():
+
+    if session["memberEmail"]:
+        try:
+            myOwnEventData = db.engine.execute(f'''SELECT * FROM events WHERE organiser_email = "{session["memberEmail"]}"''')
+            
+            myOwnEventArr = []
+            for myOwnEvent in myOwnEventData:
+                totalPeopleData = db.engine.execute(
+                    f'''SELECT COUNT(memberEmail) FROM activity WHERE eventId = "{myOwnEvent[3]}"''')
+                People = totalPeopleData.fetchone()
+
+                ownDict = {
+                    "getCollect": myOwnEvent[0],
+                    "ownOrganiser": myOwnEvent[1],
+                    "ownOrganiserE": myOwnEvent[2],
+                    "ownTitle": myOwnEvent[3],
+                    "ownDay": myOwnEvent[4],
+                    "ownDate": myOwnEvent[5],
+                    "ownMonth": myOwnEvent[6],
+                    "ownYear": myOwnEvent[7],
+                    "ownTime": myOwnEvent[8],
+                    "ownCover": 'http://dqgc5yp61yvd.cloudfront.net/' + myOwnEvent[10],
+                    "totalPeople": People[0]
+                }
+                ownData = ownDict.copy()
+                myOwnEventArr.append(ownData)
+
+            if len(myOwnEventArr) > 0:
+                return jsonify({
+                    "myOwnEvent": myOwnEventArr
+                })
+            else:
+                return jsonify({
+                    "error": True
+                })
+        except Exception as e:
+            print(e)
+            return jsonify({
+                "error": True,
+                "message": "Invalid Server"
+            })
+    else:
+        return jsonify({
+            "error": True,
+            "message": "Please sign in"
+        })
+
 
 @app.route("/api/google", methods=["POST"])
 def google():
@@ -568,7 +685,8 @@ def google():
                 "gmail": ge
             })
         else:
-            demo = db.engine.execute(f'''INSERT INTO member (name, email) VALUES ("{gn}", "{ge}")''')
+            demo = db.engine.execute(
+                f'''INSERT INTO member (name, email) VALUES ("{gn}", "{ge}")''')
             return jsonify({
                 "gname": gn,
                 "gmail": ge
@@ -581,106 +699,107 @@ def google():
             "message": "Invalid Server"
         })
 
+
 @app.route("/api/user", methods=["GET", "POST", "PATCH", "DELETE"])
 def loginPage():
 
-        if request.method == "PATCH":
-            data = request.get_json()
-            sqlEmail = data.get('email')
-            sqlPassword = data['password']
+    if request.method == "PATCH":
+        data = request.get_json()
+        sqlEmail = data.get('email')
+        sqlPassword = data['password']
 
-            login = f'''SELECT * FROM member WHERE email = "{sqlEmail}"'''
-            login_data = db.engine.execute(login)
-            loginResult = login_data.fetchone()
+        login = f'''SELECT * FROM member WHERE email = "{sqlEmail}"'''
+        login_data = db.engine.execute(login)
+        loginResult = login_data.fetchone()
 
-            try:
-                if loginResult != None:
-                    if sqlPassword == loginResult[3]:
-                        session["memberEmail"] = loginResult[2]
-                        session["memberName"] = loginResult[1]
+        try:
+            if loginResult != None:
+                if sqlPassword == loginResult[3]:
+                    session["memberEmail"] = loginResult[2]
+                    session["memberName"] = loginResult[1]
 
-                        return jsonify({
-                            "data": {
-                                "id": loginResult[0],
-                                "name": loginResult[1],
-                                "email": loginResult[2]
-                            }
-                        }), 200
-                    else:
-                        return jsonify({
-                            "error": True,
-                            "message": "Wrong Password"
-                        }), 400
-
+                    return jsonify({
+                        "data": {
+                            "id": loginResult[0],
+                            "name": loginResult[1],
+                            "email": loginResult[2]
+                        }
+                    }), 200
                 else:
                     return jsonify({
                         "error": True,
-                        "message": "Invalid Account"
-                    })
-
-            except Exception as e:
-                return jsonify({
-                    "error": True,
-                    "message": "Invalid Server"
-                }), 500
-
-        elif request.method == "POST":
-            data = request.get_json()
-            sqlName = data['name']
-            sqlEmail = data['email']
-            sqlPassword = data['password']
-
-            register = f'''SELECT * FROM member WHERE email = "{sqlEmail}"'''
-            register_data = db.engine.execute(register)
-            registerResult = register_data.fetchone()
-
-            try:
-                if registerResult == None:
-                    if len(sqlName) == 0 or len(sqlEmail) == 0 or len(sqlPassword) == 0:
-                        
-                        return jsonify({
-                            "error": True,
-                            "message": "Please fill in the blanks"
-                        }), 400
-                    else:
-                        signin = f'''INSERT INTO member (name, email, password) VALUES ("{sqlName}", "{sqlEmail}", "{sqlPassword}")'''
-                        signin_data = db.engine.execute(signin)
-
-                        return jsonify({
-                            "ok": True,
-                            "message": "Your account has been successfully activated, please re-sign-in"
-                        }), 200
-
-                else:
-                    return jsonify({
-                        "error": True,
-                        "message": "Email is used by another account.",
+                        "message": "Wrong Password"
                     }), 400
 
-            except Exception as e:
-                print(e)
-                return jsonify({
-                    "error": True,
-                    "message": "Invalid Server"
-                }), 500
-
-        elif request.method == "GET":
-            if "memberEmail" in session:
-                return jsonify({
-                    "data": True,
-                    "member": session["memberName"]
-                })
             else:
                 return jsonify({
-                    "data": None,
+                    "error": True,
+                    "message": "Invalid Account"
                 })
 
-        elif request.method == "DELETE":
-            session.pop("memberName", None)
-            session.pop("memberEmail", None)
+        except Exception as e:
             return jsonify({
-                "ok": True,
+                "error": True,
+                "message": "Invalid Server"
+            }), 500
+
+    elif request.method == "POST":
+        data = request.get_json()
+        sqlName = data['name']
+        sqlEmail = data['email']
+        sqlPassword = data['password']
+
+        register = f'''SELECT * FROM member WHERE email = "{sqlEmail}"'''
+        register_data = db.engine.execute(register)
+        registerResult = register_data.fetchone()
+
+        try:
+            if registerResult == None:
+                if len(sqlName) == 0 or len(sqlEmail) == 0 or len(sqlPassword) == 0:
+
+                    return jsonify({
+                        "error": True,
+                        "message": "Please fill in the blanks"
+                    }), 400
+                else:
+                    signin = f'''INSERT INTO member (name, email, password) VALUES ("{sqlName}", "{sqlEmail}", "{sqlPassword}")'''
+                    signin_data = db.engine.execute(signin)
+
+                    return jsonify({
+                        "ok": True,
+                        "message": "Your account has been successfully activated, please re-sign-in"
+                    }), 200
+
+            else:
+                return jsonify({
+                    "error": True,
+                    "message": "Email is used by another account.",
+                }), 400
+
+        except Exception as e:
+            print(e)
+            return jsonify({
+                "error": True,
+                "message": "Invalid Server"
+            }), 500
+
+    elif request.method == "GET":
+        if "memberEmail" in session:
+            return jsonify({
+                "data": True,
+                "member": session["memberName"]
             })
+        else:
+            return jsonify({
+                "data": None,
+            })
+
+    elif request.method == "DELETE":
+        session.pop("memberName", None)
+        session.pop("memberEmail", None)
+        return jsonify({
+            "ok": True,
+        })
 
 
 app.run(host="0.0.0.0", port=3300, debug=True)

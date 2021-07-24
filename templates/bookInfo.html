@@ -442,7 +442,7 @@
         }
 
         .titleS {
-            line-height: 3;
+            margin: 10px 0px;
         }
 
         #allEventsPage {
@@ -477,12 +477,18 @@
 
         <div class="nav">
             <div class="menu"><a id="eventPage" href="/events">Events</a></div>
-            <!-- <div class="menu mybookIcon" id="mybookIcon"><a id="mybookProcess" class="mybookProcess" href="#"><i
-                        class="fas fa-book"></i></a></div> -->
             <div class="menu signinIcon" id="signinIcon" style="display: none"><a id="signinProcess"
                     class="signinProcess" href="/accounts">Sign in</a></div>
-            <div class="menu signoutIcon" id="signoutIcon" style="display: none"><a id="signoutProcess"
-                    class="signoutProcess" href="#"><i class="fas fa-user-astronaut"></i></a></div>
+            <div class="menu memIcon" id="memIcon" style="display: none">
+                <i class="fas fa-user-astronaut"></i>
+            </div>
+        </div>
+
+        <div id="memToggle" class="memToggle" style="display: none">
+            <a href="/myevent">
+                <div class="myEvent">My Collection</div>
+            </a>
+            <div id="signoutProcess" class="signoutProcess">Sign Out</div>
         </div>
     </div>
 
@@ -1364,6 +1370,9 @@
 
         checkProcess()
 
+        let memIcon = document.getElementById("memIcon")
+        let memToggle = document.getElementById("memToggle")
+
         async function checkProcess() {
             await fetch("/api/user", { method: "GET" })
                 .then(response => {
@@ -1371,13 +1380,30 @@
                 }).then(res => {
                     if (res.data == true) {
                         signinIcon.style.display = "none"
-                        signoutIcon.style.display = "block"
+                        memIcon.style.display = "block"
                     } else {
                         signinIcon.style.display = "block"
-                        signoutIcon.style.display = "none"
+                        memIcon.style.display = "none"
                     }
                 })
         }
+
+        memIcon.addEventListener("mousemove", () => {
+            memToggle.style.display = "block"
+        })
+
+        // memIcon.addEventListener("mouseout", () => {
+        //     memToggle.style.display = "none"
+        // })
+
+        memToggle.addEventListener("mouseout", () => {
+            memToggle.style.display = "none"
+        })
+
+        memToggle.addEventListener("mouseover", () => {
+            memToggle.style.display = "block"
+        })
+
 
         document.getElementById("signoutProcess").addEventListener("click", function () {
             logoutProcess()

@@ -112,18 +112,6 @@ input::placeholder {
     font-family: Helvetica;
 }
 
-.mybookIcon {
-    padding-top: 5px;
-}
-
-.mybookProcess {
-    color: white;
-}
-
-.mybookProcess:hover {
-    color: #656565;
-}
-
 #eventPage {
     font-size: 24px;
     color: white;
@@ -161,6 +149,7 @@ input::placeholder {
     right: 0px;
     width: 150px;
     background: white;
+    box-shadow: 1px 5px 10px;
 }
 
 .myEvent, .signoutProcess {
@@ -284,4 +273,68 @@ i.fa.fa-cloud-upload {
     -webkit-opacity: 0.3;
     display: none;
     z-index: 100;
+}
+
+.indiEvent {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 370px;
+    margin: 20px 30px;
+    height: 275px;
+    background-color: white;
+    border-bottom: 1px solid #c5b8a5;
+}
+
+.indiEvent:hover {
+    box-shadow: 1px 1px 10px;
+}
+
+.indiCover {
+    width: 100%;
+    height: 165px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    border: 0.5px solid gray;
+}
+
+.eventCollect {
+    position: absolute;
+    bottom: 90px;
+    right: 20px;
+    font-size: 40px;
+    background: white;
+    color: gray;
+    border-radius: 40px;
+    cursor: pointer;
+}
+
+.indiInfo {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 20px 0px 20px;
+}
+
+.indiTitle {
+    font-size: 20px;
+    color: #656565;
+}
+
+.indiOrg {
+    color: #8696a7;
+    line-height: 2;
+    font-size: 15px;
+}
+
+.indiTime {
+    color: #965454;
+    font-size: 15px;
+}
+
+.indiPeo {
+    color: #8696a7;
+    font-size: 15px;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
 }

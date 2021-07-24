@@ -14,17 +14,61 @@
 
 <body>
     <style>
-        .myPageT {
-            font-size: 60px;
-            padding: 30px;
+        #which {
+            position: relative;
+            display: flex;
+            flex-direction: row;
+            padding: 30px 30px 0px 30px;
             margin-top: 150px;
             font-weight: 500;
+            border-bottom: 0.5px solid gray;
         }
 
-        #likeSec {
-            margin: auto;
-            width: 1200px;
+        .myPageTB {
+            font-size: 60px;
+            padding: 15px;
+            margin-bottom: -3px;
+            background-color: #f0ebe5;
         }
+
+        .myLikeS {
+            font-size: 20px;
+            height: 20px;
+            padding: 15px;
+            background: #f0ebe5;
+            margin: 46px 20px 0px 0px;
+        }
+
+        .myPageTS {
+            font-size: 20px;
+            height: 20px;
+            bottom: 0px;
+            position: absolute;
+            left: 220px;
+            background: ff;
+            padding: 15px;
+            background: #f0ebe5;
+        }
+
+        #allEventSec {
+            padding: 20px 30px;
+        }
+
+        #likeSec, #myEventSec {
+            margin: auto;
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            
+        }
+
+        #allEventSec {
+            background-color: #f0ebe5;
+        }
+
     </style>
     <div class="searchEngine">
         <div class="Header">
@@ -33,8 +77,6 @@
 
         <div class="nav">
             <div class="menu"><a id="eventPage" href="/events">Events</a></div>
-            <!-- <div class="menu mybookIcon" id="mybookIcon"><a id="mybookProcess" class="mybookProcess" href="#"><i
-                        class="fas fa-book"></i></a></div> -->
             <div class="menu signinIcon" id="signinIcon" style="display: none"><a id="signinProcess"
                     class="signinProcess" href="/accounts">Sign in</a></div>
             <div class="menu memIcon" id="memIcon" style="display: none">
@@ -44,15 +86,26 @@
 
         <div id="memToggle" class="memToggle" style="display: none">
             <a href="/myevent">
-                <div class="myEvent">My Event</div>
+                <div class="myEvent">My Collection</div>
             </a>
             <div id="signoutProcess" class="signoutProcess">Sign Out</div>
         </div>
     </div>
 
-    <div class="myPageT">Likes</div>
+    <div id="which">
+        <div id="likes" class="myPageTB">Likes</div>
+        <div id="mycreation" class="myPageTS">My Event</div>
+    </div>
 
-    <div id="likeSec"></div>
+    <div id="allEventSec">
+        <div id="likedisplay">
+            <div id="likeSec"></div>
+        </div>
+        <div id="myEventdisplay" style="display: none">
+            <div id="myEventSec"></div>
+        </div>
+        
+    </div>
 
 
     <script src="https://kit.fontawesome.com/cbebce4b6d.js" crossorigin="anonymous"></script>
@@ -60,14 +113,226 @@
 
     <script>
         //MEMBER EVENTS LIKES
+        //MEMBER OWN EVENTS
 
         eventLikes()
+        memOwn()
 
-        async function eventLikes(){
-            await fetch ("/api/eventfav")
+        let collectEventId;
+
+        async function eventLikes() {
+            await fetch("/api/eventfav", { method: "GET" })
+                .then(response => {
+                    return response.json()
+                }).then(re => {
+                    let favItems = re.favCollection
+                    let likeSec = document.getElementById("likeSec")
+                    for (let i = 0; i < favItems.length; i++) {
+                        let favEvent = document.createElement("div")
+                        let img_tag = document.createElement("div")
+                        let favInfo = document.createElement("div")
+                        let favTitle = document.createElement("div")
+                        let favTime = document.createElement("div")
+                        let a_tag = document.createElement("a")
+                        let favOrg = document.createElement("div")
+                        let favPeo_tag = document.createElement("div")
+                        let fav_tag = document.createElement("i")
+
+                        favEvent.classList.add("indiEvent")
+                        img_tag.classList.add("indiCover")
+                        favInfo.classList.add("indiInfo")
+                        favTitle.classList.add("indiTitle")
+                        favTime.classList.add("indiTime")
+                        a_tag.classList.add("indiLink")
+                        favOrg.classList.add("indiOrg")
+                        favPeo_tag.classList.add("indiPeo")
+                        fav_tag.setAttribute("data-id", favItems[i].getCollect)
+                        fav_tag.classList.add("eventCollect")
+                        fav_tag.classList.add("fab")
+                        fav_tag.classList.add("fa-gratipay")
+
+                        favTitle.innerHTML = favItems[i].favTitle
+                        favOrg.innerHTML = "by " + favItems[i].favOrganiser.toUpperCase()
+                        img_tag.style.backgroundImage = `url(${favItems[i].favCover})`
+                        favTime.innerHTML = favItems[i].favDay + ", " + favItems[i].favDate + ", " + favItems[i].favMonth + ", " + favItems[i].favYear + ", " + favItems[i].favTime
+                        favPeo_tag.innerHTML = favItems[i].totalPeople + " participants"
+                        a_tag.href = `/e/${favItems[i].favTitle}`
+
+                        favInfo.appendChild(favTitle)
+                        favInfo.appendChild(favOrg)
+                        favInfo.appendChild(favTime)
+                        favInfo.appendChild(favPeo_tag)
+                        a_tag.appendChild(img_tag)
+                        a_tag.appendChild(favInfo)
+                        favEvent.appendChild(a_tag)
+                        favEvent.appendChild(fav_tag)
+                        likeSec.appendChild(favEvent)
+
+                        let turnRed = document.querySelectorAll("[data-id]")
+                        turnRed.forEach((e) => {
+                            if (e.getAttribute('data-id') == favItems[i].getCollect) {
+                                e.style.color = "red"
+                            }
+                        })
+                    }
+
+                    likeSec.addEventListener("click", function (e) {
+                        let targetID = e.target
+                        if (targetID.getAttribute('data-id')) {
+                            collectEventId = targetID.getAttribute('data-id')
+                            collectEvent()
+                        } else {
+                            console.log("no ID")
+                        }
+                    })
+                })
+        }
+
+        async function collectEvent() {
+            await fetch("/api/eventfav", {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json"
+                },
+                body: JSON.stringify({
+                    eventId: collectEventId
+                })
+            }).then(response => {
+                return response.json()
+            }).then(re => {
+                console.log('pass')
+                if (re.ok == true) {
+                    let turnGray = document.querySelectorAll("[data-id]")
+                    turnGray.forEach((e) => {
+                        if (e.getAttribute('data-id') == collectEventId) {
+                            e.style.color = "gray"
+                        }
+                    })
+                } else if (re.error == true) {
+                    alert(re.message)
+                } else {
+                    let turn = document.querySelectorAll("[data-id]")
+                    turn.forEach((e) => {
+                        if (e.getAttribute('data-id') == collectEventId) {
+                            e.style.color = "red"
+                        }
+                    })
+                }
+            })
+        }
+
+        async function memOwn() {
+            await fetch ("/api/myevent", {method: "GET"})
+                .then(response => {
+                    return response.json()
+                }).then(data => {
+                    console.log(data)
+                    let ownItems = data.myOwnEvent
+                    let myEventSec = document.getElementById("myEventSec")
+                    for (let i = 0; i < ownItems.length; i++) {
+                        let ownEvent = document.createElement("div")
+                        let img_tag = document.createElement("div")
+                        let ownInfo = document.createElement("div")
+                        let ownTitle = document.createElement("div")
+                        let ownTime = document.createElement("div")
+                        let a_tag = document.createElement("a")
+                        let ownOrg = document.createElement("div")
+                        let ownPeo_tag = document.createElement("div")
+                        let own_tag = document.createElement("i")
+
+                        ownEvent.classList.add("indiEvent")
+                        img_tag.classList.add("indiCover")
+                        ownInfo.classList.add("indiInfo")
+                        ownTitle.classList.add("indiTitle")
+                        ownTime.classList.add("indiTime")
+                        a_tag.classList.add("indiLink")
+                        ownOrg.classList.add("indiOrg")
+                        ownPeo_tag.classList.add("indiPeo")
+                        own_tag.setAttribute("data-id", ownItems[i].getCollect)
+                        own_tag.classList.add("eventCollect")
+                        own_tag.classList.add("fab")
+                        own_tag.classList.add("fa-gratipay")
+
+                        ownTitle.innerHTML = ownItems[i].ownTitle
+                        ownOrg.innerHTML = "by " + ownItems[i].ownOrganiser.toUpperCase()
+                        img_tag.style.backgroundImage = `url(${ownItems[i].ownCover})`
+                        ownTime.innerHTML = ownItems[i].ownDay + ", " + ownItems[i].ownDate + ", " + ownItems[i].ownMonth + ", " + ownItems[i].ownYear + ", " + ownItems[i].ownTime
+                        ownPeo_tag.innerHTML = ownItems[i].totalPeople + " participants"
+                        a_tag.href = `/e/${ownItems[i].ownTitle}`
+
+                        ownInfo.appendChild(ownTitle)
+                        ownInfo.appendChild(ownOrg)
+                        ownInfo.appendChild(ownTime)
+                        ownInfo.appendChild(ownPeo_tag)
+                        a_tag.appendChild(img_tag)
+                        a_tag.appendChild(ownInfo)
+                        ownEvent.appendChild(a_tag)
+                        ownEvent.appendChild(own_tag)
+                        myEventSec.appendChild(ownEvent)
+                    }
+
+                    myEventSec.addEventListener("click", function (e) {
+                        let owntargetID = e.target
+                        if (owntargetID.getAttribute('data-id')) {
+                            collectEventId = owntargetID.getAttribute('data-id')
+                            collectEvent()
+                        } else {
+                            console.log("no ID")
+                        }
+                    })
+
+                    async function getCollectionE() {
+                        if (document.getElementById("signinIcon").style.display == "block") {
+                            return
+                        } else {
+                            await fetch("/api/eventfav", { method: "GET" })
+                                .then(response => {
+                                    return response.json()
+                                }).then(data => {
+                                    let getFav = data.favCollection
+                                    let ownRed = document.querySelectorAll("[data-id]")
+                                    ownRed.forEach((e) => {
+                                        for (let i = 0; i < getFav.length; i++)
+                                            if (e.getAttribute('data-id') == getFav[i].getCollect) {
+                                                e.style.color = "red"
+                                            }
+                                    })
+
+                                })
+                        }
+                    }
+                    getCollectionE()
+                })
         }
     </script>
 
+    <script>
+        let likes = document.getElementById("likes")
+        let mycreation = document.getElementById("mycreation")
+        let likedisplay = document.getElementById("likedisplay")
+        let myEventdisplay = document.getElementById("myEventdisplay")
+        // let likeSec = document.getElementById("likeSec")
+        // let myEventSec = document.getElementById("myEventSec")
+
+        likes.addEventListener("mouseover", () => {
+            mycreation.classList.add("myPageTS");
+            mycreation.classList.remove("myPageTB");
+            likes.classList.add("myPageTB");
+            likes.classList.remove("myLikeS");
+            likedisplay.style.display = "block";
+            myEventdisplay.style.display = "none";
+
+        })
+
+        mycreation.addEventListener("mouseover", () => {
+            mycreation.classList.remove("myPageTS");
+            mycreation.classList.add(("myPageTB"));
+            likes.classList.remove("myPageTB");
+            likes.classList.add("myLikeS");
+            likedisplay.style.display = "none";
+            myEventdisplay.style.display = "block";
+        })
+    </script>
 
     <script>
         //MEMBER SYSTEM
