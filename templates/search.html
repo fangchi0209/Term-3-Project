@@ -183,7 +183,7 @@
                 let img_tag = document.createElement("img")
                 let url_tag = document.createElement("a")
 
-                !items[n].volumeInfo.imageLinks ? console.log(items[n].volumeInfo.title) : img_tag.src = items[n].volumeInfo.imageLinks.thumbnail
+                !items[n].volumeInfo.imageLinks ? img_tag.src = "http://dqgc5yp61yvd.cloudfront.net/no_cover.png" : img_tag.src = items[n].volumeInfo.imageLinks.thumbnail
 
                 let bookTitle = document.createTextNode(items[n].volumeInfo.title)
                 let authors = document.createTextNode(items[n].volumeInfo.authors)

@@ -338,3 +338,149 @@ i.fa.fa-cloud-upload {
     bottom: 10px;
     right: 10px;
 }
+
+.createpopup {
+    position: fixed;
+    width: 700px;
+    height: 400px;
+    left: 50%;
+    top: 80px;
+    transform: translateX(-50%);
+    box-shadow: 0px 4px 60px black;
+    z-index: 999;
+    background-color: white;
+    border-radius: 20px;
+    font-size: 24px;
+}
+
+.cBox {
+    overflow: auto;
+    margin: 20px;
+    height: 350px;
+}
+
+.eInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.eventinput {
+    height: 70px;
+    margin-left: 20px;
+    width: 500px;
+    border-radius: 8px;
+    border: 1px solid gray;
+    padding-left: 15px;
+    font-size: 24px;
+}
+
+.createInfoBox {
+    display: flex;
+    flex-direction: row;
+    margin: 20px 0px 0px 0px;
+    align-items: center;
+}
+
+.eventDT {
+    font-size: 24px;
+    width: 210px;
+    height: 70px;
+    margin-left: 30px;
+    border-radius: 8px;
+    border: 1px solid gray;
+    padding-left: 30px;
+}
+
+.cTitle {
+    color: #030305;
+    font-size: 24px;
+}
+
+
+.eventDes {
+    border: 1px solid gray;
+    border-radius: 8px;
+    background-color: white;
+    min-height: 90px;
+    color: #030305;
+    outline: none;
+    font-size: 20px;
+    padding: 20px;
+}
+
+.photoTogether {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+}
+
+.showimg {
+    width: 300px;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.nextBtn {
+    position: absolute;
+    width: 100px;
+    height: 50px;
+    bottom: 25px;
+    right: 40px;
+    color: white;
+    background-color: #c5b8a5;
+    border: 1px solid #c5b8a5;
+    border-radius: 8px;
+    font-family: Helvetica;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.nextBtn:hover {
+    background-color: white;
+    color: black;
+}
+
+.launchSec {
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px;
+    justify-content: flex-end;
+}
+
+.launchBtn {
+    width: 100px;
+    height: 50px;
+    color: white;
+    background-color: #c5b8a5;
+    border: 1px solid #c5b8a5;
+    border-radius: 8px;
+    font-family: Helvetica;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.launchBtn:hover {
+    background-color: white;
+    color: black;
+}
+
+.previousBtn {
+    width: 130px;
+    height: 48px;
+    font-size: 28px;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    margin-right: 10px;
+}
+
+.previousBtn:hover {
+    border: 1px solid gray;
+    border-radius: 8px;
+}
+
+.fa-user-cog {
+    margin-left: -30px;
+}

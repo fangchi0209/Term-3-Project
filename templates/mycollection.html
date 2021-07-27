@@ -13,85 +13,85 @@
 </head>
 
 <body>
-
     <style>
-        body {
-            background-color: #f0ebe5
-        }
-
-        #pageCover {
+        #which {
             position: relative;
-            width: 100%;
-            height: 580px;
-            background-image: url("/eventCover.png");
-            background-attachment: fixed;
-            background-size: cover;
-            margin-top: 150px;
-        }
-
-        #createEvents {
-            position: absolute;
-            left: 200px;
-            background: white;
-            opacity: 0.7;
-            width: 380px;
-            height: 380px;
-        }
-
-        #createSlogan {
-            position: absolute;
-            color: black;
-            z-index: 2;
-            left: 220px;
-            padding: 40px 20px;
-            line-height: 1.5;
-            width: 300px;
-            height: 200px;
-            font-size: 32px;
-            font-weight: bold;
-        }
-
-        #eArrow {
-            color: black;
-            font-size: 32px;
-            width: 40px;
-            position: absolute;
-            left: 530px;
-            bottom: 220px;
-        }
-
-        #createBtn {
-            height: 160px;
-            position: absolute;
-            left: 580px;
-            border: none;
-            bottom: 100px;
-            width: 160px;
-            color: black;
-            font-size: 20px;
-            font-weight: bold;
-            cursor: pointer
-        }
-
-        #events {
-            margin: auto;
             display: flex;
             flex-direction: row;
+            padding: 30px 30px 0px 30px;
+            margin-top: 150px;
+            font-weight: 500;
+            border-bottom: 0.5px solid gray;
         }
 
+        .myPageTB {
+            font-size: 60px;
+            padding: 15px;
+            margin-bottom: -3px;
+            background-color: #f0ebe5;
+        }
 
-        #ownEvents {
+        .myLikeS {
+            font-size: 20px;
+            height: 20px;
+            padding: 15px;
+            background: #f0ebe5;
+            margin: 46px 20px 0px 0px;
+        }
+
+        .myPageTS {
+            font-size: 20px;
+            height: 20px;
+            bottom: 0px;
+            position: absolute;
+            left: 220px;
+            background: ff;
+            padding: 15px;
+            background: #f0ebe5;
+        }
+
+        #allEventSec {
+            padding: 20px 30px;
+        }
+
+        #likeSec,
+        #myEventSec {
+            margin: auto;
+            width: 100%;
+            max-width: 1200px;
             display: flex;
             flex-direction: row;
             flex-wrap: wrap;
-            width: 1400px;
             justify-content: center;
-            margin: 20px auto;
+
         }
 
-        .sBox {
-            width: 650px;
-            margin-top: 80px;
+        #allEventSec {
+            background-color: #f0ebe5;
+        }
+
+        .noData {
+            font-size: 28px;
+            height: 200px;
+            margin-top: 150px;
+        }
+
+        #findout a {
+            color: #656565;
+        }
+
+        #findout a:hover {
+            border-bottom: 0.5px solid gray;
+            color: black;
+        }
+
+        #createE {
+            color: #656565;
+        }
+
+        #createE:hover {
+            border-bottom: 0.5px solid gray;
+            color: black;
         }
     </style>
     <div class="searchEngine">
@@ -116,22 +116,27 @@
         </div>
     </div>
 
-    <div id="pageCover">
-        <div id="createEvents"></div>
-        <div id="createSlogan">To Create The Best Online Events Without Leaving Home</div>
-        <div id="eArrow"><i class="fas fa-arrow-right"></i></div>
-        <button id="createBtn">Create Now</button>
+    <div id="which">
+        <div id="likes" class="myPageTB">Likes</div>
+        <div id="mycreation" class="myPageTS">My Event</div>
     </div>
 
-    <div id="events">
-        <div id="ownEvents" class="eventBox">
+    <div id="allEventSec">
+        <div id="likedisplay">
+            <div id="likeSec">
+                <div class="noData" style="display: none">
+                    <div id="findout"><a href="/events">Find Out More Events</a></div>
+                </div>
+            </div>
         </div>
-        <div id="outerEvents" class="eventBox" style="display: none">
-            outer
+        <div id="myEventdisplay" style="display: none">
+            <div id="myEventSec">
+                <div class="noData" style="display: none">
+                    <div id="createE">Create Your Own Event</div>
+                </div>
+            </div>
         </div>
-        <div id="fairs" class="eventBox" style="display: none">
-            fairs
-        </div>
+
     </div>
 
     <label><a id="bgBtn" href="javascript:void(0)">
@@ -162,7 +167,7 @@
                         <i class="fa fa-cloud-upload"></i> Upload
                     </label>
                     <input type="file" name="photo" id="eventImg" onchange="showImg(this)">
-                    <img id= "showimg" class="showimg" src="" style="display:none;" />
+                    <img id="showimg" class="showimg" src="" style="display:none;" />
                 </div>
 
                 <div class="cTitle">Event Description:</div>
@@ -175,15 +180,6 @@
             </div>
 
         </div>
-
-
-        <div id="sBox" class="sBox" style="display: none">
-            <i class="fas fa-user-cog"></i><br>
-            <div id="createAnEvent" style="display: none">Sign in with your BooKÏ Account to create an event</div>
-            <div id="collectAnEvent" style="display: none">Sign in with your BooKÏ Account to collect an event</div>
-            <button id="cancelBtn" class="cancelBtn">cancel</button><button id="gosigninBtn" class="gosigninBtn"
-                onclick="goSignin()">Sign in</button>
-        </div>
     </div>
 
 
@@ -191,12 +187,7 @@
     <script src="{{url_for('static',filename='js/base.js')}}"></script>
 
     <script>
-        //MAIN SCRIPT
-
-        showEvents()
-
-
-        let createBtn = document.getElementById("createBtn")
+        let createE = document.getElementById("createE")
         let bg = document.getElementById("bg")
         let bgBtn = document.getElementById("bgBtn")
         let nextBtn = document.getElementById("nextBtn")
@@ -210,11 +201,6 @@
         let virtual = document.getElementById("virtual")
         let createpopup = document.getElementById("createpopup")
         let cBox = document.getElementById("cBox")
-        let sBox = document.getElementById("sBox")
-        let cancelBtn = document.getElementById("cancelBtn")
-        let createAnEvent = document.getElementById("createAnEvent")
-        let collectAnEvent = document.getElementById("collectAnEvent")
-        let collectEventId;
 
         var today = new Date().toISOString().split('T')[0];
         sDate.setAttribute('min', today);
@@ -228,29 +214,14 @@
             previousBtn.style.display = "none"
             nextBtn.style.display = "block"
             launchBtn.style.display = "none"
-            sBox.style.display = "none"
             return false;
         })
 
-        createBtn.addEventListener("click", function () {
-            if (document.getElementById("signinIcon").style.display == "block") {
-                createpopup.style.display = "block"
-                createpopup.style.backgroundColor = "#D3D3D3"
-                cBox.style.display = "none"
-                sBox.style.display = "block"
-                createAnEvent.style.display = "block"
-                collectAnEvent.style.display = "none"
-                bg.style.display = "block"
-            } else {
+        createE.addEventListener("click", function () {
                 bg.style.display = "block";
                 createpopup.style.display = "block"
                 createpopup.style.backgroundColor = "white"
                 cBox.style.display = "block"
-                sBox.style.display = "none"
-                createAnEvent.style.display = "none"
-                collectAnEvent.style.display = "none"
-            }
-
         })
 
         nextBtn.addEventListener("click", function () {
@@ -269,12 +240,6 @@
             launchBtn.style.display = "none"
         })
 
-        cancelBtn.addEventListener("click", function () {
-            bg.style.display = "none";
-            createpopup.style.display = "none";
-            sBox.style.display = "none"
-        })
-
         function showImg(thisimg) {
             var file = thisimg.files[0];
             if (window.FileReader) {
@@ -287,10 +252,6 @@
                 fr.readAsDataURL(file);
                 showimg.style.display = 'block';
             }
-        }
-
-        function goSignin() {
-            window.location.replace("/accounts")
         }
 
         async function launchEvent() {
@@ -374,107 +335,87 @@
                 location.reload()
             })
         }
+    </script>
+    <script>
+        //MEMBER EVENTS LIKES
+        //MEMBER OWN EVENTS
 
-        async function showEvents() {
-            await fetch("/api/bookievents", { method: "GET" })
+        eventLikes()
+        memOwn()
+
+        let collectEventId;
+
+        async function eventLikes() {
+            await fetch("/api/eventfav", { method: "GET" })
                 .then(response => {
                     return response.json()
-                }).then(data => {
-                    eventsAll = data.allEvents
+                }).then(re => {
+                    let favItems = re.favCollection
+                    let likeSec = document.getElementById("likeSec")
 
-                    for (let i = 0; i < eventsAll.length; i++) {
-                        let ownEvents = document.getElementById("ownEvents")
-                        let indiEvent = document.createElement("div")
-                        let img_tag = document.createElement("div")
-                        let indiInfo = document.createElement("div")
-                        let indiTitle = document.createElement("div")
-                        let indiTime = document.createElement("div")
-                        let a_tag = document.createElement("a")
-                        let indiOrg = document.createElement("div")
-                        let indiPeo_tag = document.createElement("div")
-                        let eventCollect_tag = document.createElement("i")
+                    if (favItems.length == 0) {
+                        document.getElementsByClassName("noData")[0].style.display = "block"
+                    } else {
 
+                        for (let i = 0; i < favItems.length; i++) {
+                            let favEvent = document.createElement("div")
+                            let img_tag = document.createElement("div")
+                            let favInfo = document.createElement("div")
+                            let favTitle = document.createElement("div")
+                            let favTime = document.createElement("div")
+                            let a_tag = document.createElement("a")
+                            let favOrg = document.createElement("div")
+                            let favPeo_tag = document.createElement("div")
+                            let fav_tag = document.createElement("i")
 
-                        indiEvent.classList.add("indiEvent")
-                        img_tag.classList.add("indiCover")
-                        indiInfo.classList.add("indiInfo")
-                        indiTitle.classList.add("indiTitle")
-                        indiTime.classList.add("indiTime")
-                        a_tag.classList.add("indiLink")
-                        indiOrg.classList.add("indiOrg")
-                        indiPeo_tag.classList.add("indiPeo")
-                        eventCollect_tag.setAttribute("data-id", eventsAll[i].aId)
-                        eventCollect_tag.classList.add("eventCollect")
-                        eventCollect_tag.classList.add("fab")
-                        eventCollect_tag.classList.add("fa-gratipay")
+                            favEvent.classList.add("indiEvent")
+                            img_tag.classList.add("indiCover")
+                            favInfo.classList.add("indiInfo")
+                            favTitle.classList.add("indiTitle")
+                            favTime.classList.add("indiTime")
+                            a_tag.classList.add("indiLink")
+                            favOrg.classList.add("indiOrg")
+                            favPeo_tag.classList.add("indiPeo")
+                            fav_tag.setAttribute("data-id", favItems[i].getCollect)
+                            fav_tag.classList.add("eventCollect")
+                            fav_tag.classList.add("fab")
+                            fav_tag.classList.add("fa-gratipay")
 
-                        indiTitle.innerHTML = eventsAll[i].aTitle
-                        indiOrg.innerHTML = "by " + eventsAll[i].aUser.toUpperCase()
-                        img_tag.style.backgroundImage = `url(${eventsAll[i].aCover})`
-                        indiTime.innerHTML = eventsAll[i].asDay + ", " + eventsAll[i].asDate + ", " + eventsAll[i].asMonth + ", " + eventsAll[i].asYear + ", " + eventsAll[i].asTime
-                        indiPeo_tag.innerHTML = eventsAll[i].aPeople + " participants"
-                        a_tag.href = `/e/${eventsAll[i].aTitle}`
+                            favTitle.innerHTML = favItems[i].favTitle
+                            favOrg.innerHTML = "by " + favItems[i].favOrganiser.toUpperCase()
+                            img_tag.style.backgroundImage = `url(${favItems[i].favCover})`
+                            favTime.innerHTML = favItems[i].favDay + ", " + favItems[i].favDate + ", " + favItems[i].favMonth + ", " + favItems[i].favYear + ", " + favItems[i].favTime
+                            favPeo_tag.innerHTML = favItems[i].totalPeople + " participants"
+                            a_tag.href = `/e/${favItems[i].favTitle}`
 
-                        indiInfo.appendChild(indiTitle)
-                        indiInfo.appendChild(indiOrg)
-                        indiInfo.appendChild(indiTime)
-                        indiInfo.appendChild(indiPeo_tag)
-                        a_tag.appendChild(img_tag)
-                        a_tag.appendChild(indiInfo)
-                        indiEvent.appendChild(a_tag)
-                        indiEvent.appendChild(eventCollect_tag)
-                        ownEvents.appendChild(indiEvent)
-                    }
+                            favInfo.appendChild(favTitle)
+                            favInfo.appendChild(favOrg)
+                            favInfo.appendChild(favTime)
+                            favInfo.appendChild(favPeo_tag)
+                            a_tag.appendChild(img_tag)
+                            a_tag.appendChild(favInfo)
+                            favEvent.appendChild(a_tag)
+                            favEvent.appendChild(fav_tag)
+                            likeSec.appendChild(favEvent)
 
-                    ownEvents.addEventListener("click", function (e) {
-                        let targetID = e.target
-                        if (targetID.getAttribute('data-id')) {
-                            if (document.getElementById("signinIcon").style.display == "block") {
-                                createpopup.style.display = "block"
-                                createpopup.style.backgroundColor = "#D3D3D3"
-                                cBox.style.display = "none"
-                                sBox.style.display = "block"
-                                createAnEvent.style.display = "none"
-                                collectAnEvent.style.display = "block"
-                                bg.style.display = "block"
-                            } else {
-                                createpopup.style.display = "none"
-                                createpopup.style.backgroundColor = "white"
-                                cBox.style.display = "none"
-                                sBox.style.display = "none"
-                                createAnEvent.style.display = "none"
-                                collectAnEvent.style.display = "none"
-                                bg.style.display = "none"
+                            let turnRed = document.querySelectorAll("[data-id]")
+                            turnRed.forEach((e) => {
+                                if (e.getAttribute('data-id') == favItems[i].getCollect) {
+                                    e.style.color = "red"
+                                }
+                            })
+                        }
 
+                        likeSec.addEventListener("click", function (e) {
+                            let targetID = e.target
+                            if (targetID.getAttribute('data-id')) {
                                 collectEventId = targetID.getAttribute('data-id')
                                 collectEvent()
+                            } else {
+                                console.log("no ID")
                             }
-                        } else {
-                            console.log("no ID")
-                        }
-                    })
-
-                    async function getCollectionE() {
-                        if (document.getElementById("signinIcon").style.display == "block") {
-                            return
-                        } else {
-                            await fetch("/api/eventfav", { method: "GET" })
-                                .then(response => {
-                                    return response.json()
-                                }).then(data => {
-                                    let getFav = data.favCollection
-                                    let turnRed = document.querySelectorAll("[data-id]")
-                                    turnRed.forEach((e) => {
-                                        for (let i = 0; i < getFav.length; i++)
-                                            if (e.getAttribute('data-id') == getFav[i].getCollect) {
-                                                e.style.color = "red"
-                                            }
-                                    })
-
-                                })
-                        }
+                        })
                     }
-                    getCollectionE()
                 })
         }
 
@@ -490,6 +431,7 @@
             }).then(response => {
                 return response.json()
             }).then(re => {
+                console.log('pass')
                 if (re.ok == true) {
                     let turnGray = document.querySelectorAll("[data-id]")
                     turnGray.forEach((e) => {
@@ -510,11 +452,120 @@
             })
         }
 
+        async function memOwn() {
+            await fetch("/api/myevent", { method: "GET" })
+                .then(response => {
+                    return response.json()
+                }).then(data => {
+                    let ownItems = data.myOwnEvent
+                    let myEventSec = document.getElementById("myEventSec")
+                    if (data.error == true) {
+                        document.getElementsByClassName("noData")[1].style.display = "block"
+                    } else {
 
+                        for (let i = 0; i < ownItems.length; i++) {
+                            let ownEvent = document.createElement("div")
+                            let img_tag = document.createElement("div")
+                            let ownInfo = document.createElement("div")
+                            let ownTitle = document.createElement("div")
+                            let ownTime = document.createElement("div")
+                            let a_tag = document.createElement("a")
+                            let ownOrg = document.createElement("div")
+                            let ownPeo_tag = document.createElement("div")
+                            let own_tag = document.createElement("i")
 
+                            ownEvent.classList.add("indiEvent")
+                            img_tag.classList.add("indiCover")
+                            ownInfo.classList.add("indiInfo")
+                            ownTitle.classList.add("indiTitle")
+                            ownTime.classList.add("indiTime")
+                            a_tag.classList.add("indiLink")
+                            ownOrg.classList.add("indiOrg")
+                            ownPeo_tag.classList.add("indiPeo")
+                            own_tag.setAttribute("data-id", ownItems[i].getCollect)
+                            own_tag.classList.add("eventCollect")
+                            own_tag.classList.add("fab")
+                            own_tag.classList.add("fa-gratipay")
 
+                            ownTitle.innerHTML = ownItems[i].ownTitle
+                            ownOrg.innerHTML = "by " + ownItems[i].ownOrganiser.toUpperCase()
+                            img_tag.style.backgroundImage = `url(${ownItems[i].ownCover})`
+                            ownTime.innerHTML = ownItems[i].ownDay + ", " + ownItems[i].ownDate + ", " + ownItems[i].ownMonth + ", " + ownItems[i].ownYear + ", " + ownItems[i].ownTime
+                            ownPeo_tag.innerHTML = ownItems[i].totalPeople + " participants"
+                            a_tag.href = `/e/${ownItems[i].ownTitle}`
 
+                            ownInfo.appendChild(ownTitle)
+                            ownInfo.appendChild(ownOrg)
+                            ownInfo.appendChild(ownTime)
+                            ownInfo.appendChild(ownPeo_tag)
+                            a_tag.appendChild(img_tag)
+                            a_tag.appendChild(ownInfo)
+                            ownEvent.appendChild(a_tag)
+                            ownEvent.appendChild(own_tag)
+                            myEventSec.appendChild(ownEvent)
+                        }
 
+                        myEventSec.addEventListener("click", function (e) {
+                            let owntargetID = e.target
+                            if (owntargetID.getAttribute('data-id')) {
+                                collectEventId = owntargetID.getAttribute('data-id')
+                                collectEvent()
+                            } else {
+                                console.log("no ID")
+                            }
+                        })
+
+                        async function getCollectionE() {
+                            if (document.getElementById("signinIcon").style.display == "block") {
+                                return
+                            } else {
+                                await fetch("/api/eventfav", { method: "GET" })
+                                    .then(response => {
+                                        return response.json()
+                                    }).then(data => {
+                                        let getFav = data.favCollection
+                                        let ownRed = document.querySelectorAll("[data-id]")
+                                        ownRed.forEach((e) => {
+                                            for (let i = 0; i < getFav.length; i++)
+                                                if (e.getAttribute('data-id') == getFav[i].getCollect) {
+                                                    e.style.color = "red"
+                                                }
+                                        })
+
+                                    })
+                            }
+                        }
+                        getCollectionE()
+                    }
+                })
+        }
+    </script>
+
+    <script>
+        //SWITCH
+        let likes = document.getElementById("likes")
+        let mycreation = document.getElementById("mycreation")
+        let likedisplay = document.getElementById("likedisplay")
+        let myEventdisplay = document.getElementById("myEventdisplay")
+
+        likes.addEventListener("mouseover", () => {
+            mycreation.classList.add("myPageTS");
+            mycreation.classList.remove("myPageTB");
+            likes.classList.add("myPageTB");
+            likes.classList.remove("myLikeS");
+            likedisplay.style.display = "block";
+            myEventdisplay.style.display = "none";
+
+        })
+
+        mycreation.addEventListener("mouseover", () => {
+            mycreation.classList.remove("myPageTS");
+            mycreation.classList.add(("myPageTB"));
+            likes.classList.remove("myPageTB");
+            likes.classList.add("myLikeS");
+            likedisplay.style.display = "none";
+            myEventdisplay.style.display = "block";
+        })
     </script>
 
     <script>
@@ -589,5 +640,3 @@
         }
     </script>
 </body>
-
-</html>

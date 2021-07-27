@@ -376,15 +376,6 @@
             window.location.replace("/myevent")
         }
 
-
-        // bgBtn.addEventListener("click", function () {
-        //     bg.style.display = "none";
-        //     registerpopup.style.display = "none"
-        //     reBox.style.display = "none"
-        //     return false;
-        // })
-
-
         async function theEvent(eId) {
             await fetch(`/api/theevent?e=${eId}`, { method: "GET" })
                 .then(response => {

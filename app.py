@@ -62,10 +62,10 @@ def e(eventId):
     return render_template("e.html")
 
 
-@app.route("/myevent")
-def myevent():
+@app.route("/mycollection")
+def mycollection():
     if "memberEmail" in session:
-        return render_template("myevent.html")
+        return render_template("mycollection.html")
     else:
         return redirect("/events")
 
@@ -147,20 +147,33 @@ def eachPage():
 def authors():
     try:
         bookIdforA = request.args.get("a")
-        authorUrl = f"https://books.google.com.tw/books?id={bookIdforA}"
+        checkAuthorData = db.engine.execute(f'''SELECT * FROM author WHERE bookID = "{bookIdforA}"''')
+        checkAuthor = checkAuthorData.fetchone()
 
-        authorHtml = requests.get(authorUrl)
-        authorData = BeautifulSoup(authorHtml.text, 'html.parser')
-        aboutAuthor = authorData.find("div", class_="textmodulecontent")
-
-        if aboutAuthor != None:
+        if checkAuthor != None:
             return jsonify({
-                "aboutAuthor": aboutAuthor.text
+                "aboutAuthor": checkAuthor[2]
             })
+
         else:
-            return jsonify({
-                "aboutAuthor": "no data"
-            })
+
+            authorUrl = f"https://books.google.com.tw/books?id={bookIdforA}"
+
+            authorHtml = requests.get(authorUrl)
+            authorData = BeautifulSoup(authorHtml.text, 'html.parser')
+            aboutAuthor = authorData.find("div", class_="textmodulecontent")
+
+            if aboutAuthor != None:
+                db.engine.execute(f'''INSERT INTO author (bookID, aboutAuthor) VALUES ("{bookIdforA}", "{aboutAuthor.text}")''')
+
+                return jsonify({
+                    "aboutAuthor": aboutAuthor.text
+                })
+            else:
+                return jsonify({
+                    "aboutAuthor": "no data"
+                })
+            
     except Exception as e:
         print(e)
         return jsonify({
@@ -169,9 +182,11 @@ def authors():
         })
 
 
-@app.route("/api/recommend")
+@app.route("/api/recommend", methods=["POST"])
 def recommend():
-    bookIdforRec = request.args.get("rec")
+    recData = request.get_json()
+    bookIdforRec = recData["bookIdforRecommend"]
+    bookCoverforRec = recData["bookCoverforRecommend"]
     count_data = db.engine.execute(
         f'''SELECT * from counts WHERE bookId = "{bookIdforRec}"''')
     count_Result = count_data.fetchone()
@@ -184,56 +199,42 @@ def recommend():
 
             ctsRank = db.engine.execute(
                 "SELECT * FROM counts ORDER BY visitSite DESC LIMIT 17")
+            
+            top17arr = []
+            for recBookData in ctsRank:
 
-            def recBookInfo(recURL):
-                recBookHTML = requests.get(recURL)
-                recBook_data = json.loads(recBookHTML.text)
+                recBookDict = {
+                    "recBookId": recBookData[1],
+                    "recBookCover": recBookData[3]
+                }
 
-                return recBook_data
-
-            ctsBookArr = []
-            for ctsBook in ctsRank:
-                recBook = f"https://www.googleapis.com/books/v1/volumes?q={ctsBook[1]}&maxResults=1"
-                ctsBookArr.append(recBook)
-
-            with ThreadPoolExecutor(max_workers=15) as executor:
-                recBookResults = executor.map(recBookInfo, ctsBookArr)
-
-            top13Arr = []
-            for i in recBookResults:
-                top13Arr.append(i)
+                recBook = recBookDict.copy()
+                top17arr.append(recBook)
 
             return jsonify({
-                "recBooks": top13Arr,
+                "recBooks": top17arr
             })
 
         else:
             db.engine.execute(
-                f'''INSERT INTO counts (bookId, visitSite) VALUES ("{bookIdforRec}", "1")''')
+                f'''INSERT INTO counts (bookId, visitSite, bookCoverImg) VALUES ("{bookIdforRec}", "1", "{bookCoverforRec}")''')
 
             ctsRank = db.engine.execute(
-                "SELECT * FROM counts ORDER BY visitSite DESC LIMIT 13")
+                "SELECT * FROM counts ORDER BY visitSite DESC LIMIT 17")
 
-            def recBookInfo(recURL):
-                recBookHTML = requests.get(recURL)
-                recBook_data = json.loads(recBookHTML.text)
+            top17arr = []
+            for recBookData in ctsRank:
 
-                return recBook_data
+                recBookDict = {
+                    "recBookId": recBookData[1],
+                    "recBookCover": recBookData[3]
+                }
 
-            ctsBookArr = []
-            for ctsBook in ctsRank:
-                recBook = f"https://www.googleapis.com/books/v1/volumes?q={ctsBook[1]}&maxResults=1"
-                ctsBookArr.append(recBook)
-
-            with ThreadPoolExecutor(max_workers=15) as executor:
-                recBookResults = executor.map(recBookInfo, ctsBookArr)
-
-            top13Arr = []
-            for i in recBookResults:
-                top13Arr.append(i)
+                recBook = recBookDict.copy()
+                top17arr.append(recBook)
 
             return jsonify({
-                "recBooks": top13Arr,
+                "recBooks": top17arr,
             })
 
     except Exception as e:
@@ -299,36 +300,53 @@ def reviews():
             })
 
     elif request.method == "GET":
+
+        bookId = request.args.get("r")
+        gReview = f'''SELECT * FROM reviews WHERE book = "{bookId}"'''
+        gReview_data = db.engine.execute(gReview)
+ 
         try:
             bookId = request.args.get("r")
             gReview = f'''SELECT * FROM reviews WHERE book = "{bookId}"'''
             gReview_data = db.engine.execute(gReview)
 
+            for i in gReview_data:
+                print(i)
+
+            return jsonify({
+                "ok": "ok"
+            })
+
             reviewArr = []
             starsArr = []
             for reviews in gReview_data:
-                starsArr.append(reviews[4])
-                if reviews[6] == None:
-                    reviewDic = {
-                        "name": reviews[2],
-                        "time": reviews[3],
-                        "rates": reviews[4],
-                        "content": reviews[5],
-                    }
-                    reviewData = reviewDic.copy()
-                    reviewArr.append(reviewData)
+                if reviews == " ":
+                    print("nothing")
                 else:
-                    reviewDic = {
-                        "name": reviews[2],
-                        "time": reviews[3],
-                        "rates": reviews[4],
-                        "content": reviews[5],
-                        "image": 'http://dqgc5yp61yvd.cloudfront.net/' + reviews[6]
-                    }
-                    reviewData = reviewDic.copy()
-                    reviewArr.append(reviewData)
+                    print("something")
+                    starsArr.append(reviews[4])
+                    if reviews[6] == None:
+                        reviewDic = {
+                            "name": reviews[2],
+                            "time": reviews[3],
+                            "rates": reviews[4],
+                            "content": reviews[5],
+                        }
+                        reviewData = reviewDic.copy()
+                        reviewArr.append(reviewData)
+                    else:
+                        reviewDic = {
+                            "name": reviews[2],
+                            "time": reviews[3],
+                            "rates": reviews[4],
+                            "content": reviews[5],
+                            "image": 'http://dqgc5yp61yvd.cloudfront.net/' + reviews[6]
+                        }
+                        reviewData = reviewDic.copy()
+                        reviewArr.append(reviewData)
 
             avgStar = sum(starsArr) // len(starsArr)
+
 
             return jsonify({
                 "allReviews": reviewArr,
@@ -489,7 +507,6 @@ def theevent():
             try:
                 checkEmail = db.engine.execute(
                     f'''SELECT * FROM activity WHERE memberEmail = "{session['memberEmail']}" and eventId = "{eventReplace}"''')
-                    # f'''SELECT eventName, memberEmail FROM events JOIN  activity ON events.eventName = activity.eventId WHERE memberEmail = "{session['memberEmail']}" and eventName = "{eventReplace}"''')
                 checked = checkEmail.fetchone()
             
                 if checked == None:
@@ -615,8 +632,8 @@ def collectevent():
                 "message": "Invalid Server"
             })
 
-@app.route("/api/myevent", methods=["GET"])
-def myeventAPI():
+@app.route("/api/mycollection", methods=["GET"])
+def mycollectionAPI():
 
     if session["memberEmail"]:
         try:
