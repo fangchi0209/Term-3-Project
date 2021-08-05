@@ -531,7 +531,7 @@
                         if (re.theHashtags[t].tagName != "") {
                             let hashtag_tag = document.createElement("div")
                             hashtag_tag.classList.add("tags")
-                            hashtag_tag.setAttribute("data-id", re.theHashtags[t].tagId)
+                            hashtag_tag.setAttribute("data-hashid", re.theHashtags[t].tagId)
                             hashtag_tag.innerHTML = re.theHashtags[t].tagName
                             group_tag.appendChild(hashtag_tag)
                             hashtagSec.appendChild(group_tag)
@@ -556,8 +556,8 @@
 
                     group_tag.addEventListener("click", function (e) {
                         let targetTag = e.target
-                        if (targetTag.getAttribute('data-id')) {
-                            targetTagId = targetTag.getAttribute('data-id')
+                        if (targetTag.getAttribute('data-hashid')) {
+                            targetTagId = targetTag.getAttribute('data-hashid')
                             wrap2.style.display = "block"
                             hashKW.innerHTML = targetTag.innerHTML + '<i id="minus" class="fas fa-minus-circle"></i>'
                             hashtagEvents.innerHTML = ""
@@ -675,7 +675,7 @@
                             a_tag.classList.add("indiLink")
                             hashOrg.classList.add("indiOrg")
                             hashPeo_tag.classList.add("indiPeo")
-                            hash_tag.setAttribute("data-id", hashItems[h].getHashE)
+                            hash_tag.setAttribute("data-hashid", hashItems[h].getHashE)
                             hash_tag.classList.add("eventCollect")
                             hash_tag.classList.add("fab")
                             hash_tag.classList.add("fa-gratipay")
