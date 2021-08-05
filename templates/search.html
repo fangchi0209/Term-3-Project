@@ -57,7 +57,7 @@
 
         #pageCount {
             text-align: center;
-            padding-top: 30px;
+            padding: 30px;
         }
 
         #pageCount a {
@@ -95,7 +95,7 @@
         </div>
 
         <div id="memToggle" class="memToggle" style="display: none">
-            <a href="/myevent">
+            <a href="/mycollection">
                 <div class="myEvent">My Collection</div>
             </a>
             <div id="signoutProcess" class="signoutProcess">Sign Out</div>
@@ -151,7 +151,6 @@
                 .then(response => {
                     return response.json()
                 }).then(re => {
-                    console.log(re)
                     totalBooks = re
                     data = totalBooks[num].items
                     totalData = totalBooks.length

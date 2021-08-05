@@ -25,10 +25,20 @@
         }
 
         .myPageTB {
-            font-size: 60px;
+            font-size: 40px;
             padding: 15px;
             margin-bottom: -3px;
             background-color: #f0ebe5;
+        }
+
+        .myPageforMyEvent {
+            position: absolute;
+            font-size: 40px;
+            padding: 15px;
+            background-color: #f0ebe5;
+            height: 50px;
+            bottom: -10px;
+            left: 130px;
         }
 
         .myLikeS {
@@ -44,8 +54,7 @@
             height: 20px;
             bottom: 0px;
             position: absolute;
-            left: 220px;
-            background: ff;
+            left: 170px;
             padding: 15px;
             background: #f0ebe5;
         }
@@ -87,11 +96,26 @@
 
         #createE {
             color: #656565;
+            cursor: pointer;
         }
 
         #createE:hover {
             border-bottom: 0.5px solid gray;
             color: black;
+        }
+
+        #createEvent {
+            position: absolute;
+            left: 350px;
+            top: 65px;
+            width: 100px;
+            height: 50px;
+            border-radius: 8px;
+            border: none;
+            font-size: 20px;
+            background: #c5b8a5;
+            color: white;
+            cursor: pointer;
         }
     </style>
     <div class="searchEngine">
@@ -119,6 +143,7 @@
     <div id="which">
         <div id="likes" class="myPageTB">Likes</div>
         <div id="mycreation" class="myPageTS">My Event</div>
+        <button id="createEvent" style="display: none">Create</button>
     </div>
 
     <div id="allEventSec">
@@ -201,6 +226,7 @@
         let virtual = document.getElementById("virtual")
         let createpopup = document.getElementById("createpopup")
         let cBox = document.getElementById("cBox")
+        let createEvent = document.getElementById("createEvent")
 
         var today = new Date().toISOString().split('T')[0];
         sDate.setAttribute('min', today);
@@ -218,10 +244,17 @@
         })
 
         createE.addEventListener("click", function () {
-                bg.style.display = "block";
-                createpopup.style.display = "block"
-                createpopup.style.backgroundColor = "white"
-                cBox.style.display = "block"
+            bg.style.display = "block";
+            createpopup.style.display = "block"
+            createpopup.style.backgroundColor = "white"
+            cBox.style.display = "block"
+        })
+
+        createEvent.addEventListener("click", function () {
+            bg.style.display = "block";
+            createpopup.style.display = "block"
+            createpopup.style.backgroundColor = "white"
+            cBox.style.display = "block"
         })
 
         nextBtn.addEventListener("click", function () {
@@ -431,12 +464,12 @@
             }).then(response => {
                 return response.json()
             }).then(re => {
-                console.log('pass')
                 if (re.ok == true) {
                     let turnGray = document.querySelectorAll("[data-id]")
                     turnGray.forEach((e) => {
                         if (e.getAttribute('data-id') == collectEventId) {
                             e.style.color = "gray"
+                            location.reload()
                         }
                     })
                 } else if (re.error == true) {
@@ -446,6 +479,7 @@
                     turn.forEach((e) => {
                         if (e.getAttribute('data-id') == collectEventId) {
                             e.style.color = "red"
+                            location.reload()
                         }
                     })
                 }
@@ -453,7 +487,7 @@
         }
 
         async function memOwn() {
-            await fetch("/api/myevent", { method: "GET" })
+            await fetch("/api/mycollection", { method: "GET" })
                 .then(response => {
                     return response.json()
                 }).then(data => {
@@ -548,6 +582,8 @@
         let likedisplay = document.getElementById("likedisplay")
         let myEventdisplay = document.getElementById("myEventdisplay")
 
+
+
         likes.addEventListener("mouseover", () => {
             mycreation.classList.add("myPageTS");
             mycreation.classList.remove("myPageTB");
@@ -555,16 +591,19 @@
             likes.classList.remove("myLikeS");
             likedisplay.style.display = "block";
             myEventdisplay.style.display = "none";
+            createEvent.style.display = "none"
 
         })
 
         mycreation.addEventListener("mouseover", () => {
             mycreation.classList.remove("myPageTS");
-            mycreation.classList.add(("myPageTB"));
+            mycreation.classList.add(("myPageforMyEvent"));
             likes.classList.remove("myPageTB");
             likes.classList.add("myLikeS");
             likedisplay.style.display = "none";
             myEventdisplay.style.display = "block";
+            createEvent.style.display = "block"
+
         })
     </script>
 

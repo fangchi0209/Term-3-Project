@@ -396,7 +396,8 @@
             await fetch("/api/user", {
                 method: "POST",
                 headers: {
-                    "content-type": "application/json"
+                    "content-type": "application/json",
+                    "Authorization": "Bearer JWT_token"
                 },
                 body: JSON.stringify({
                     name: document.getElementById("registerName").value,

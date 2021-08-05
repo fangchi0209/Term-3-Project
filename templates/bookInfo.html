@@ -102,6 +102,7 @@
             position: relative;
             margin: 20px;
             line-height: 30px;
+            width: 100%;
         }
 
         #aboutAuthor {
@@ -501,7 +502,7 @@
         </div>
 
         <div id="memToggle" class="memToggle" style="display: none">
-            <a href="/myevent">
+            <a href="/mycollection">
                 <div class="myEvent">My Collection</div>
             </a>
             <div id="signoutProcess" class="signoutProcess">Sign Out</div>
@@ -693,7 +694,12 @@
             i_tag.classList.add("fas")
             i_tag.classList.add("fa-caret-down")
 
-            theBookCover_img.src = data.volumeInfo.imageLinks.thumbnail
+            if (data.volumeInfo.imageLinks){
+                theBookCover_img.src = data.volumeInfo.imageLinks.thumbnail
+            }else{
+                theBookCover_img.src = "http://dqgc5yp61yvd.cloudfront.net/no_cover.png"
+            }
+            
 
             // whether rating exits or not
             let ratingData = data.volumeInfo.averageRating
@@ -717,11 +723,21 @@
 
             // whether book description exits or not
             let theBookDes = data.volumeInfo.description
-            !theBookDes ? theBookDes_tag.innerHTML = "no description" : theBookDes_tag.innerHTML = theBookDes
+            if (theBookDes == null) {
+                theBookDes_tag.innerHTML = "No description"
+                document.getElementById("more").style.display = "none"
+            } else {
+                theBookDes_tag.innerHTML = theBookDes
+            }
+
+            if (data.volumeInfo.authors == null) {
+                console.log("No author information")
+            } else {
+                aForauthors_tag.innerHTML = "by " + data.volumeInfo.authors
+                authors_tag.appendChild(aForauthors_tag)
+            }
 
             theBookTitle_tag.appendChild(theBookTitle)
-            aForauthors_tag.innerHTML = "by" + " " + data.volumeInfo.authors
-            authors_tag.appendChild(aForauthors_tag)
             emptyStar_tag.appendChild(emptyS)
             fullStar_tag.appendChild(fullS)
             ratings_tag.appendChild(emptyStar_tag)
@@ -793,26 +809,35 @@
 
             categories.classList.add("extraLink")
 
-            publisher.innerHTML = "出版商:" + "&nbsp" + res.volumeInfo.publisher + "&nbsp" + "," + "&nbsp" + res.volumeInfo.publishedDate
+            !res.volumeInfo.publisher ? console.log("No publisher") : publisher.innerHTML = "出版商:" + "&nbsp" + res.volumeInfo.publisher + "&nbsp" + "," + "&nbsp" + res.volumeInfo.publishedDate
 
-            !res.volumeInfo.industryIdentifiers ? console.log("no ISBN") : ISBN.innerHTML = "ISBN:" + "&nbsp" + res.volumeInfo.industryIdentifiers[0].identifier + "&nbsp" + "(ISBN10)," + "&nbsp" + res.volumeInfo.industryIdentifiers[1].identifier + "&nbsp" + "(ISBN13)"
+            !res.volumeInfo.industryIdentifiers ? console.log("No ISBN") : ISBN.innerHTML = "ISBN:" + "&nbsp" + res.volumeInfo.industryIdentifiers[0].identifier + "&nbsp" + "(ISBN10)," + "&nbsp" + res.volumeInfo.industryIdentifiers[1].identifier + "&nbsp" + "(ISBN13)"
 
-            pageCount.innerHTML = "頁數:" + "&nbsp" + res.volumeInfo.pageCount + "&nbsp" + "頁"
+            !res.volumeInfo.pageCount ? console.log("No page count") : pageCount.innerHTML = "頁數:" + "&nbsp" + res.volumeInfo.pageCount + "&nbsp" + "頁"
+
 
             if (res.volumeInfo.dimensions != null) {
-                dimensions.innerHTML = "規格:" + "&nbsp" + res.volumeInfo.dimensions.height + "&nbsp" + "x" + "&nbsp" + res.volumeInfo.dimensions.width + "&nbsp" + "x" + "&nbsp" + res.volumeInfo.dimensions.thickness
+                if (res.volumeInfo.dimensions.height != null & res.volumeInfo.dimensions.width != null & res.volumeInfo.dimensions.thickness != null) {
+                    dimensions.innerHTML = "規格:" + "&nbsp" + res.volumeInfo.dimensions.height + "&nbsp" + "x" + "&nbsp" + res.volumeInfo.dimensions.width + "&nbsp" + "x" + "&nbsp" + res.volumeInfo.dimensions.thickness
+                } else {
+                    console.log("No dimensions")
+                }
             } else {
                 console.log("No dimensions")
             }
 
-            categories.innerHTML = "本書分類:<br>"
-            for (let i = 0; i < res.volumeInfo.categories.length; i++) {
-                let url_tag = document.createElement("a")
-                let br_tag = document.createElement("br")
-                url_tag.href = `/search?q=subject:${res.volumeInfo.categories[i]}`
-                url_tag.innerHTML = res.volumeInfo.categories[i]
-                url_tag.appendChild(br_tag)
-                categories.appendChild(url_tag)
+            if (res.volumeInfo.categories != null) {
+                categories.innerHTML = "本書分類:<br>"
+                for (let i = 0; i < res.volumeInfo.categories.length; i++) {
+                    let url_tag = document.createElement("a")
+                    let br_tag = document.createElement("br")
+                    url_tag.href = `/search?q=subject:${res.volumeInfo.categories[i]}`
+                    url_tag.innerHTML = res.volumeInfo.categories[i]
+                    url_tag.appendChild(br_tag)
+                    categories.appendChild(url_tag)
+                }
+            } else {
+                console.log("No categories")
             }
 
             bookSpec.appendChild(publisher)
@@ -947,27 +972,30 @@
                 .then(response => {
                     return response.json()
                 }).then(re => {
-                    let author = re.aboutAuthor
                     let authorSec = document.getElementById("authorSec")
                     let aboutAuthor_tag = document.createElement("div")
-                    let i_tag = document.createElement("i")
-
                     aboutAuthor_tag.setAttribute("id", "aboutAuthor")
-                    i_tag.classList.add("fas")
-                    i_tag.classList.add("fa-caret-down")
-                    i_tag.setAttribute("id", "authorTri")
+                    if (re.aboutAuthor){
+                        let author = re.aboutAuthor
+                        let i_tag = document.createElement("i")
 
-                    aboutAuthor_tag.innerHTML = author
-                    authorSec.appendChild(aboutAuthor_tag)
-                    authorSec.appendChild(i_tag)
+                        i_tag.classList.add("fas")
+                        i_tag.classList.add("fa-caret-down")
+                        i_tag.setAttribute("id", "authorTri")
+
+                        aboutAuthor_tag.innerHTML = author
+                        authorSec.appendChild(aboutAuthor_tag)
+                        authorSec.appendChild(i_tag)
+                    }else{
+                        aboutAuthor_tag.innerHTML = re.message
+                        authorSec.appendChild(aboutAuthor_tag)
+                    }
                 })
 
             document.getElementById("authorTri").addEventListener("click", function () {
                 if (moreAIcon == false) {
-                    console.log("open")
                     document.getElementById("aboutAuthor").style.display = "block"
                 } else {
-                    console.log("close")
                     document.getElementById("aboutAuthor").style.display = "-webkit-box"
                 }
                 moreAIcon = !moreAIcon
@@ -1329,6 +1357,7 @@
                     return response.json()
                 }).then(data => {
                     let oldReviews = data.allReviews
+                    console.log(oldReviews)
 
                     let thumbRate = document.getElementById("thumbRate")
 
@@ -1342,7 +1371,7 @@
 
                     if (oldReviews != null) {
                         reviewSec.style.display = "block"
-                        document.getElementById("noreview").style.display="none"
+                        document.getElementById("noreview").style.display = "none"
                         for (let n = 0; n < oldReviews.length; n++) {
 
                             let indiReview_tag = document.createElement("div")
@@ -1404,7 +1433,7 @@
                             reviewSec.insertBefore(indiReview_tag, reviewSec.childNodes[0])
                         }
                     } else {
-                        document.getElementById("noreview").style.display="block"
+                        document.getElementById("noreview").style.display = "block"
                         reviewSec.style.display = "none"
                     }
                 })

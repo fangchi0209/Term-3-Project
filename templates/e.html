@@ -17,9 +17,36 @@
         #wrap {
             display: flex;
             flex-direction: column;
-            margin: 150px auto;
+            margin: 30px auto;
             width: 1200px;
             background: white;
+        }
+
+        #wrap2 {
+            display: flex;
+            flex-direction: column;
+            margin: 20px auto;
+            width: 1200px;
+        }
+
+        #hashtagEvents {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+
+        #goBack {
+            font-size: 22px;
+            margin: 150px auto 0px auto;
+            width: 1200px;
+        }
+
+        #goBack a {
+            color: #656565
+        }
+
+        #goBack a:hover {
+            color: black
         }
 
         #pageCover {
@@ -88,6 +115,17 @@
             background-color: #179C55
         }
 
+        #already {
+            width: 320px;
+            height: 50px;
+            margin: 10px 10px;
+            background-color: gray;
+            color: white;
+            font-size: 20px;
+            border-radius: 8px;
+            border: none;
+        }
+
         #eventBody {
             display: flex;
             flex-direction: row;
@@ -107,6 +145,7 @@
         #eventDes {
             padding: 20px;
             flex-grow: 2;
+            margin-bottom: 40px;
         }
 
         #bodyDes {
@@ -120,6 +159,32 @@
             padding: 20px
         }
 
+        #leftSec {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 2;
+        }
+
+        #hashtagSec {
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        #group {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+
+        .tags {
+            border: 0.5px solid gray;
+            border-radius: 8px;
+            padding: 5px 10px;
+            margin: 10px;
+            cursor: pointer;
+        }
+
         #eventTime {
             display: flex;
             flex-direction: column;
@@ -127,7 +192,7 @@
 
         #eventLoca,
         #manageAtt {
-            margin-top: 20px;
+            margin-top: 40px;
         }
 
         .peopleN {
@@ -227,6 +292,28 @@
         .cancelBtn:hover {
             border: 1px solid gray;
         }
+
+        #hashtagSearch {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+
+        #hSearchIcon {
+            padding: 20px;
+            font-size: 40px;
+        }
+
+        #hashKW {
+            padding: 10px;
+            font-size: 40px;
+        }
+
+        #minus {
+            font-size: 20px;
+            padding-left: 5px;
+            cursor: pointer;
+        }
     </style>
     <div class="searchEngine">
         <div class="Header">
@@ -243,13 +330,14 @@
         </div>
 
         <div id="memToggle" class="memToggle" style="display: none">
-            <a href="/myevent">
+            <a href="/mycollection">
                 <div class="myEvent">My Collection</div>
             </a>
             <div id="signoutProcess" class="signoutProcess">Sign Out</div>
         </div>
     </div>
 
+    <div id="goBack"><a href="/events"><i class="fas fa-long-arrow-alt-left"></i> All Events</a></div>
     <div id="wrap">
 
         <div id="pageCover">
@@ -261,12 +349,18 @@
         <div id="shareSec">
             <div id="share"></div>
             <button id="attendBtn">Register</button>
+            <button id="already" style="display: none">Already registered</button>
         </div>
 
         <div id="eventBody">
-            <div id="eventDes">
-                <div class="bodyTitle">About this event</div>
+            <div id="leftSec">
+                <div id="eventDes">
+                    <div class="bodyTitle">About this event</div>
 
+                </div>
+                <div id="hashtagSec">
+                    <div class="bodyTitle">Tags</div>
+                </div>
             </div>
 
             <div id="rightSec">
@@ -285,10 +379,15 @@
                     <div id="attendee"></div>
                 </div>
             </div>
-
-
-
         </div>
+    </div>
+
+    <div id="wrap2" style="display: none">
+        <div id=hashtagSearch>
+            <i id="hSearchIcon" class="fas fa-search"></i>
+            <div id="hashKW"></div>
+        </div>
+        <div id="hashtagEvents"></div>
     </div>
 
     <label><a id="bgBtn" href="javascript:void(0)">
@@ -302,7 +401,8 @@
 
         <div id="sBox" class="sBox" style="display: none">
             <i class="fas fa-user-cog"></i><br>
-            <div>Sign in with your BooKÏ Account to create an event</div>
+            <div id="registerAnEvent" style="display: none">Sign in with your BooKÏ Account to register an event</div>
+            <div id="collectAnEvent" style="display: none">Sign in with your BooKÏ Account to collect an event</div>
             <button id="cancelBtn" class="cancelBtn">cancel</button><button id="gosigninBtn" class="gosigninBtn"
                 onclick="goSignin()">Sign in</button>
         </div>
@@ -322,11 +422,16 @@
     <script src="{{url_for('static',filename='js/base.js')}}"></script>
     <script>
 
+        //MAIN SCRIPT
+
         let src = window.location.href;
         let eventId = src.split("/")[4];
+        let targetTagId;
         theEvent(eventId)
+        checkRe(eventId)
 
         let attendBtn = document.getElementById("attendBtn")
+        let registeredBtn = document.getElementById("already")
         let bg = document.getElementById("bg")
         let bgBtn = document.getElementById("bgBtn")
         let registerpopup = document.getElementById("registerpopup")
@@ -334,6 +439,9 @@
         let sBox = document.getElementById("sBox")
         let cancelBtn = document.getElementById("cancelBtn")
         let goEventBox = document.getElementById("goEventBox")
+        let hashtagEvents = document.getElementById("hashtagEvents")
+        let hashKW = document.getElementById("hashKW")
+        let wrap2 = document.getElementById("wrap2")
 
         bgBtn.addEventListener("click", function () {
             bg.style.display = "none"
@@ -373,7 +481,7 @@
         }
 
         function goMycollection() {
-            window.location.replace("/myevent")
+            window.location.replace("/mycollection")
         }
 
         async function theEvent(eId) {
@@ -386,6 +494,7 @@
                     let attendEvents = document.getElementById("attendEvents")
                     let eventBody = document.getElementById("eventBody")
                     let eventDes = document.getElementById("eventDes")
+                    let hashtagSec = document.getElementById("hashtagSec")
                     let eventTime = document.getElementById("eventTime")
                     let downTime = document.getElementById("downTime")
                     let loca = document.getElementById("loca")
@@ -394,6 +503,8 @@
                     let title_tag = document.createElement("div")
                     let organiser_tag = document.createElement("div")
                     let eventDes_tag = document.createElement("div")
+
+                    let group_tag = document.createElement("div")
                     let date_tag = document.createElement("div")
                     let upDate_tag = document.createElement("div")
                     let uDate = document.createElement("div")
@@ -406,6 +517,8 @@
                     title_tag.setAttribute("id", "theEventTitle")
                     organiser_tag.setAttribute("id", "organiser")
                     eventDes_tag.setAttribute("id", "bodyDes")
+                    group_tag.setAttribute("id", "group")
+
 
                     img_tag.style.backgroundImage = `url(${re.theCover})`
                     uDate.innerHTML = re.thesDate
@@ -414,6 +527,18 @@
                     organiser_tag.innerHTML = "by " + re.theUser
 
                     eventDes_tag.innerHTML = re.theDes
+
+                    for (let t = 0; t < re.theHashtags.length; t++) {
+                        if (re.theHashtags[t].tagName != "") {
+                            let hashtag_tag = document.createElement("div")
+                            hashtag_tag.classList.add("tags")
+                            hashtag_tag.setAttribute("data-id", re.theHashtags[t].tagId)
+                            hashtag_tag.innerHTML = re.theHashtags[t].tagName
+                            group_tag.appendChild(hashtag_tag)
+                            hashtagSec.appendChild(group_tag)
+                        }
+                    }
+
                     date_tag.innerHTML = re.thesDay + ", " + re.thesDate + " " + re.thesMonth + " " + re.thesYear
                     time_tag.innerHTML = re.thesTime
                     loca_tag.innerHTML = "Online event"
@@ -425,26 +550,188 @@
                     attendEvents.appendChild(organiser_tag)
                     pageCover.appendChild(img_tag)
                     pageCover.appendChild(attendEvents)
-
                     eventDes.appendChild(eventDes_tag)
                     downTime.appendChild(date_tag)
                     downTime.appendChild(time_tag)
                     eventLoca.appendChild(loca_tag)
 
-                    if (re.thePeople != null) {
-                        document.getElementById("manageAtt").style.display = "block"
-                        let list = re.thePeople
-                        for (let i = 0; i < list.length; i++) {
-                            let attendee = document.getElementById("attendee")
-                            let peopleN_tag = document.createElement("div")
-                            peopleN_tag.classList.add("peopleN")
-                            peopleN_tag.innerHTML = list[i]
-                            attendee.appendChild(peopleN_tag)
+                    group_tag.addEventListener("click", function (e) {
+                        let targetTag = e.target
+                        if (targetTag.getAttribute('data-id')) {
+                            targetTagId = targetTag.getAttribute('data-id')
+                            wrap2.style.display = "block"
+                            hashKW.innerHTML = targetTag.innerHTML + '<i id="minus" class="fas fa-minus-circle"></i>'
+                            hashtagEvents.innerHTML = ""
+                            searchTag(targetTagId)
                         }
-                    }else{
+
+                        document.getElementById("minus").addEventListener("click", ()=>{
+                            hashKW.innerHTML = ""
+                            hashtagEvents.innerHTML = ""
+                            wrap2.style.display = "none"
+
+
+                        })
+                    })
+
+                    hashtagEvents.addEventListener("click", function (e) {
+                        let targetID = e.target
+                        if (targetID.getAttribute('data-id')) {
+                            if (document.getElementById("signinIcon").style.display == "block") {
+                                registerpopup.style.display = "block"
+                                registerpopup.style.backgroundColor = "#D3D3D3"
+                                reBox.style.display = "none"
+                                sBox.style.display = "block"
+                                registerAnEvent.style.display = "none"
+                                collectAnEvent.style.display = "block"
+                                goEventBox.style.display = "none"
+                                bg.style.display = "block"
+                            } else {
+                                registerpopup.style.display = "none"
+                                registerpopup.style.backgroundColor = "white"
+                                reBox.style.display = "none"
+                                sBox.style.display = "none"
+                                registerAnEvent.style.display = "none"
+                                collectAnEvent.style.display = "none"
+                                goEventBox.style.display = "none"
+                                bg.style.display = "none"
+
+                                collectEventId = targetID.getAttribute('data-id')
+                                collectEvent()
+                            }
+                        } else {
+                            console.log("no ID")
+                        }
+                    })
+
+                    async function getCollectionE() {
+                        if (document.getElementById("signinIcon").style.display == "block") {
+                            return
+                        } else {
+                            await fetch("/api/eventfav", { method: "GET" })
+                                .then(response => {
+                                    return response.json()
+                                }).then(data => {
+                                    let getFav = data.favCollection
+                                    let turnRed = document.querySelectorAll("[data-id]")
+                                    turnRed.forEach((e) => {
+                                        for (let i = 0; i < getFav.length; i++)
+                                            if (e.getAttribute('data-id') == getFav[i].getCollect) {
+                                                e.style.color = "red"
+                                            }
+                                    })
+
+                                })
+                        }
+                    }
+                    getCollectionE()
+
+                    
+
+                    let list = re.thePeople
+                    if (list != null) {
+                        if (list != 0) {
+                            document.getElementById("manageAtt").style.display = "block"
+                            let attendee = document.getElementById("attendee")
+
+                            for (let i = 0; i < list.length; i++) {
+                                let peopleN_tag = document.createElement("div")
+                                peopleN_tag.classList.add("peopleN")
+                                peopleN_tag.innerHTML = list[i]
+                                attendee.appendChild(peopleN_tag)
+                            }
+                        } else {
+                            document.getElementById("manageAtt").style.display = "block"
+                            attendee.innerHTML = "No Attendees"
+
+                        }
+                    } else {
                         return
                     }
+
                 })
+
+            async function searchTag(theTag) {
+                await fetch(`/api/hashtag?tagID=${theTag}`, { method: "GET" })
+                    .then(response => {
+                        return response.json()
+                    }).then(data => {
+                        let hashItems = data.hashEvent
+                        for (let h = 0; h < hashItems.length; h++) {
+                            let hashEvent = document.createElement("div")
+                            let img_tag = document.createElement("div")
+                            let hashInfo = document.createElement("div")
+                            let hashTitle = document.createElement("div")
+                            let hashTime = document.createElement("div")
+                            let a_tag = document.createElement("a")
+                            let hashOrg = document.createElement("div")
+                            let hashPeo_tag = document.createElement("div")
+                            let hash_tag = document.createElement("i")
+
+                            hashEvent.classList.add("indiEvent")
+                            img_tag.classList.add("indiCover")
+                            hashInfo.classList.add("indiInfo")
+                            hashTitle.classList.add("indiTitle")
+                            hashTime.classList.add("indiTime")
+                            a_tag.classList.add("indiLink")
+                            hashOrg.classList.add("indiOrg")
+                            hashPeo_tag.classList.add("indiPeo")
+                            hash_tag.setAttribute("data-id", hashItems[h].getHashE)
+                            hash_tag.classList.add("eventCollect")
+                            hash_tag.classList.add("fab")
+                            hash_tag.classList.add("fa-gratipay")
+
+                            hashTitle.innerHTML = hashItems[h].hTitle
+                            hashOrg.innerHTML = "by " + hashItems[h].hOrganiser.toUpperCase()
+                            img_tag.style.backgroundImage = `url(${hashItems[h].hCover})`
+                            hashTime.innerHTML = hashItems[h].hDay + ", " + hashItems[h].hDate + ", " + hashItems[h].hMonth + ", " + hashItems[h].hYear + ", " + hashItems[h].hTime
+                            hashPeo_tag.innerHTML = hashItems[h].hPeople + " participants"
+                            a_tag.href = `/e/${hashItems[h].hTitle}`
+
+                            hashInfo.appendChild(hashTitle)
+                            hashInfo.appendChild(hashOrg)
+                            hashInfo.appendChild(hashTime)
+                            hashInfo.appendChild(hashPeo_tag)
+                            a_tag.appendChild(img_tag)
+                            a_tag.appendChild(hashInfo)
+                            hashEvent.appendChild(a_tag)
+                            hashEvent.appendChild(hash_tag)
+                            hashtagEvents.appendChild(hashEvent)
+                        }
+                    })
+            }
+        }
+
+        async function collectEvent() {
+            await fetch("/api/eventfav", {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json"
+                },
+                body: JSON.stringify({
+                    eventId: collectEventId
+                })
+            }).then(response => {
+                return response.json()
+            }).then(re => {
+                if (re.ok == true) {
+                    let turnGray = document.querySelectorAll("[data-id]")
+                    turnGray.forEach((e) => {
+                        if (e.getAttribute('data-id') == collectEventId) {
+                            e.style.color = "gray"
+                        }
+                    })
+                } else if (re.error == true) {
+                    alert(re.message)
+                } else {
+                    let turn = document.querySelectorAll("[data-id]")
+                    turn.forEach((e) => {
+                        if (e.getAttribute('data-id') == collectEventId) {
+                            e.style.color = "red"
+                        }
+                    })
+                }
+            })
         }
 
         async function registered() {
@@ -472,6 +759,7 @@
                         reBox.style.display = "none"
                         bg.style.display = "none"
                         alert("Successfully registered! Please go check your email for event link.")
+                        location.reload()
                     } else {
                         registerpopup.style.display = "block"
                         registerpopup.style.backgroundColor = "white"
@@ -484,6 +772,23 @@
                 })
         }
 
+        async function checkRe(reId) {
+            await fetch(`/api/registered?reg=${reId}`, { method: "GET" })
+                .then(response => {
+                    return response.json()
+                }).then(data => {
+                    if (data.ok == true) {
+                        attendBtn.style.display = "none"
+                        registeredBtn.style.display = "block"
+                    } else if (data.ok == false) {
+                        attendBtn.style.display = "block"
+                        registeredBtn.style.display = "none"
+                    } else {
+                        attendBtn.style.display = "block"
+                        registeredBtn.style.display = "none"
+                    }
+                })
+        }
     </script>
 
     <script>

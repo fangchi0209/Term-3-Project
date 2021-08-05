@@ -4,6 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, jsonify, render_template, request, session, redirect
 from dotenv import load_dotenv
+from flask_bcrypt import bcrypt
 import os
 import boto3
 import requests
@@ -12,8 +13,9 @@ import bs4
 import json
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
+# from flask_jwt_extended import JWTManager, jwt_required, create_access_token
 
-
+# jwt = JWTManager()
 load_dotenv()
 
 s3 = boto3.resource(
@@ -26,6 +28,8 @@ app = Flask(__name__, static_folder="static", static_url_path="/")
 app.secret_key = os.getenv("secretKey")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("awsRDS")
+# app.config['JWT_SECRET_KEY'] = 'qwe'
+# jwt.init_app(app)
 db = SQLAlchemy(app)
 
 
@@ -95,7 +99,6 @@ def searchEngine():
             "message": "Invalid Server"
         })
 
-
 @app.route("/api/eachPage")
 def eachPage():
 
@@ -142,7 +145,6 @@ def eachPage():
 
     return jsonify(resultsArr)
 
-
 @app.route("/api/authors")
 def authors():
     try:
@@ -171,7 +173,8 @@ def authors():
                 })
             else:
                 return jsonify({
-                    "aboutAuthor": "no data"
+                    "error": True,
+                    "message": "No author data"
                 })
             
     except Exception as e:
@@ -180,7 +183,6 @@ def authors():
             "error": True,
             "message": "Invalid Server"
         })
-
 
 @app.route("/api/recommend", methods=["POST"])
 def recommend():
@@ -243,7 +245,6 @@ def recommend():
             "error": True,
             "message": "Invalid Server"
         })
-
 
 @app.route("/api/reviews", methods=["GET", "POST"])
 def reviews():
@@ -310,20 +311,12 @@ def reviews():
             gReview = f'''SELECT * FROM reviews WHERE book = "{bookId}"'''
             gReview_data = db.engine.execute(gReview)
 
-            for i in gReview_data:
-                print(i)
-
-            return jsonify({
-                "ok": "ok"
-            })
-
             reviewArr = []
             starsArr = []
             for reviews in gReview_data:
                 if reviews == " ":
                     print("nothing")
                 else:
-                    print("something")
                     starsArr.append(reviews[4])
                     if reviews[6] == None:
                         reviewDic = {
@@ -359,7 +352,6 @@ def reviews():
                 "message": "Invalid Server"
             })
 
-
 @app.route("/api/bookievents", methods=["GET", "POST"])
 def bookievents():
 
@@ -379,6 +371,7 @@ def bookievents():
                 eventCover = request.files['selectFile']
                 nImage = request.files['selectFile'].filename
                 nDes = request.form.get('description')
+                nTags = request.form.get('hashtagsArr')
 
                 imageRep = nImage.replace(" ", "_")
 
@@ -386,7 +379,27 @@ def bookievents():
                                                          Key=imageRep, Body=eventCover)
 
                 db.engine.execute(
-                    f'''INSERT INTO events (organiser, organiser_email, eventName, sDay, sDate, sMonth, sYear, sTime, location, cover, eventDes) VALUES ("{session['memberName']}", "{session['memberEmail']}", "{nTitle}", "{nsDate[0]}", "{nsDate[1]}", "{nsDate[2]}", "{nsDate[3]}", "{nsTime}", "{nURL}", "{imageRep}", "{nDes}")''')
+                    f'''INSERT INTO events (organiser, organiser_email, eventName, sDay, sDate, sMonth, sYear, sTime, location, cover, eventDes, hashtags) VALUES ("{session['memberName']}", "{session['memberEmail']}", "{nTitle}", "{nsDate[0]}", "{nsDate[1]}", "{nsDate[2]}", "{nsDate[3]}", "{nsTime}", "{nURL}", "{imageRep}", "{nDes}", "{nTags}")''')
+
+                selectData = db.engine.execute(f'''SELECT * FROM events WHERE eventName = "{nTitle}"''')
+                theselect = selectData.fetchone()
+
+                for i in nTags.split(","):
+                    if i != "<br>":
+                        
+                        checkData = db.engine.execute(f'''SELECT * FROM tags WHERE tagName = "{i}"''')
+                        thecheck = checkData.fetchone()
+
+                        if thecheck != None:
+                            newNum = thecheck[2] + 1
+                            db.engine.execute(f'''UPDATE tags SET num = "{newNum}" WHERE tagName = "{i}"''')
+                        else:
+                            db.engine.execute(f'''INSERT INTO tags (tagName, num) VALUES ("{i}", "1")''')
+                                                
+                        idData = db.engine.execute(f'''SELECT * FROM tags WHERE tagName = "{i}"''')
+                        theid = idData.fetchone()
+
+                        db.engine.execute(f'''INSERT INTO tagmap (tagID, eventID) VALUES ("{theid[0]}", "{theselect[0]}")''')
 
                 return jsonify({
                     "ok": True,
@@ -438,7 +451,6 @@ def bookievents():
                 "message": "Invalid Server"
             })
 
-
 @app.route("/api/theevent", methods=["GET", "POST"])
 def theevent():
 
@@ -449,32 +461,64 @@ def theevent():
                 f'''SELECT * FROM events WHERE eventName = "{eventId}"''')
             theEvent = theEventData.fetchone()
 
-            if theEvent[2] == session["memberEmail"]:
-                peopleArr = []
-                totalPeopleData = db.engine.execute(
-                    f'''SELECT memberEmail, name FROM activity JOIN member ON activity.memberEmail = member.email WHERE eventId = "{theEvent[3]}"''')
-                for people in totalPeopleData:
-                    peopleArr.append(people[1])
+            theTagData = db.engine.execute(f'''SELECT * FROM booki.tagmap JOIN booki.tags ON booki.tagmap.tagID = booki.tags.id WHERE booki.tagmap.eventID = "{theEvent[0]}" ''')
 
-                ttP = len(peopleArr)
+            tagsArr = []
+            for tags in theTagData:
+                tagsDict = {
+                    "tagId": tags[3],
+                    "tagName": tags[4]
+                }
+                tagsData = tagsDict.copy()
+                tagsArr.append(tagsData)
+            
 
-                return jsonify({
-                    "theTitle": theEvent[3],
-                    "theUser": theEvent[1],
-                    "theUserE": theEvent[2],
-                    "thesDay": theEvent[4],
-                    "thesDate": theEvent[5],
-                    "thesMonth": theEvent[6],
-                    "thesYear": theEvent[7],
-                    "thesTime": theEvent[8],
-                    "theURL": theEvent[9],
-                    "theCover": 'http://dqgc5yp61yvd.cloudfront.net/' + theEvent[10],
-                    "theDes": theEvent[11],
-                    "thePeopleAcount": ttP,
-                    "thePeople": peopleArr 
-                })
+            if "memberEmail" in session:
+                if theEvent[2] == session["memberEmail"]:
+                    peopleArr = []
+                    totalPeopleData = db.engine.execute(
+                        f'''SELECT memberEmail, name FROM activity JOIN member ON activity.memberEmail = member.email WHERE eventId = "{theEvent[3]}"''')
+                    for people in totalPeopleData:
+                        peopleArr.append(people[1])
+
+                    ttP = len(peopleArr)
+
+                    return jsonify({
+                        "theTitle": theEvent[3],
+                        "theUser": theEvent[1],
+                        "theUserE": theEvent[2],
+                        "thesDay": theEvent[4],
+                        "thesDate": theEvent[5],
+                        "thesMonth": theEvent[6],
+                        "thesYear": theEvent[7],
+                        "thesTime": theEvent[8],
+                        "theURL": theEvent[9],
+                        "theCover": 'http://dqgc5yp61yvd.cloudfront.net/' + theEvent[10],
+                        "theDes": theEvent[11],
+                        "theHashtags": tagsArr,
+                        "thePeopleAcount": ttP,
+                        "thePeople": peopleArr 
+                    })
+                else:
+                    peopleAccountData = db.engine.execute(f'''Select COUNT(memberEmail) FROM activity WHERE eventId = "{theEvent[3]}"''')
+                    peopleAccount = peopleAccountData.fetchone()
+
+                    return jsonify({
+                        "theTitle": theEvent[3],
+                        "theUser": theEvent[1],
+                        "theUserE": theEvent[2],
+                        "thesDay": theEvent[4],
+                        "thesDate": theEvent[5],
+                        "thesMonth": theEvent[6],
+                        "thesYear": theEvent[7],
+                        "thesTime": theEvent[8],
+                        "theURL": theEvent[9],
+                        "theCover": 'http://dqgc5yp61yvd.cloudfront.net/' + theEvent[10],
+                        "theDes": theEvent[11],
+                        "theHashtags": tagsArr,
+                        "thePeopleAcount": peopleAccount[0]
+                    })
             else:
-
                 peopleAccountData = db.engine.execute(f'''Select COUNT(memberEmail) FROM activity WHERE eventId = "{theEvent[3]}"''')
                 peopleAccount = peopleAccountData.fetchone()
 
@@ -490,6 +534,7 @@ def theevent():
                     "theURL": theEvent[9],
                     "theCover": 'http://dqgc5yp61yvd.cloudfront.net/' + theEvent[10],
                     "theDes": theEvent[11],
+                    "theHashtags": tagsArr,
                     "thePeopleAcount": peopleAccount[0]
                 })
         except Exception as e:
@@ -551,6 +596,57 @@ def theevent():
                 "message": "Please sign in"
             })
 
+@app.route("/api/registered", methods=["GET"])
+def registered():
+    registeredEventId = request.args.get("reg")
+    try:
+        if "memberEmail" in session:
+            registeredEventData = db.engine.execute(f'''SELECT * FROM activity WHERE eventId = "{registeredEventId}" and memberEmail = "{session["memberEmail"]}"''')
+            registeredEvent = registeredEventData.fetchone()
+
+            if registeredEvent != None:
+                return jsonify({
+                    "ok": True
+                })
+            else:
+                return jsonify({
+                    "ok": False
+                })
+        else:
+            return jsonify({
+                "error": True,
+                "message": "Please sign in"
+            })
+    except Exception as e:
+        print(e)
+        return jsonify({
+            "error": True,
+            "message": "Invalid Server"
+        })
+
+@app.route("/api/getAllRegistered", methods=["GET"])
+def getAllRegistered():
+    try:
+        if "memberEmail" in session:
+            getAllRegisteredData = db.engine.execute(f'''SELECT * FROM booki.events LEFT JOIN booki.activity ON booki.events.eventName = booki.activity.eventId WHERE memberEmail = "{session["memberEmail"]}"''')
+            reTitleArr = []
+            for getAllRegistered in getAllRegisteredData:
+                reTitleArr.append(getAllRegistered[3])
+
+            return jsonify({
+                "registeredTitle": reTitleArr
+            })
+        else:
+            return jsonify({
+                "error": True,
+                "message": "Please sign in"
+            })
+    except Exception as e:
+        print(e)
+        return jsonify({
+            "error": True,
+            "message": "Invalid Server"
+        })
 
 @app.route("/api/eventfav", methods=["GET", "POST"])
 def collectevent():
@@ -681,6 +777,38 @@ def mycollectionAPI():
             "message": "Please sign in"
         })
 
+@app.route("/api/hashtag", methods=["GET"])
+def hashtag():
+    getTagId = request.args.get("tagID")
+    
+    getHashtagDataAll = db.engine.execute(f'''SELECT * FROM booki.events JOIN booki.tagmap ON booki.events.id = booki.tagmap.eventID WHERE booki.tagmap.tagID = "{getTagId}"''')
+
+    hashArr = []
+    for h in getHashtagDataAll:
+        hashPeoData = db.engine.execute(
+        f'''SELECT COUNT(memberEmail) FROM activity WHERE eventId = "{h[3]}"''')
+        hashPeople = hashPeoData.fetchone()
+
+        getHashtagDict = {
+            "getHashE": h[0],
+            "hOrganiser": h[1],
+            "hOrganiserE": h[2],
+            "hTitle": h[3],
+            "hDay": h[4],
+            "hDate": h[5],
+            "hMonth": h[6],
+            "hYear": h[7],
+            "hTime": h[8],
+            "hCover": 'http://dqgc5yp61yvd.cloudfront.net/' + h[10],
+            "hPeople": hashPeople[0]
+        }
+        getHashtagData = getHashtagDict.copy()
+        hashArr.append(getHashtagData)
+
+
+    return jsonify({
+        "hashEvent": hashArr
+    })
 
 @app.route("/api/google", methods=["POST"])
 def google():
@@ -731,7 +859,7 @@ def loginPage():
 
         try:
             if loginResult != None:
-                if sqlPassword == loginResult[3]:
+                if bcrypt.checkpw(sqlPassword.encode('utf-8'), loginResult[3].encode('utf-8')):
                     session["memberEmail"] = loginResult[2]
                     session["memberName"] = loginResult[1]
 
@@ -779,12 +907,15 @@ def loginPage():
                         "message": "Please fill in the blanks"
                     }), 400
                 else:
-                    signin = f'''INSERT INTO member (name, email, password) VALUES ("{sqlName}", "{sqlEmail}", "{sqlPassword}")'''
+
+                    hashed = bcrypt.hashpw(sqlPassword.encode('utf-8'), bcrypt.gensalt())
+                    signin = f'''INSERT INTO member (name, email, password) VALUES ("{sqlName}", "{sqlEmail}", "{hashed.decode('utf-8')}")'''
                     signin_data = db.engine.execute(signin)
+
 
                     return jsonify({
                         "ok": True,
-                        "message": "Your account has been successfully activated, please re-sign-in"
+                        "message": "Your account has been successfully activated, please re-sign-in",
                     }), 200
 
             else:
@@ -817,6 +948,7 @@ def loginPage():
         return jsonify({
             "ok": True,
         })
+
 
 
 app.run(host="0.0.0.0", port=3300, debug=True)

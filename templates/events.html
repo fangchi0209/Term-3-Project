@@ -93,6 +93,20 @@
             width: 650px;
             margin-top: 80px;
         }
+
+        #hashSec {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hashtag {
+            width: 200px;
+            height: 30px;
+            border: 1px solid gray;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px auto;
+        }
     </style>
     <div class="searchEngine">
         <div class="Header">
@@ -109,7 +123,7 @@
         </div>
 
         <div id="memToggle" class="memToggle" style="display: none">
-            <a href="/myevent">
+            <a href="/mycollection">
                 <div class="myEvent">My Collection</div>
             </a>
             <div id="signoutProcess" class="signoutProcess">Sign Out</div>
@@ -162,18 +176,33 @@
                         <i class="fa fa-cloud-upload"></i> Upload
                     </label>
                     <input type="file" name="photo" id="eventImg" onchange="showImg(this)">
-                    <img id= "showimg" class="showimg" src="" style="display:none;" />
+                    <img id="showimg" class="showimg" src="" style="display:none;" />
                 </div>
 
                 <div class="cTitle">Event Description:</div>
                 <div contenteditable="true" id="eventDes" class="eventDes" data-placeholder="Event description"></div>
                 <div class="launchSec">
                     <button id="previousBtn" class="previousBtn" style="display: none">Previous</button>
+                    <button id="nextBtn2" class="nextBtn" style="display: none">Next</button>
+
+                </div>
+            </div>
+
+            <div id="eInfo3" class="eInfo" style="display: none">
+                <div class="cTitle">#Hashtag (optional)</div>
+                <div id="hashSec">
+                    <div contenteditable="true" class="hashtag"></div>
+                    <div contenteditable="true" class="hashtag"></div>
+                    <div contenteditable="true" class="hashtag"></div>
+
+                </div>
+                <button id="add">add</button>
+                <div class="launchSec">
+                    <button id="previousBtn2" class="previousBtn" style="display: none">Previous</button>
                     <button id="launchBtn" class="launchBtn" onclick="launchEvent(event)"
                         style="display: none">Send</button>
                 </div>
             </div>
-
         </div>
 
 
@@ -200,9 +229,12 @@
         let bg = document.getElementById("bg")
         let bgBtn = document.getElementById("bgBtn")
         let nextBtn = document.getElementById("nextBtn")
+        let nextBtn2 = document.getElementById("nextBtn2")
         let eInfo1 = document.getElementById("eInfo1")
         let eInfo2 = document.getElementById("eInfo2")
+        let eInfo3 = document.getElementById("eInfo3")
         let previousBtn = document.getElementById("previousBtn")
+        let previousBtn2 = document.getElementById("previousBtn2")
         let launchBtn = document.getElementById("launchBtn")
         let eventName = document.getElementById("eventName")
         let sDate = document.getElementById("sDate")
@@ -225,8 +257,11 @@
             cBox.style.display = "none"
             eInfo1.style.display = "block"
             eInfo2.style.display = "none"
+            eInfo3.style.display = "none"
             previousBtn.style.display = "none"
+            previousBtn2.style.display = "none"
             nextBtn.style.display = "block"
+            nextBtn2.style.display = "none"
             launchBtn.style.display = "none"
             sBox.style.display = "none"
             return false;
@@ -256,16 +291,44 @@
         nextBtn.addEventListener("click", function () {
             eInfo1.style.display = "none"
             eInfo2.style.display = "block"
+            eInfo3.style.display = "none"
             previousBtn.style.display = "block"
+            previousBtn2.style.display = "none"
             nextBtn.style.display = "none"
+            nextBtn2.style.display = "block"
+            launchBtn.style.display = "none"
+        })
+
+        nextBtn2.addEventListener("click", function () {
+            eInfo1.style.display = "none"
+            eInfo2.style.display = "none"
+            eInfo3.style.display = "block"
+            previousBtn.style.display = "none"
+            previousBtn2.style.display = "block"
+            nextBtn.style.display = "none"
+            nextBtn2.style.display = "none"
             launchBtn.style.display = "block"
         })
 
         previousBtn.addEventListener("click", function () {
             eInfo1.style.display = "block"
             eInfo2.style.display = "none"
+            eInfo3.style.display = "none"
             previousBtn.style.display = "none"
+            previousBtn2.style.display = "none"
             nextBtn.style.display = "block"
+            nextBtn2.style.display = "none"
+            launchBtn.style.display = "none"
+        })
+
+        previousBtn2.addEventListener("click", function () {
+            eInfo1.style.display = "none"
+            eInfo2.style.display = "block"
+            eInfo3.style.display = "none"
+            previousBtn.style.display = "block"
+            previousBtn2.style.display = "none"
+            nextBtn.style.display = "none"
+            nextBtn2.style.display = "block"
             launchBtn.style.display = "none"
         })
 
@@ -275,6 +338,13 @@
             sBox.style.display = "none"
         })
 
+        document.getElementById("add").addEventListener("click", () => {
+            let hashSec = document.getElementById("hashSec")
+            let tagInput = document.createElement("div")
+            tagInput.setAttribute("contenteditable", "true")
+            tagInput.classList.add("hashtag")
+            hashSec.appendChild(tagInput)
+        })
         function showImg(thisimg) {
             var file = thisimg.files[0];
             if (window.FileReader) {
@@ -356,6 +426,12 @@
                 s = [sday, sdate, smonth, syear]
             }
 
+            let hashtags = document.querySelectorAll(".hashtag")
+            let hashArr = []
+            hashtags.forEach((e) => {
+                hashArr.push(e.innerHTML)
+            })
+
             let formData = new FormData()
             formData.append('eTitle', eventName.value)
             formData.append('sDate', s)
@@ -363,6 +439,7 @@
             formData.append('online', virtual.value)
             formData.append('selectFile', selectedFile);
             formData.append('description', eventDes.innerHTML)
+            formData.append('hashtagsArr', hashArr)
 
             await fetch("/api/bookievents", {
                 method: "POST",
@@ -393,6 +470,7 @@
                         let indiOrg = document.createElement("div")
                         let indiPeo_tag = document.createElement("div")
                         let eventCollect_tag = document.createElement("i")
+                        let decor_tag = document.createElement("div")
 
 
                         indiEvent.classList.add("indiEvent")
@@ -407,6 +485,7 @@
                         eventCollect_tag.classList.add("eventCollect")
                         eventCollect_tag.classList.add("fab")
                         eventCollect_tag.classList.add("fa-gratipay")
+                        decor_tag.classList.add("decor")
 
                         indiTitle.innerHTML = eventsAll[i].aTitle
                         indiOrg.innerHTML = "by " + eventsAll[i].aUser.toUpperCase()
@@ -414,6 +493,8 @@
                         indiTime.innerHTML = eventsAll[i].asDay + ", " + eventsAll[i].asDate + ", " + eventsAll[i].asMonth + ", " + eventsAll[i].asYear + ", " + eventsAll[i].asTime
                         indiPeo_tag.innerHTML = eventsAll[i].aPeople + " participants"
                         a_tag.href = `/e/${eventsAll[i].aTitle}`
+                        decor_tag.innerHTML = "Registered"
+                        decor_tag.style.display = "none"
 
                         indiInfo.appendChild(indiTitle)
                         indiInfo.appendChild(indiOrg)
@@ -421,6 +502,7 @@
                         indiInfo.appendChild(indiPeo_tag)
                         a_tag.appendChild(img_tag)
                         a_tag.appendChild(indiInfo)
+                        a_tag.appendChild(decor_tag)
                         indiEvent.appendChild(a_tag)
                         indiEvent.appendChild(eventCollect_tag)
                         ownEvents.appendChild(indiEvent)
@@ -475,6 +557,28 @@
                         }
                     }
                     getCollectionE()
+
+                    async function getRegistered() {
+                        if (document.getElementById("signinIcon").style.display == "block") {
+                            return
+                        } else {
+                            await fetch("/api/getAllRegistered", { method: "GET" })
+                                .then(response => {
+                                    return response.json()
+                                }).then(data => {
+                                    let titleData = data.registeredTitle
+                                    let registeredTitle = document.querySelectorAll(".indiEvent")
+                                    registeredTitle.forEach((e) => {
+                                        for (let n = 0; n < titleData.length; n++) {
+                                            if (e.getElementsByClassName("indiTitle")[0].innerHTML == titleData[n]) {
+                                                e.getElementsByClassName("decor")[0].style.display = "block"
+                                            }
+                                        }
+                                    })
+                                })
+                        }
+                    }
+                    getRegistered()
                 })
         }
 
