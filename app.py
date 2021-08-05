@@ -13,9 +13,7 @@ import bs4
 import json
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
-# from flask_jwt_extended import JWTManager, jwt_required, create_access_token
 
-# jwt = JWTManager()
 load_dotenv()
 
 s3 = boto3.resource(
@@ -26,10 +24,10 @@ s3 = boto3.resource(
 
 app = Flask(__name__, static_folder="static", static_url_path="/")
 app.secret_key = os.getenv("secretKey")
+app.config['JSON_AS_ASCII'] = False
+app.config['JSONIFY_MIMETYPE'] = "application/json;charset=utf-8"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("awsRDS")
-# app.config['JWT_SECRET_KEY'] = 'qwe'
-# jwt.init_app(app)
 db = SQLAlchemy(app)
 
 
@@ -99,7 +97,7 @@ def searchEngine():
             "message": "Invalid Server"
         })
 
-@app.route("/api/eachPage")
+@app.route("/api/eachPage", methods=["GET"])
 def eachPage():
 
     try:
@@ -145,7 +143,7 @@ def eachPage():
 
     return jsonify(resultsArr)
 
-@app.route("/api/authors")
+@app.route("/api/authors", methods=["GET"])
 def authors():
     try:
         bookIdforA = request.args.get("a")
@@ -565,10 +563,27 @@ def theevent():
                     msg = email.message.EmailMessage()
                     msg["From"] = os.getenv('gmail')
                     msg["To"] = f"{session['memberEmail']}"
-                    msg["Subject"] = f"Hello, {session['memberName']}, Online Event from BooKÏ"
+                    msg["Subject"] = f"Online Event from BooKÏ - {eventEmail[3]}"
 
-                    msg.add_alternative(
-                        f"<h3>Online Event from BooKÏ</h3> <h3>Event:</h3> {eventReplace},<br> <h3>Date:</h3> {eventEmail[5]}, {eventEmail[6]}<br> <h3>Link:<h3> {eventEmail[9]}", subtype="html")
+                    msg.add_alternative(f"""\
+                        <html>
+                        <head></head>
+                        <body>
+                            <div>Hello <b>{session["memberName"]}</b>,</div><br>
+                            <div>Thank you for registering <b>{eventEmail[3]}</b>, below please kindly find the event information:</div><br>
+                            <div>Online Event Title:</div><br>
+                            <a href="http://www.booki.tw/e/{eventEmail[3]}">{eventEmail[3]}</a><br><br>
+                            <div>Online Event Date & Time:</div><br>
+                            <div>{eventEmail[5]}, {eventEmail[6]}, {eventEmail[7]}, {eventEmail[8]}</div><br><br>
+                            <div>Online Event Link:</div>
+                            <div>{eventEmail[9]}</div><br><br>
+                            <a href="http://www.booki.tw/e/{eventEmail[3]}"><div><img src="http://dqgc5yp61yvd.cloudfront.net/{eventEmail[10]}"></div></a>
+                        </body>
+                        </html>
+                        """, subtype="html")
+
+                    # msg.add_alternative(
+                    #     f"<h3>Online Event from BooKÏ</h3> <h3>Event:</h3> {eventReplace}<br> <h3>Date:</h3> {eventEmail[5]}, {eventEmail[6]}<br> <h3>Link:<h3> {eventEmail[9]}", subtype="html")
 
                     server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
                     server.login(os.getenv('gmail'), os.getenv('gmailP'))

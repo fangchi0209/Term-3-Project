@@ -133,8 +133,10 @@
         #add:hover {
             opacity: 1;
         }
+
         .deleteHash {
             padding-top: 25px;
+            cursor: pointer;
         }
     </style>
     <div class="searchEngine">
@@ -222,19 +224,10 @@
             <div id="eInfo3" style="display: none">
                 <div class="cTitle">#Hashtag (optional)<button id="add">add</button></div>
                 <div id="hashSec">
-                    <div class="indiHashtag">
+                    <div class="indiHashtag" data-tagid="1">
                         <div contenteditable="true" class="hashtag"></div>
-                        <i class="fas fa-minus-circle deleteHash"></i>
+                        <i data-deid="1" class="fas fa-minus-circle deleteHash"></i>
                     </div>
-                    <div class="indiHashtag">
-                        <div contenteditable="true" class="hashtag"></div>
-                        <i class="fas fa-minus-circle deleteHash"></i>
-                    </div>
-                    <div class="indiHashtag">
-                        <div contenteditable="true" class="hashtag"></div>
-                        <i class="fas fa-minus-circle deleteHash"></i>
-                    </div>
-
                 </div>
                 <div class="launchSec">
                     <button id="previousBtn2" class="previousBtn" style="display: none">Previous</button>
@@ -377,23 +370,41 @@
             sBox.style.display = "none"
         })
 
+        let tagidNum=1;
         document.getElementById("add").addEventListener("click", () => {
             let hashSec = document.getElementById("hashSec")
             let deleteTogether = document.createElement("div")
             let tagInput = document.createElement("div")
             let delete_tag = document.createElement("i")
             deleteTogether.classList.add("indiHashtag")
+
+            tagidNum += 1
+            deleteTogether.setAttribute("data-tagid", `${tagidNum}`)
             tagInput.setAttribute("contenteditable", "true")
+            
             tagInput.classList.add("hashtag")
             delete_tag.classList.add("fas")
             delete_tag.classList.add("fa-minus-circle")
             delete_tag.classList.add("deleteHash")
+            delete_tag.setAttribute("data-deid", `${tagidNum}`)
             deleteTogether.appendChild(tagInput)
             deleteTogether.appendChild(delete_tag)
             hashSec.appendChild(deleteTogether)
 
-            console.log(document.querySelectorAll(".indiHashtag"))
         })
+
+
+        document.getElementById("hashSec").addEventListener("click", (e) => {
+            let deleteTarget = e.target
+            let demo = document.querySelectorAll(".indiHashtag")
+            demo.forEach((e) => {
+                if (e.getAttribute("data-tagid") == deleteTarget.getAttribute("data-deid")) {
+                    e.remove()
+                }
+            })
+        })
+
+
 
         function showImg(thisimg) {
             var file = thisimg.files[0];

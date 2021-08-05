@@ -69,6 +69,16 @@
         #pageCount a:hover {
             color: black
         }
+
+        #noData {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #suggestList {
+            line-height: 1.5;
+            margin-top: 10px;
+        }
     </style>
 
     <div class="searchEngine">
@@ -122,6 +132,7 @@
         let keyword;
         let searchBarWord;
         let targetPage = document.getElementById("pageCount")
+        let bookSection = document.getElementById("bookSection")
         let finalData;
         let totalBooks;
 
@@ -142,8 +153,6 @@
         })
 
         async function allBooks(num) {
-
-            // searchBarWord = queryString.replace(/%20/g, " ")
             let searchBarWord = decodeURI(queryString)
             document.getElementById("searchBar").value = searchBarWord
 
@@ -152,10 +161,44 @@
                     return response.json()
                 }).then(re => {
                     totalBooks = re
-                    data = totalBooks[num].items
-                    totalData = totalBooks.length
-                    getPages(totalData)
-                    getBooks(data)
+                    if (totalBooks != ""){
+                        data = totalBooks[num].items
+                        totalData = totalBooks.length
+                        getPages(totalData)
+                        getBooks(data)
+                    }else{
+                        let noData = document.createElement("div")
+                        let noResults = document.createElement("div")
+                        let suggestion = document.createElement("div")
+                        let suggestList = document.createElement("div")
+                        let aSuggest = document.createElement("div")
+                        let bSuggest = document.createElement("div")
+                        let cSuggest = document.createElement("div")
+                        let dSuggest = document.createElement("div")
+
+                        noData.setAttribute("id", "noData")
+                        suggestList.setAttribute("id", "suggestList")
+
+                        noResults.style.fontSize = "22px"
+                        suggestion.style.marginTop = "25px"
+
+                        noResults.innerHTML = `Your search - <b>${queryString}</b> - did not match any book results.`
+                        suggestion.innerText = "Suggestions:"
+                        aSuggest.innerText = "● Make sure that all words are spelled correctly."
+                        bSuggest.innerText = "● Try different keywords."
+                        cSuggest.innerText = "● Try more general keywords."
+                        dSuggest.innerText = "● Try fewer keywords."
+
+                        suggestList.appendChild(aSuggest)
+                        suggestList.appendChild(bSuggest)
+                        suggestList.appendChild(cSuggest)
+                        suggestList.appendChild(dSuggest)
+
+                        noData.appendChild(noResults)
+                        noData.appendChild(suggestion)
+                        noData.appendChild(suggestList)
+                        bookSection.appendChild(noData)
+                    }
                 })
         }
 
@@ -171,7 +214,6 @@
         function getBooks(items) {
 
             for (let n = 0; n <= items.length; n++) {
-                let bookSection = document.getElementById("bookSection")
                 let book_tag = document.createElement("div")
                 let bookCover_tag = document.createElement("div")
                 let bookTitle_tag = document.createElement("div")
@@ -185,7 +227,7 @@
                 !items[n].volumeInfo.imageLinks ? img_tag.src = "http://dqgc5yp61yvd.cloudfront.net/no_cover.png" : img_tag.src = items[n].volumeInfo.imageLinks.thumbnail
 
                 let bookTitle = document.createTextNode(items[n].volumeInfo.title)
-                let authors = document.createTextNode(items[n].volumeInfo.authors)
+                !items[n].volumeInfo.authors ? authors_tag.innerText = "No Author" : authors_tag.innerHTML = items[n].volumeInfo.authors
                 let emptyS = document.createTextNode("★★★★★")
                 let fullS = document.createTextNode("★★★★★")
                 let url_link = "/bookInfo/" + items[n].id
@@ -218,7 +260,6 @@
                 fullStar_tag.appendChild(fullS)
                 ratings_tag.appendChild(emptyStar_tag)
                 ratings_tag.appendChild(fullStar_tag)
-                authors_tag.appendChild(authors)
                 url_tag.appendChild(bookCover_tag)
                 url_tag.appendChild(bookTitle_tag)
                 url_tag.appendChild(ratings_tag)
@@ -291,7 +332,6 @@
         }
 
         function preview(data) {
-            // console.log(data)
             if (data != "") {
                 bundle.style.borderRadius = "24px 24px 0px 0px"
                 toggle.style.display = "block"
@@ -336,10 +376,6 @@
         memIcon.addEventListener("mousemove", () => {
             memToggle.style.display = "block"
         })
-
-        // memIcon.addEventListener("mouseout", () => {
-        //     memToggle.style.display = "none"
-        // })
 
         memToggle.addEventListener("mouseout", () => {
             memToggle.style.display = "none"
