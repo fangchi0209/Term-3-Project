@@ -358,7 +358,7 @@
 
                 </div>
                 <div id="hashtagSec">
-                    <div class="bodyTitle">Tags</div>
+                    <div class="bodyTitle">#Tags</div>
                 </div>
             </div>
 
@@ -466,6 +466,8 @@
                 bg.style.display = "block"
                 registerpopup.style.display = "block"
                 registerpopup.style.backgroundColor = "#D3D3D3"
+                registerAnEvent.style.display = "block"
+                collectAnEvent.style.display = "none"
                 sBox.style.display = "block"
                 reBox.style.display = "none"
                 goEventBox.style.display = "none"
@@ -675,7 +677,7 @@
                             a_tag.classList.add("indiLink")
                             hashOrg.classList.add("indiOrg")
                             hashPeo_tag.classList.add("indiPeo")
-                            hash_tag.setAttribute("data-hashid", hashItems[h].getHashE)
+                            hash_tag.setAttribute("data-id", hashItems[h].getHashE)
                             hash_tag.classList.add("eventCollect")
                             hash_tag.classList.add("fab")
                             hash_tag.classList.add("fa-gratipay")

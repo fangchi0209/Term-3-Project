@@ -97,6 +97,7 @@
         #hashSec {
             display: flex;
             flex-direction: column;
+            margin-top: 20px;
         }
 
         .hashtag {
@@ -105,7 +106,35 @@
             border: 1px solid gray;
             border-radius: 8px;
             padding: 10px;
-            margin: 10px auto;
+            margin: 10px;
+            outline: none;
+        }
+
+        .indiHashtag {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+        }
+
+        #add {
+            width: 80px;
+            height: 30px;
+            background-color: #f05537;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            margin-left: 10px;
+            font-size: 20px;
+            font-family: Helvetica;
+            cursor: pointer;
+            opacity: 0.8;
+        }
+
+        #add:hover {
+            opacity: 1;
+        }
+        .deleteHash {
+            padding-top: 25px;
         }
     </style>
     <div class="searchEngine">
@@ -154,7 +183,7 @@
 
     <div id="createpopup" class="createpopup" style="display: none;">
         <div id="cBox" class="cBox" style="display: none;">
-            <div id="eInfo1" class="eInfo">
+            <div id="eInfo1">
                 <div class="createInfoBox">
                     <div class="cTitle">Event Title:</div>
                     <input type="text" id="eventName" class="eventinput" placeholder="BooKÏ Top 10 club">
@@ -167,10 +196,12 @@
                     <div class="cTitle">Event Link:</div>
                     <input type="text" id="virtual" class="eventinput" placeholder="http://">
                 </div>
-                <button id="nextBtn" class="nextBtn">Next</button>
+                <div class="launchSec">
+                    <button id="nextBtn" class="nextBtn">Next</button>
+                </div>
             </div>
 
-            <div id="eInfo2" class="eInfo" style="display: none">
+            <div id="eInfo2" style="display: none">
                 <div class="photoTogether">
                     <label for="eventImg" class="custom-file-upload">
                         <i class="fa fa-cloud-upload"></i> Upload
@@ -188,15 +219,23 @@
                 </div>
             </div>
 
-            <div id="eInfo3" class="eInfo" style="display: none">
-                <div class="cTitle">#Hashtag (optional)</div>
+            <div id="eInfo3" style="display: none">
+                <div class="cTitle">#Hashtag (optional)<button id="add">add</button></div>
                 <div id="hashSec">
-                    <div contenteditable="true" class="hashtag"></div>
-                    <div contenteditable="true" class="hashtag"></div>
-                    <div contenteditable="true" class="hashtag"></div>
+                    <div class="indiHashtag">
+                        <div contenteditable="true" class="hashtag"></div>
+                        <i class="fas fa-minus-circle deleteHash"></i>
+                    </div>
+                    <div class="indiHashtag">
+                        <div contenteditable="true" class="hashtag"></div>
+                        <i class="fas fa-minus-circle deleteHash"></i>
+                    </div>
+                    <div class="indiHashtag">
+                        <div contenteditable="true" class="hashtag"></div>
+                        <i class="fas fa-minus-circle deleteHash"></i>
+                    </div>
 
                 </div>
-                <button id="add">add</button>
                 <div class="launchSec">
                     <button id="previousBtn2" class="previousBtn" style="display: none">Previous</button>
                     <button id="launchBtn" class="launchBtn" onclick="launchEvent(event)"
@@ -340,11 +379,22 @@
 
         document.getElementById("add").addEventListener("click", () => {
             let hashSec = document.getElementById("hashSec")
+            let deleteTogether = document.createElement("div")
             let tagInput = document.createElement("div")
+            let delete_tag = document.createElement("i")
+            deleteTogether.classList.add("indiHashtag")
             tagInput.setAttribute("contenteditable", "true")
             tagInput.classList.add("hashtag")
-            hashSec.appendChild(tagInput)
+            delete_tag.classList.add("fas")
+            delete_tag.classList.add("fa-minus-circle")
+            delete_tag.classList.add("deleteHash")
+            deleteTogether.appendChild(tagInput)
+            deleteTogether.appendChild(delete_tag)
+            hashSec.appendChild(deleteTogether)
+
+            console.log(document.querySelectorAll(".indiHashtag"))
         })
+
         function showImg(thisimg) {
             var file = thisimg.files[0];
             if (window.FileReader) {

@@ -378,11 +378,6 @@ i.fa.fa-cloud-upload {
     height: 350px;
 }
 
-.eInfo {
-    display: flex;
-    flex-direction: column;
-}
-
 .eventinput {
     height: 70px;
     margin-left: 20px;
@@ -391,6 +386,7 @@ i.fa.fa-cloud-upload {
     border: 1px solid gray;
     padding-left: 15px;
     font-size: 24px;
+    outline: none;
 }
 
 .createInfoBox {
@@ -442,7 +438,6 @@ input[type="file"] {
 }
 
 .nextBtn {
-    position: absolute;
     width: 100px;
     height: 50px;
     bottom: 25px;
