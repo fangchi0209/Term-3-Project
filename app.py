@@ -584,9 +584,6 @@ def theevent():
                         </html>
                         """, subtype="html")
 
-                    # msg.add_alternative(
-                    #     f"<h3>Online Event from BooKÏ</h3> <h3>Event:</h3> {eventReplace}<br> <h3>Date:</h3> {eventEmail[5]}, {eventEmail[6]}<br> <h3>Link:<h3> {eventEmail[9]}", subtype="html")
-
                     server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
                     server.login(os.getenv('gmail'), os.getenv('gmailP'))
                     server.send_message(msg)
