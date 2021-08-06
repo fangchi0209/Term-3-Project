@@ -441,6 +441,7 @@
         let hashtagEvents = document.getElementById("hashtagEvents")
         let hashKW = document.getElementById("hashKW")
         let wrap2 = document.getElementById("wrap2")
+        let jsonTitle;
 
         bgBtn.addEventListener("click", function () {
             bg.style.display = "none"
@@ -526,6 +527,7 @@
                     uMonth.innerHTML = re.thesMonth
                     title_tag.innerHTML = re.theTitle
                     organiser_tag.innerHTML = "by " + re.theUser
+                    jsonTitle = re.theTitle
 
                     eventDes_tag.innerHTML = re.theDes
 
@@ -748,7 +750,7 @@
                     "content-type": "application/json"
                 },
                 body: JSON.stringify({
-                    reEventId: eventId,
+                    reEventId: jsonTitle,
                 })
             })
                 .then(response => {
