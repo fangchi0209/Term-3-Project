@@ -111,7 +111,7 @@ def eachPage():
         if final["totalItems"] < 10:
             totalCount = final["totalItems"]
         else:
-            totalCount = final["totalItems"] - 80
+            totalCount = final["totalItems"] - 150
 
         i = 0
         while i < totalCount:
@@ -571,12 +571,14 @@ def theevent():
                         <body>
                             <div>Hello <b>{session["memberName"]}</b>,</div><br>
                             <div>Thank you for registering <b>{eventEmail[3]}</b>, below please kindly find the event information:</div><br>
-                            <div>Online Event Title:</div><br>
+                            <div>Online Event Title:</div>
                             <a href="http://www.booki.tw/e/{eventEmail[3]}">{eventEmail[3]}</a><br><br>
-                            <div>Online Event Date & Time:</div><br>
+                            <div>Online Event Date & Time:</div>
                             <div>{eventEmail[5]}, {eventEmail[6]}, {eventEmail[7]}, {eventEmail[8]}</div><br><br>
                             <div>Online Event Link:</div>
                             <div>{eventEmail[9]}</div><br><br>
+                            <div>Event Description:</div>
+                            <div>{eventEmail[11]}</div><br><br>
                             <a href="http://www.booki.tw/e/{eventEmail[3]}"><div><img src="http://dqgc5yp61yvd.cloudfront.net/{eventEmail[10]}"></div></a>
                         </body>
                         </html>
