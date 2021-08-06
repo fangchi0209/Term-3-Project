@@ -108,13 +108,13 @@ def eachPage():
         f = requests.get(first)
         final = json.loads(f.text)
 
-        if final["totalItems"] < 10:
-            totalCount = final["totalItems"]
-        else:
-            totalCount = final["totalItems"] - 150
+        # if final["totalItems"] < 10:
+        #     totalCount = final["totalItems"]
+        # else:
+        #     totalCount = final["totalItems"] - 150
 
         i = 0
-        while i < totalCount:
+        while i < 200:
             links = f"https://www.googleapis.com/books/v1/volumes?q={keyword}&startIndex={i}&maxResults=30"
             # links = f"https://www.googleapis.com/books/v1/volumes?q={keyword}&startIndex={i}&maxResults=30&key=AIzaSyDbZ4ChEkPy6BsmTMPbLUmS55VWtfnrEJE&country=TW"
             data.append(links)
