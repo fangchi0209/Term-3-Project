@@ -170,7 +170,7 @@
 
     <div id="createpopup" class="createpopup" style="display: none;">
         <div id="cBox" class="cBox" style="display: none;">
-            <div id="eInfo1" class="eInfo">
+            <div id="eInfo1">
                 <div class="createInfoBox">
                     <div class="cTitle">Event Title:</div>
                     <input type="text" id="eventName" class="eventinput" placeholder="BooKÏ Top 10 club">
@@ -183,10 +183,12 @@
                     <div class="cTitle">Event Link:</div>
                     <input type="text" id="virtual" class="eventinput" placeholder="http://">
                 </div>
-                <button id="nextBtn" class="nextBtn">Next</button>
+                <div class="launchSec">
+                    <button id="nextBtn" class="nextBtn">Next</button>
+                </div>
             </div>
 
-            <div id="eInfo2" class="eInfo" style="display: none">
+            <div id="eInfo2" style="display: none">
                 <div class="photoTogether">
                     <label for="eventImg" class="custom-file-upload">
                         <i class="fa fa-cloud-upload"></i> Upload
@@ -199,13 +201,28 @@
                 <div contenteditable="true" id="eventDes" class="eventDes" data-placeholder="Event description"></div>
                 <div class="launchSec">
                     <button id="previousBtn" class="previousBtn" style="display: none">Previous</button>
+                    <button id="nextBtn2" class="nextBtn" style="display: none">Next</button>
+
+                </div>
+            </div>
+
+            <div id="eInfo3" style="display: none">
+                <div class="cTitle">#Hashtag (optional)<button id="add" class="add">add</button></div>
+                <div id="hashSec" class="hashSec">
+                    <div class="indiHashtag" data-tagid="1">
+                        <div contenteditable="true" class="hashtag"></div>
+                        <i data-deid="1" class="fas fa-minus-circle deleteHash"></i>
+                    </div>
+                </div>
+                <div class="launchSec">
+                    <button id="previousBtn2" class="previousBtn" style="display: none">Previous</button>
                     <button id="launchBtn" class="launchBtn" onclick="launchEvent(event)"
                         style="display: none">Send</button>
                 </div>
             </div>
-
         </div>
     </div>
+
 
 
     <script src="https://kit.fontawesome.com/cbebce4b6d.js" crossorigin="anonymous"></script>
@@ -218,7 +235,9 @@
         let nextBtn = document.getElementById("nextBtn")
         let eInfo1 = document.getElementById("eInfo1")
         let eInfo2 = document.getElementById("eInfo2")
+        let eInfo3 = document.getElementById("eInfo3")
         let previousBtn = document.getElementById("previousBtn")
+        let previousBtn2 = document.getElementById("previousBtn2")
         let launchBtn = document.getElementById("launchBtn")
         let eventName = document.getElementById("eventName")
         let sDate = document.getElementById("sDate")
@@ -237,8 +256,11 @@
             cBox.style.display = "none"
             eInfo1.style.display = "block"
             eInfo2.style.display = "none"
+            eInfo3.style.display = "none"
             previousBtn.style.display = "none"
+            previousBtn2.style.display = "none"
             nextBtn.style.display = "block"
+            nextBtn2.style.display = "none"
             launchBtn.style.display = "none"
             return false;
         })
@@ -260,17 +282,79 @@
         nextBtn.addEventListener("click", function () {
             eInfo1.style.display = "none"
             eInfo2.style.display = "block"
+            eInfo3.style.display = "none"
             previousBtn.style.display = "block"
+            previousBtn2.style.display = "none"
             nextBtn.style.display = "none"
+            nextBtn2.style.display = "block"
+            launchBtn.style.display = "none"
+        })
+
+        nextBtn2.addEventListener("click", function () {
+            eInfo1.style.display = "none"
+            eInfo2.style.display = "none"
+            eInfo3.style.display = "block"
+            previousBtn.style.display = "none"
+            previousBtn2.style.display = "block"
+            nextBtn.style.display = "none"
+            nextBtn2.style.display = "none"
             launchBtn.style.display = "block"
         })
 
         previousBtn.addEventListener("click", function () {
             eInfo1.style.display = "block"
             eInfo2.style.display = "none"
+            eInfo3.style.display = "none"
             previousBtn.style.display = "none"
+            previousBtn2.style.display = "none"
             nextBtn.style.display = "block"
+            nextBtn2.style.display = "none"
             launchBtn.style.display = "none"
+        })
+
+        previousBtn2.addEventListener("click", function () {
+            eInfo1.style.display = "none"
+            eInfo2.style.display = "block"
+            eInfo3.style.display = "none"
+            previousBtn.style.display = "block"
+            previousBtn2.style.display = "none"
+            nextBtn.style.display = "none"
+            nextBtn2.style.display = "block"
+            launchBtn.style.display = "none"
+        })
+
+        document.getElementById("hashSec").addEventListener("click", (e) => {
+            let deleteTarget = e.target
+            let demo = document.querySelectorAll(".indiHashtag")
+            demo.forEach((e) => {
+                if (e.getAttribute("data-tagid") == deleteTarget.getAttribute("data-deid")) {
+                    e.remove()
+                }
+            })
+        })
+
+
+        let tagidNum = 1;
+        document.getElementById("add").addEventListener("click", () => {
+            let hashSec = document.getElementById("hashSec")
+            let deleteTogether = document.createElement("div")
+            let tagInput = document.createElement("div")
+            let delete_tag = document.createElement("i")
+            deleteTogether.classList.add("indiHashtag")
+
+            tagidNum += 1
+            deleteTogether.setAttribute("data-tagid", `${tagidNum}`)
+            tagInput.setAttribute("contenteditable", "true")
+
+            tagInput.classList.add("hashtag")
+            delete_tag.classList.add("fas")
+            delete_tag.classList.add("fa-minus-circle")
+            delete_tag.classList.add("deleteHash")
+            delete_tag.setAttribute("data-deid", `${tagidNum}`)
+            deleteTogether.appendChild(tagInput)
+            deleteTogether.appendChild(delete_tag)
+            hashSec.appendChild(deleteTogether)
+
         })
 
         function showImg(thisimg) {
@@ -350,6 +434,12 @@
                 s = [sday, sdate, smonth, syear]
             }
 
+            let hashtags = document.querySelectorAll(".hashtag")
+            let hashArr = []
+            hashtags.forEach((e) => {
+                hashArr.push(e.innerHTML)
+            })
+
             let formData = new FormData()
             formData.append('eTitle', eventName.value)
             formData.append('sDate', s)
@@ -357,6 +447,7 @@
             formData.append('online', virtual.value)
             formData.append('selectFile', selectedFile);
             formData.append('description', eventDes.innerHTML)
+            formData.append('hashtagsArr', hashArr)
 
             await fetch("/api/bookievents", {
                 method: "POST",
@@ -369,6 +460,7 @@
             })
         }
     </script>
+
     <script>
         //MEMBER EVENTS LIKES
         //MEMBER OWN EVENTS

@@ -94,50 +94,7 @@
             margin-top: 80px;
         }
 
-        #hashSec {
-            display: flex;
-            flex-direction: column;
-            margin-top: 20px;
-        }
 
-        .hashtag {
-            width: 200px;
-            height: 30px;
-            border: 1px solid gray;
-            border-radius: 8px;
-            padding: 10px;
-            margin: 10px;
-            outline: none;
-        }
-
-        .indiHashtag {
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-        }
-
-        #add {
-            width: 80px;
-            height: 30px;
-            background-color: #f05537;
-            border: none;
-            border-radius: 8px;
-            color: white;
-            margin-left: 10px;
-            font-size: 20px;
-            font-family: Helvetica;
-            cursor: pointer;
-            opacity: 0.8;
-        }
-
-        #add:hover {
-            opacity: 1;
-        }
-
-        .deleteHash {
-            padding-top: 25px;
-            cursor: pointer;
-        }
     </style>
     <div class="searchEngine">
         <div class="Header">
@@ -222,8 +179,8 @@
             </div>
 
             <div id="eInfo3" style="display: none">
-                <div class="cTitle">#Hashtag (optional)<button id="add">add</button></div>
-                <div id="hashSec">
+                <div class="cTitle">#Hashtag (optional)<button id="add" class="add">add</button></div>
+                <div id="hashSec" class="hashSec">
                     <div class="indiHashtag" data-tagid="1">
                         <div contenteditable="true" class="hashtag"></div>
                         <i data-deid="1" class="fas fa-minus-circle deleteHash"></i>
