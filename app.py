@@ -255,6 +255,7 @@ def reviews():
                     cTime = request.form.get('date')
                     cStar = request.form.get('stars')
                     cContent = request.form.get('content')
+                    print(cContent)
                     pReview = f'''INSERT INTO reviews (book, user, time, rates, content) VALUES ("{cTitle}", "{session['memberName']}", "{cTime}", "{cStar}", "{cContent}")'''
                     db.engine.execute(pReview)
 
