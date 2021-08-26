@@ -652,6 +652,7 @@
                 .then(response => {
                     return response.json();
                 }).then(result => {
+                    console.log(result)
                     theBookInfo(result)
                     theBookSpec(result)
                 })
@@ -726,13 +727,7 @@
 
 
             // whether book description exits or not
-            let theBookDes = data.volumeInfo.description
-            if (theBookDes == null) {
-                theBookDes_tag.innerHTML = "No description"
-                document.getElementById("more").style.display = "none"
-            } else {
-                theBookDes_tag.innerHTML = theBookDes
-            }
+        
 
             
             if (data.volumeInfo.authors == null) {
@@ -801,6 +796,15 @@
                 }
                 moreIcon = !moreIcon
             })
+
+            if (("description" in data.volumeInfo)) {
+                let theBookDes = data.volumeInfo.description
+                theBookDes_tag.innerHTML = theBookDes
+            } else {
+                theBookDes_tag.innerHTML = "No description"
+                document.getElementById("more").style.display = "none"
+
+            }
 
             async function recCounts() {
 
